@@ -26,7 +26,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="查成绩"
+            android:text="成绩查询"
             android:textSize="16sp" />
 
         <TextView
@@ -45,7 +45,7 @@
     <include layout="@layout/view_line"/>
 
     <LinearLayout
-        android:id="@+id/id_menu_search"
+        android:id="@+id/id_menu_notice"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:background="@drawable/layout_ripple"
@@ -58,14 +58,14 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="课程库"
+            android:text="最新公告"
             android:textSize="16sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="5dp"
-            android:text="搜索"
+            android:text="网页"
             android:textColor="@color/app_gray" />
 
         <ImageView
@@ -75,10 +75,29 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/id_menu_changeclass"
+        android:id="@+id/id_menu_search"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_marginTop="10dp"
+        android:background="@drawable/layout_ripple"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="课程仓库"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+    <include layout="@layout/view_line"/>
+    <LinearLayout
+        android:id="@+id/id_menu_changeclass"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
         android:background="@drawable/layout_ripple"
         android:gravity="center_vertical"
         android:orientation="horizontal"

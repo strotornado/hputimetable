@@ -127,14 +127,24 @@ public class MenuActivity extends AppCompatActivity {
         getContext().finish();
     }
 
+    @OnClick(R.id.id_menu_notice)
+    public void onNoticeLayoutCLicked(){
+        BundleModel model=new BundleModel();
+        model.setFromClass(MenuActivity.class)
+                .put("title","最新公告")
+                .put("url","https://vpn.hpu.edu.cn")
+                .put("isUse",1);
+        ActivityTools.toActivity(this,WebViewActivity.class,model);
+    }
+
     @OnClick(R.id.id_menu_score)
     public void score() {
         int show=ShareTools.getInt(this,ShareConstants.KEY_SHOW_ALERTDIALOG,1);
         if(show==1){
             AlertDialog.Builder builder=new AlertDialog.Builder(this);
             builder.setTitle("查询指南")
-                    .setMessage("步骤如下：\n\n1.点击[确认]\n2.登录VPN,若失败,可以使用其他同学的校园网账号，vpn密码默认是身份证后六位\n." +
-                            "3.登陆教务处,输入个人教务处账号,密码默认为学号\n4.登陆成功后,网页无法点击,这是正常现象." +
+                    .setMessage("步骤如下：\n\n1.点击[确认]\n2.登录VPN,若失败,可以使用其他同学的校园网账号,vpn密码默认是身份证后六位" +
+                            "\n3.登陆教务处,输入个人教务处账号,密码默认为学号\n4.登陆成功后,网页无法点击,这是正常现象." +
                             "\n4.此时,点击右上角,选择[兼容模式菜单],选择需要的功能即可\n\n我只能帮你到这里了~~,如果感觉好用就帮我推广一下呗\n");
 
             builder.setPositiveButton("确认", new DialogInterface.OnClickListener() {
@@ -162,7 +172,8 @@ public class MenuActivity extends AppCompatActivity {
     public void issues() {
         AlertDialog.Builder builder=new AlertDialog.Builder(this);
         builder.setTitle("问题反馈")
-                .setMessage("您的任何的问题和建议都会列入我们的考虑范围之内.\n\n请加QQ群:684993074(hpu小课)\n\n如果感觉不好用的话私聊我，好用就帮我推广一下呗\n");
+                .setMessage("您的任何问题和建议都会列入我们的考虑范围之内.\n\n" +
+                        "请加QQ群:684993074(hpu小课)\n\n如果感觉不好用的话私聊我，好用就帮我推广一下呗\n");
 
         builder.setPositiveButton("朕知道了,退下吧", null);
         builder.create().show();

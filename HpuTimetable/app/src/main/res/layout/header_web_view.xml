@@ -33,6 +33,7 @@
         android:textSize="18sp" />
 
     <TextView
+        android:visibility="gone"
         android:id="@+id/id_webview_help"
         android:layout_width="60dp"
         android:layout_height="30dp"

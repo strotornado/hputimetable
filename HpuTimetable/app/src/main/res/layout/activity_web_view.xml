@@ -16,15 +16,14 @@
         android:orientation="vertical">
 
         <Button
-            android:id="@+id/id_webview_btn1"
-            android:text="历年成绩"
-            android:layout_marginTop="20dp"
+            android:id="@+id/id_webview_btn2"
+            android:text="期末成绩"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 
         <Button
-            android:id="@+id/id_webview_btn2"
-            android:text="期末成绩"
+            android:id="@+id/id_webview_btn1"
+            android:text="历年成绩"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 

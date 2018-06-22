@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.ViewManager;
 import android.webkit.DownloadListener;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
@@ -24,6 +25,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TabHost;
 import android.widget.TextView;
 
 import com.tencent.bugly.crashreport.BuglyLog;
@@ -56,6 +58,7 @@ public class WebViewActivity extends AppCompatActivity {
     String url,title;
 
     boolean isScoreQuery=false;
+    boolean isUseBrower=false;
 
     //所有成绩
     public static final String URL_SCORE_ALL="https://vpn.hpu.edu.cn/web/1/http/2/218.196.240.97/gradeLnAllAction.do?type=ln&oper=qb";
@@ -92,7 +95,12 @@ public class WebViewActivity extends AppCompatActivity {
         returnClass = BundleTools.getFromClass(this, MainActivity.class);
         url = BundleTools.getString(this, "url", "http://www.liuzhuangfei.com");
         title=BundleTools.getString(this,"title","WebView");
-        if(title!=null&&title.indexOf("成绩")!=-1) isScoreQuery=true;
+        int isUse= (int) BundleTools.getInt(this,"isUse",0);
+        if(isUse==1) isUseBrower=true;
+        if(title!=null&&title.indexOf("成绩")!=-1){
+            isScoreQuery=true;
+            helpView.setVisibility(View.VISIBLE);
+        }
     }
 
     /**
@@ -190,7 +198,15 @@ public class WebViewActivity extends AppCompatActivity {
         webView.setWebViewClient(new WebViewClient(){
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                webView.loadUrl(url);
+                Log.d(TAG, "shouldOverrideUrlLoading: "+url);
+
+                if(isUseBrower){
+                    Intent i = new Intent(Intent.ACTION_VIEW);
+                    i.setData(Uri.parse(url));
+                    startActivity(i);
+                }else{
+                    webView.loadUrl(url);
+                }
                 return true;
             }
 

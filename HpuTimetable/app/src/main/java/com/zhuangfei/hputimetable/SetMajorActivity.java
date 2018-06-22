@@ -1,5 +1,6 @@
 package com.zhuangfei.hputimetable;
 
+import android.Manifest;
 import android.app.Activity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -30,6 +31,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnItemClick;
+import kr.co.namee.permissiongen.PermissionFail;
+import kr.co.namee.permissiongen.PermissionGen;
+import kr.co.namee.permissiongen.PermissionSuccess;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -46,13 +50,45 @@ public class SetMajorActivity extends AppCompatActivity{
     @BindView(R.id.id_find_major_edittext)
     EditText findMajorEditText;
 
+    final int SUCCESSCODE=1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_set_major);
         ButterKnife.bind(this);
         context=this;
+        shouldcheckPermission();
         checkLocalMajor();
+    }
+
+    private void shouldcheckPermission() {
+        PermissionGen.with(SetMajorActivity.this)
+                .addRequestCode(SUCCESSCODE)
+                .permissions(
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.MOUNT_UNMOUNT_FILESYSTEMS
+                )
+                .request();
+    }
+
+    //申请权限结果的返回
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        PermissionGen.onRequestPermissionsResult(this, requestCode, permissions, grantResults);
+    }
+
+    //权限申请成功
+    @PermissionSuccess(requestCode = SUCCESSCODE)
+    public void doSomething() {
+        //在这个方法中做一些权限申请成功的事情
+
+    }
+    //申请失败
+    @PermissionFail(requestCode =SUCCESSCODE)
+    public void doFailSomething() {
+        ToastTools.show(this,"权限不足，运行中可能会出现故障!");
     }
 
     public void checkLocalMajor(){
