@@ -1,0 +1,84 @@
+apply plugin: 'com.android.application'
+// 依赖插件脚本
+apply from: 'tinker-support.gradle'
+
+android {
+    compileSdkVersion 26
+    defaultConfig {
+        applicationId "com.zhuangfei.hputimetable"
+        minSdkVersion 15
+        targetSdkVersion 26
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        ndk {
+            //设置支持的SO库架构
+            abiFilters 'armeabi', 'x86', 'armeabi-v7a', 'x86_64', 'arm64-v8a'
+        }
+
+        // 开启multidex
+        multiDexEnabled true
+
+        versionCode 1
+        versionName "1.0.0"
+    }
+
+    // 签名配置
+    signingConfigs {
+        release {
+            try {
+                storeFile file("./keystore/my.kestore")
+                storePassword "5271314"
+                keyAlias "liu"
+                keyPassword "5271314"
+            } catch (ex) {
+                throw new InvalidUserDataException(ex.toString())
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+        }
+    }
+
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:0.5'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:2.2.2'
+    compile 'com.jakewharton:butterknife:8.5.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
+    //    //图文混排
+    compile 'com.zhuangfei:ExpandEditText:1.0.0'
+    compile 'com.zhuangfei:GeneralPage:1.0.0'
+    compile 'com.zhuangfei:TimetableView:2.0.0'
+    implementation project(':toolkit')
+    compile 'com.contrarywind:Android-PickerView:3.2.7'
+    compile 'com.squareup.retrofit2:retrofit:2.0.2'
+    compile 'com.squareup.retrofit2:converter-gson:2.0.2'
+    implementation project(':smartalert')
+
+    //数据库
+    compile 'org.litepal.android:core:1.6.1'
+    implementation 'com.android.support:design:26.1.0'
+
+    // 多dex配置
+    compile 'com.android.support:multidex:1.0.1'
+    //注释掉原有bugly的仓库
+    //compile 'com.tencent.bugly:crashreport:latest.release'//其中latest.release指代最新版本号，也可以指定明确的版本号，例如1.3.4
+    compile 'com.tencent.bugly:crashreport_upgrade:1.3.4'
+    compile 'com.tencent.bugly:nativecrashreport:latest.release'
+
+}
+
+apply plugin: 'bugly'
+
+bugly {
+    appId = 'd5c36279ba' // 注册时分配的App ID
+    appKey = 'f1ae90b2-92e9-4324-9fd2-ee3537250249' // 注册时分配的App Key
+}

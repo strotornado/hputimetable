@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@color/app_white"
+    android:orientation="vertical" >
+    
+
+    <LinearLayout 
+        android:id="@+id/id_container"
+        android:background="@drawable/layout_press_style"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+        
+        <LinearLayout 
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+            
+            
+            <TextView 
+            android:id="@+id/id_manager_name"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+           	android:maxLines="2"
+            android:ellipsize="middle"
+            android:textStyle="bold"/>
+            <CheckBox
+                android:clickable="false"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:id="@+id/id_manager_check"/>
+        </LinearLayout>
+  
+        <LinearLayout 
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+            <TextView 
+            android:id="@+id/id_manager_room"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:singleLine="true"
+            android:ellipsize="middle"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"/>
+        </LinearLayout>
+   
+        <LinearLayout 
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+            <TextView 
+            android:id="@+id/id_manager_weeks"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:singleLine="true"
+            android:ellipsize="middle"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"/>
+        </LinearLayout>
+      
+        <LinearLayout 
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+            <TextView 
+            android:id="@+id/id_manager_day"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:singleLine="true"
+            android:ellipsize="middle"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"/>
+        </LinearLayout>
+        <LinearLayout 
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_marginBottom="15dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+            <TextView 
+            android:id="@+id/id_manager_teacher"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:singleLine="true"
+            android:ellipsize="middle"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"/>
+        </LinearLayout>
+      
+    </LinearLayout>
+    
+    <TextView 
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/app_line"/>
+</LinearLayout>
+

@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include layout="@layout/header_timetable_menu" />
+
+    <ImageView
+        android:id="@+id/id_show"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+    <LinearLayout
+        android:id="@+id/id_menu_score"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/layout_ripple"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="查成绩"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:text="网页"
+            android:textColor="@color/app_gray" />
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_point_right" />
+    </LinearLayout>
+
+    <include layout="@layout/view_line"/>
+
+    <LinearLayout
+        android:id="@+id/id_menu_search"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/layout_ripple"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="课程库"
+            android:textSize="16sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="5dp"
+            android:text="搜索"
+            android:textColor="@color/app_gray" />
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_point_right" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/id_menu_changeclass"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/layout_ripple"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="切换班级"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <include layout="@layout/view_line"/>
+
+    <LinearLayout
+        android:id="@+id/id_menu_manager"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/layout_ripple"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="课程管理"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/id_menu_issues"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/layout_ripple"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="15dp"
+        android:paddingRight="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="问题反馈"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+    <include layout="@layout/view_line" />
+    <LinearLayout
+        android:id="@+id/id_menu_update"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/layout_ripple"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="15dp"
+        android:paddingRight="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="版本更新"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <include layout="@layout/view_line" />
+
+    <LinearLayout
+        android:id="@+id/id_menu_clear"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@drawable/layout_ripple"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="15dp"
+        android:paddingRight="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="清空数据"
+            android:textSize="16sp" />
+    </LinearLayout>
+</LinearLayout>
+

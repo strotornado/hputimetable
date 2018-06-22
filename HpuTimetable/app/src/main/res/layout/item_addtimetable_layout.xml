@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/app_white"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:textSize="16sp"
+            android:text="名称" />
+
+        <EditText
+            android:id="@+id/id_addcourse_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/app_white"
+            android:textSize="16sp"
+            android:hint="名称"
+            android:singleLine="true" />
+    </LinearLayout>
+
+    <include layout="@layout/view_line" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:paddingLeft="15dp"
+        android:gravity="center_vertical"
+        android:paddingRight="15dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:textSize="16sp"
+            android:text="教室" />
+
+        <EditText
+            android:id="@+id/id_addcourse_room"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/app_white"
+            android:textSize="16sp"
+            android:hint="教室"
+            android:singleLine="true" />
+    </LinearLayout>
+
+    <include layout="@layout/view_line" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:textSize="16sp"
+            android:text="教师" />
+
+        <EditText
+            android:id="@+id/id_addcourse_teacher"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/app_white"
+            android:textSize="16sp"
+            android:hint="教师"
+            android:singleLine="true" />
+    </LinearLayout>
+
+    <include layout="@layout/view_line" />
+
+    <LinearLayout
+        android:id="@+id/id_addcourse_weeks"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:background="@drawable/layout_press_style"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/id_addcourse_weeks_textview"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="选择周次"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_point_right" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/app_panel_bg" />
+
+
+    <LinearLayout
+        android:id="@+id/id_addcourse_days"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:background="@drawable/layout_press_style"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/id_addcourse_days_textview"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="选择节次"
+            android:textSize="16sp" />
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/ic_point_right" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/id_addcourse_savebutton"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/loginbutton_style"
+        android:clickable="true"
+        android:gravity="center"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="保存课程"
+            android:textColor="@color/app_white"
+            android:textSize="17sp" />
+    </LinearLayout>
+</LinearLayout>

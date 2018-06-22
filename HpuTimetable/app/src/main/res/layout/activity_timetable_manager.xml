@@ -1,0 +1,111 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/app_white_slight"
+        android:gravity="center_vertical">
+
+        <LinearLayout
+            android:id="@+id/id_back"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="5dp"
+                android:src="@drawable/ic_back2" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/id_manager_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="课程管理"
+            android:textSize="18sp" />
+
+
+        <TextView
+            android:id="@+id/id_add"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="添加"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@color/app_white">
+
+        <LinearLayout
+            android:id="@+id/id_course_manager_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"></LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/dark"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/id_manager_allcheck"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <CheckBox
+                android:id="@+id/id_box_allcheck"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="false" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="全选"
+                android:textColor="@color/app_white"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="1px"
+            android:layout_height="match_parent"
+            android:background="@color/app_white" />
+
+        <LinearLayout
+            android:id="@+id/id_manager_alldelete"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@color/app_orange"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="删除"
+                android:textColor="@color/app_white"
+                android:textSize="16sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>
