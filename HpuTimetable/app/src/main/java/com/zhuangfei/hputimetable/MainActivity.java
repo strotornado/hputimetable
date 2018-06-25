@@ -104,7 +104,12 @@ public class MainActivity extends Activity{
             mTimetableView.updateView();
             ShareTools.put(this, "course_update", 0);
         }
-        mWeekView.updateView();
+        try{
+            mTimetableView.getOnDateBuildListener().onHighLight();
+        }catch (Exception e){
+
+        }
+
     }
 
     private void inits() {

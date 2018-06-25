@@ -18,8 +18,8 @@ android {
         // 开启multidex
         multiDexEnabled true
 
-        versionCode 1
-        versionName "1.0.0"
+        versionCode 3
+        versionName "1.0.2"
     }
 
     // 签名配置
@@ -56,7 +56,7 @@ dependencies {
     //    //图文混排
     compile 'com.zhuangfei:ExpandEditText:1.0.0'
     compile 'com.zhuangfei:GeneralPage:1.0.0'
-    compile 'com.zhuangfei:TimetableView:2.0.0'
+    compile 'com.zhuangfei:TimetableView:2.0.1'
     implementation project(':toolkit')
     compile 'com.contrarywind:Android-PickerView:3.2.7'
     compile 'com.squareup.retrofit2:retrofit:2.0.2'

@@ -157,7 +157,7 @@ public class AddTimetableActivity extends Activity implements OnWeekAlertListene
 
         if(isSuccess){
             Toast.makeText(this, "保存成功",Toast.LENGTH_SHORT).show();
-            ActivityTools.toBackActivityAnim(this,TimetableManagerActivity.class);
+            ActivityTools.toBackActivityAnim(this,returnClass);
         }else{
             Toast.makeText(this, "保存失败!",Toast.LENGTH_SHORT).show();
         }
