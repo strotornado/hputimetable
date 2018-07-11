@@ -15,13 +15,13 @@ hpu小课:一款精致、简洁的课表软件.
 - [在酷安下载安装包](https://www.coolapk.com/apk/com.zhuangfei.hputimetable)
 
 - [TimetableView](https://github.com/zfman/hputimetable)
-> 一个开源的、完善的、简洁的课程表控件
+  > 一个开源的、完善的、简洁的课程表控件
 
 - [全网第二好的Android课程表控件](https://blog.csdn.net/column/details/22816.html)
-> 课程表控件实现原理以及使用手册(10篇+)
+  > 课程表控件实现原理以及使用手册(10篇+)
 
 - [timetable](https://github.com/zfman/api-demo/tree/master/timetable)
-> 河南理工大学课程库(非官方)对外开放接口,本项目的数据来源于此
+  > 河南理工大学课程库(非官方)对外开放接口,本项目的数据来源于此
 
 ### About Me
 - [csdn](https://blog.csdn.net/lzhuangfei)
