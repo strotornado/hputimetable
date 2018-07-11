@@ -24,6 +24,6 @@ hpu小课:一款精致、简洁的课表软件.
   > 河南理工大学课程库(非官方)对外开放接口,本项目的数据来源于此
 
 ### About Me
-- [csdn](https://blog.csdn.net/lzhuangfei)
-- [github](https://github.com/zfman)
+- [https://blog.csdn.net/lzhuangfei](https://blog.csdn.net/lzhuangfei)
+- [https://github.com/zfman](https://github.com/zfman)
 - QQ:1193600556
