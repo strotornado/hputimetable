@@ -1,11 +1,10 @@
 # hputimetable
 
-<<<<<<< HEAD
-hpu小课-一款精致、简洁的课表软件，它不需要登录注册，你可以选择班级导入课表或者从课程库中搜索。hpu小课不仅仅是一个课程表，它还可以查成绩、查空教室、查最新公告等等，小课君还专门对其做了优化了呢~
-=======
-hpu小课:一款精致、简洁的课表软件.
+怪兽课表是一款免费、开源的通用型课表软件，可以无缝从超级课程表和课程格子（暂不支持）的账户以及课程码中导入数据，并且有桌面小部件和学校专区，快来体验吧，感觉好用就分享给你的朋友吧~
 
-它是为河南理工大学学生设计的一个蹭课软件,但你可以通过本小项目的学习进而完成自己的课程表软件.
+<img src="https://raw.githubusercontent.com/zfman/hputimetable/master/images/v1.0.4/img1.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/images/v1.0.4/img2.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/images/v1.0.4/img3.jpg" width="30%"/>
+<img src="https://raw.githubusercontent.com/zfman/hputimetable/master/images/v1.0.4/img4.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/images/v1.0.4/img_appwidget.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/images/v1.0.4/ic_launch.png" width="30%"/>
+
 
 涉及到的技术点：
 
