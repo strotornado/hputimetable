@@ -34,6 +34,12 @@
             android:layout_height="wrap_content" />
 
         <Button
+            android:id="@+id/id_webview_btn6"
+            android:text="选课结果"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
             android:id="@+id/id_webview_btn4"
             android:text="网上选课"
             android:layout_width="match_parent"

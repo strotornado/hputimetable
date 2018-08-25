@@ -1,0 +1,16 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/id_widget_item_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="110dp"
+        android:textSize="18sp"
+        android:gravity="center"
+        android:textColor="@color/app_gray"
+        android:text="今天没有课，可以休息了~"/>
+
+</LinearLayout>

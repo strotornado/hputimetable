@@ -35,13 +35,6 @@
             android:textSize="18sp" />
 
 
-        <TextView
-            android:id="@+id/id_add"
-            android:layout_width="60dp"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text="添加"
-            android:textSize="16sp" />
     </LinearLayout>
 
     <ScrollView

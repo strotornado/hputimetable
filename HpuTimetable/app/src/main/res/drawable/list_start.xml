@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+    <!-- 设置整个屏幕背景为白色 -->
+    <item >
+        <color android:color="@color/app_white"/>
+    </item>
+
+    <!-- 中间logo -->
+    <item >
+        <bitmap
+            android:gravity="center"
+            android:src="@drawable/ic_launch" />
+    </item>
+
+</layer-list>

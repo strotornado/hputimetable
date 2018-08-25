@@ -1,22 +1,25 @@
 package com.zhuangfei.hputimetable;
 
-import android.Manifest;
 import android.app.Activity;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.Toast;
 
 import com.zhuangfei.hputimetable.api.TimetableRequest;
 import com.zhuangfei.hputimetable.api.model.ListResult;
 import com.zhuangfei.hputimetable.api.model.MajorModel;
+import com.zhuangfei.hputimetable.api.model.ObjResult;
+import com.zhuangfei.hputimetable.api.model.ScheduleName;
+import com.zhuangfei.hputimetable.api.model.TimetableModel;
+import com.zhuangfei.hputimetable.api.model.TimetableResultModel;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
 import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.ShareTools;
@@ -31,14 +34,12 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnItemClick;
-import kr.co.namee.permissiongen.PermissionFail;
-import kr.co.namee.permissiongen.PermissionGen;
-import kr.co.namee.permissiongen.PermissionSuccess;
+import es.dmoral.toasty.Toasty;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class SetMajorActivity extends AppCompatActivity{
+public class ImportMajorActivity extends AppCompatActivity{
 
     Activity context;
 
@@ -50,55 +51,14 @@ public class SetMajorActivity extends AppCompatActivity{
     @BindView(R.id.id_find_major_edittext)
     EditText findMajorEditText;
 
-    final int SUCCESSCODE=1;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_set_major);
         ButterKnife.bind(this);
         context=this;
-        shouldcheckPermission();
-        checkLocalMajor();
-    }
-
-    private void shouldcheckPermission() {
-        PermissionGen.with(SetMajorActivity.this)
-                .addRequestCode(SUCCESSCODE)
-                .permissions(
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.MOUNT_UNMOUNT_FILESYSTEMS
-                )
-                .request();
-    }
-
-    //申请权限结果的返回
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        PermissionGen.onRequestPermissionsResult(this, requestCode, permissions, grantResults);
-    }
-
-    //权限申请成功
-    @PermissionSuccess(requestCode = SUCCESSCODE)
-    public void doSomething() {
-        //在这个方法中做一些权限申请成功的事情
-
-    }
-    //申请失败
-    @PermissionFail(requestCode =SUCCESSCODE)
-    public void doFailSomething() {
-        ToastTools.show(this,"权限不足，运行中可能会出现故障!");
-    }
-
-    public void checkLocalMajor(){
-        String localMajor=ShareTools.getString(getContext(), ShareConstants.KEY_MAJOR_NAME,"");
-        if(!TextUtils.isEmpty(localMajor)){
-            ActivityTools.toActivity(this, MainActivity.class);
-            finish();
-        }else{
-            inits();
-        }
+        inits();
+        TimetableRequest.findMajor(this, "1", findMajorCallback);
     }
 
     private void inits() {
@@ -112,8 +72,8 @@ public class SetMajorActivity extends AppCompatActivity{
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         String major=datas.get(i).get("major");
         ShareTools.putString(getContext(), ShareConstants.KEY_MAJOR_NAME,major);
-        ActivityTools.toActivity(getContext(),MainActivity.class);
-        finish();
+        Toasty.info(ImportMajorActivity.this,"正在加载数据").show();
+        TimetableRequest.getByMajor(getContext(), major, new GetByMajorCallback(major));
     }
 
     public Activity getContext() {
@@ -185,5 +145,50 @@ public class SetMajorActivity extends AppCompatActivity{
         if (!TextUtils.isEmpty(key)) {
             TimetableRequest.findMajor(this, key, findMajorCallback);
         }
+    }
+
+    class GetByMajorCallback implements Callback<ObjResult<TimetableResultModel>>{
+        private String major=null;
+        public GetByMajorCallback(String major){
+            this.major=major;
+        }
+        @Override
+        public void onResponse(Call<ObjResult<TimetableResultModel>> call, Response<ObjResult<TimetableResultModel>> response) {
+            ObjResult<TimetableResultModel> result = response.body();
+            if (result != null) {
+                int code = result.getCode();
+                if (code == 200) {
+                    ScheduleName scheduleName=new ScheduleName();
+                    scheduleName.setTime(System.currentTimeMillis());
+                    scheduleName.setName(major==null?"默认课表":major);
+                    scheduleName.save();
+                    TimetableResultModel resultModel = result.getData();
+                    List<TimetableModel> haveList = resultModel.getHaveList();
+                    for (TimetableModel model : haveList) {
+                        model.setScheduleName(scheduleName);
+                        model.save();
+                    }
+                    if (haveList != null && haveList.size() != 0) {
+                        ShareTools.putString(getContext(), ShareConstants.KEY_CUR_TERM, haveList.get(0).getTerm());
+                    }
+                    Toasty.success(ImportMajorActivity.this,"已存储于["+scheduleName.getName()+"]").show();
+                    ActivityTools.toActivity(ImportMajorActivity.this,MultiScheduleActivity.class);
+                    finish();
+                } else {
+                    ToastTools.show(getContext(), result.getMsg());
+                }
+            }
+
+        }
+
+        @Override
+        public void onFailure(Call<ObjResult<TimetableResultModel>> call, Throwable t) {
+            ToastTools.show(getContext(), t.getMessage());
+        }
+    };
+
+    @Override
+    public void onBackPressed() {
+        ActivityTools.toBackActivityAnim(this,MenuActivity.class);
     }
 }

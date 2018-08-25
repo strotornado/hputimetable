@@ -2,52 +2,45 @@ package com.zhuangfei.hputimetable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
-import com.zhuangfei.hputimetable.api.TimetableRequest;
-import com.zhuangfei.hputimetable.api.model.ObjResult;
+import com.zhuangfei.hputimetable.api.model.ScheduleName;
 import com.zhuangfei.hputimetable.api.model.TimetableModel;
-import com.zhuangfei.hputimetable.api.model.TimetableResultModel;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
+import com.zhuangfei.hputimetable.model.ScheduleDao;
+import com.zhuangfei.hputimetable.tools.BroadcastUtils;
 import com.zhuangfei.hputimetable.tools.TimetableTools;
 import com.zhuangfei.timetable.TimetableView;
 import com.zhuangfei.timetable.listener.ISchedule;
 import com.zhuangfei.timetable.listener.IWeekView;
-import com.zhuangfei.timetable.listener.TimeSlideAdapter;
 import com.zhuangfei.timetable.model.Schedule;
-import com.zhuangfei.timetable.model.ScheduleEnable;
 import com.zhuangfei.timetable.model.ScheduleSupport;
-import com.zhuangfei.timetable.utils.ScreenUtils;
 import com.zhuangfei.timetable.view.WeekView;
 import com.zhuangfei.toolkit.model.BundleModel;
 import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.ShareTools;
 import com.zhuangfei.toolkit.tools.ToastTools;
 
+import android.Manifest;
 import android.app.Activity;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
-import android.view.Menu;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.litepal.crud.DataSupport;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
+import kr.co.namee.permissiongen.PermissionFail;
+import kr.co.namee.permissiongen.PermissionGen;
+import kr.co.namee.permissiongen.PermissionSuccess;
 
-public class MainActivity extends Activity{
+public class MainActivity extends Activity {
 
     private static final String TAG = "MainActivity";
     private Activity context;
@@ -56,10 +49,13 @@ public class MainActivity extends Activity{
     public TimetableView mTimetableView;
 
     @BindView(R.id.id_weekview)
-    public WeekView mWeekView;
+    public CustomWeekView mWeekView;
 
     @BindView(R.id.id_title)
     public TextView mTitleTextView;
+
+    @BindView(R.id.id_schedulename)
+    public TextView mCurScheduleTextView;
 
     private List<Schedule> schedules;
 
@@ -67,16 +63,15 @@ public class MainActivity extends Activity{
         return context;
     }
 
-    String major="软件15-1";
-    boolean isShow=false;
     int target;
-    int redColor;
-
-    @BindView(R.id.id_main_major)
-    TextView majorTextView;
 
     @BindView(R.id.id_main_menu)
     ImageView menuImageView;
+
+    @BindView(R.id.id_tiptext)
+    TextView tipTextView;
+
+    final int SUCCESSCODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,125 +79,183 @@ public class MainActivity extends Activity{
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         inits();
+        shouldcheckPermission();
         adjustAndGetData();
+    }
+
+    private void shouldcheckPermission() {
+        PermissionGen.with(MainActivity.this)
+                .addRequestCode(SUCCESSCODE)
+                .permissions(
+                        Manifest.permission.CAMERA,
+                        Manifest.permission.VIBRATE
+                )
+                .request();
+    }
+
+    //申请权限结果的返回
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        PermissionGen.onRequestPermissionsResult(this, requestCode, permissions, grantResults);
+    }
+
+    //权限申请成功
+    @PermissionSuccess(requestCode = SUCCESSCODE)
+    public void doSomething() {
+        //在这个方法中做一些权限申请成功的事情
+
+    }
+
+    //申请失败
+    @PermissionFail(requestCode = SUCCESSCODE)
+    public void doFailSomething() {
+        ToastTools.show(this, "权限不足，运行中可能会出现故障!");
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        int v=ShareTools.getInt(this, "course_update", 0);
-        if(v==1){
-            String term=ShareTools.getString(getContext(),ShareConstants.KEY_CUR_TERM,"term");
-            List<TimetableModel> dataModels = DataSupport.where("term=? and major=?", term,major).find(TimetableModel.class);
-            if(dataModels==null||dataModels.size()==0){
-                TimetableRequest.getByMajor(getContext(), major,getByMajorCallback );
-            }else{
-                mTimetableView.setData(ScheduleSupport.transform(dataModels)).updateView();
-                mWeekView.setData(ScheduleSupport.transform(dataModels)).showView();
-            }
-
-            mTimetableView.updateView();
-            ShareTools.put(this, "course_update", 0);
+        checkData();
+        mTimetableView.onDateBuildListener().onHighLight();
+        int newCurWeek = TimetableTools.getCurWeek(this);
+        Log.d(TAG, "onStart: " + newCurWeek);
+        if (newCurWeek != mTimetableView.curWeek()) {
+            mTimetableView.onDateBuildListener().onUpdateDate(mTimetableView.curWeek(), newCurWeek);
+            mTimetableView.changeWeekForce(newCurWeek);
+            mWeekView.curWeek(newCurWeek).updateView();
         }
-        try{
-            mTimetableView.getOnDateBuildListener().onHighLight();
-        }catch (Exception e){
+    }
 
+    public void checkData() {
+        int v = ShareTools.getInt(this, "course_update", 0);
+        if (v == 1) {
+            int id = ScheduleDao.getApplyScheduleId(this);
+            ScheduleName scheduleName = DataSupport.find(ScheduleName.class, id);
+            mCurScheduleTextView.setText("" + scheduleName.getName());
+
+            List<TimetableModel> dataModels = ScheduleDao.getAllWithScheduleId(id);
+            if (dataModels != null) {
+                mTimetableView.data(ScheduleSupport.transform(dataModels)).updateView();
+                mWeekView.data(ScheduleSupport.transform(dataModels)).showView();
+                if (dataModels.size() == 0) {
+                    tipTextView.setVisibility(View.VISIBLE);
+                } else {
+                    tipTextView.setVisibility(View.GONE);
+                }
+            }
+            ShareTools.put(this, "course_update", 0);
         }
 
     }
 
     private void inits() {
-        context=this;
-        redColor=getResources().getColor(R.color.app_red);
-        menuImageView.setColorFilter(Color.GRAY);
-        major= ShareTools.getString(getContext(),ShareConstants.KEY_MAJOR_NAME,"软件15-1");
-        schedules=new ArrayList<>();
+        context = this;
+        menuImageView.setColorFilter(Color.WHITE);
+        schedules = new ArrayList<>();
 
-        int curWeek=ShareTools.getInt(getContext(),ShareConstants.KEY_CUR_WEEK,1);
+        int id = ScheduleDao.getApplyScheduleId(this);
+        ScheduleName scheduleName = DataSupport.find(ScheduleName.class, id);
+        if (scheduleName != null) {
+            mCurScheduleTextView.setText("" + scheduleName.getName());
+        } else {
+            mCurScheduleTextView.setText("默认课表");
+        }
+
+        int curWeek = TimetableTools.getCurWeek(this);
 
         //设置周次选择属性
-        mWeekView.setData(schedules)
-                .setCurWeek(curWeek)
-                .setOnWeekItemClickedListener(new IWeekView.OnWeekItemClickedListener() {
+        mWeekView.data(schedules)
+                .curWeek(curWeek)
+                .callback(new IWeekView.OnWeekItemClickedListener() {
                     @Override
                     public void onWeekClicked(int curWeek) {
-                        if(mTimetableView.getDataSource()!=null){
+                        if (mTimetableView.dataSource() != null) {
                             mTimetableView.changeWeekOnly(curWeek);
                         }
                     }
                 })
-                .setOnWeekLeftClickedListener(new IWeekView.OnWeekLeftClickedListener() {
+                .callback(new IWeekView.OnWeekLeftClickedListener() {
                     @Override
                     public void onWeekLeftClicked() {
                         onWeekLeftLayoutClicked();
                     }
                 })
-                .showView();
+                .isShow(false);
+        mWeekView.showView();
+        mWeekView.setBackgroundColor(Color.TRANSPARENT);
 
-        mWeekView.setVisibility(View.GONE);
-
-        String[] times = new String[]{
-                "8:00", "9:00", "10:10", "11:10",
-                "15:00", "16:00", "17:00", "18:00",
-                "19:30", "20:30"
-        };
-        TimeSlideAdapter slideAdapter = new TimeSlideAdapter();
-        slideAdapter.setTimes(times);
-
-        mTimetableView.getScheduleManager()
-                .setMaxSlideItem(10)
-                .setMarLeft(ScreenUtils.dip2px(this,2))
-                .setMarTop(ScreenUtils.dip2px(this,2))
-                .setOnSlideBuildListener(slideAdapter)
-                .setOnItemClickListener(new ISchedule.OnItemClickListener() {
+        mTimetableView.curWeek(curWeek)
+                .maxSlideItem(10)
+                .alpha(0.2f, 0.05f, 0.5f)
+                .callback(new ISchedule.OnItemClickListener() {
                     @Override
                     public void onItemClick(View v, List<Schedule> scheduleList) {
-                        BundleModel model=new BundleModel();
-                        model.put("timetable",scheduleList);
+                        BundleModel model = new BundleModel();
+                        model.put("timetable", scheduleList);
                         model.setFromClass(MainActivity.class);
-                        ActivityTools.toActivity(getContext(),TimetableDetailActivity.class,model);
+                        ActivityTools.toActivity(getContext(), TimetableDetailActivity.class, model);
                     }
-                });
-
-        mTimetableView.setCurWeek(curWeek)
-                .setOnWeekChangedListener(new ISchedule.OnWeekChangedListener() {
+                })
+                .callback(new ISchedule.OnWeekChangedListener() {
                     @Override
                     public void onWeekChanged(int curWeek) {
+                        mTimetableView.onDateBuildListener().onUpdateDate(mTimetableView.curWeek(), curWeek);
                         String text = "第" + curWeek + "周";
                         mTitleTextView.setText(text);
                     }
                 })
+                .callback(new ISchedule.OnItemLongClickListener() {
+                    @Override
+                    public void onLongClick(View v, int day, int start) {
+                        BundleModel model = new BundleModel();
+                        model.setFromClass(MainActivity.class)
+                                .put(AddTimetableActivity.KEY_DAY, day)
+                                .put(AddTimetableActivity.KEY_START, start);
+                        ActivityTools.toActivity(getContext(), AddTimetableActivity.class, model);
+                    }
+                })
+                .callback(new ISchedule.OnFlaglayoutClickListener() {
+                    @Override
+                    public void onFlaglayoutClick(int day, int start) {
+                        mTimetableView.hideFlaglayout();
+                        BundleModel model = new BundleModel();
+                        model.setFromClass(MainActivity.class)
+                                .put(AddTimetableActivity.KEY_DAY, day + 1)
+                                .put(AddTimetableActivity.KEY_START, start);
+                        ActivityTools.toActivity(getContext(), AddTimetableActivity.class, model);
+                    }
+                })
                 .showView();
-
     }
 
     /**
      * 周次选择布局的左侧被点击时回调
      */
-    protected  void onWeekLeftLayoutClicked(){
+    protected void onWeekLeftLayoutClicked() {
         final String items[] = new String[20];
-        for(int i=0;i<20;i++){
-            items[i]="第"+(i+1)+"周";
+        for (int i = 0; i < 20; i++) {
+            items[i] = "第" + (i + 1) + "周";
         }
-        target=-1;
+        target = -1;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("设置当前周");
-        builder.setSingleChoiceItems(items, mTimetableView.getCurWeek() - 1,
+        builder.setSingleChoiceItems(items, mTimetableView.curWeek() - 1,
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        target=i;
+                        target = i;
                     }
                 });
         builder.setPositiveButton("设置为当前周", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Log.d(TAG, "onClick: "+which);
-                if(target!=-1){
-                    mWeekView.setCurWeek(target+1).updateView();
-                    ShareTools.putInt(getContext(),ShareConstants.KEY_CUR_WEEK,target+1);
-                    mTimetableView.changeWeekForce(target+1);
+                Log.d(TAG, "onClick: " + which);
+                if (target != -1) {
+                    mWeekView.curWeek(target + 1).updateView();
+                    mWeekView.scrollToIndex(target);
+                    mTimetableView.changeWeekForce(target + 1);
+                    ShareTools.putString(getContext(), ShareConstants.STRING_START_TIME, TimetableTools.getStartSchoolTime(target + 1));
+                    BroadcastUtils.refreshAppWidget(MainActivity.this);
                 }
             }
         });
@@ -211,73 +264,42 @@ public class MainActivity extends Activity{
     }
 
     private void adjustAndGetData() {
-        String term=ShareTools.getString(getContext(),ShareConstants.KEY_CUR_TERM,"term");
-        List<TimetableModel> dataModels = DataSupport.where("term=? and major=?", term,major).find(TimetableModel.class);
-
-        Log.d(TAG, "adjustAndGetData: "+dataModels);
-        if(dataModels==null||dataModels.size()==0){
-            TimetableRequest.getByMajor(getContext(), major,getByMajorCallback );
-        }else{
-            mTimetableView.setData(ScheduleSupport.transform(dataModels)).updateView();
-            mWeekView.setData(ScheduleSupport.transform(dataModels)).showView();
+        int id = ScheduleDao.getApplyScheduleId(this);
+        ScheduleName scheduleName = DataSupport.where("name=?", "默认课表").findFirst(ScheduleName.class);
+        if (scheduleName == null) {
+            scheduleName = new ScheduleName();
+            scheduleName.setName("默认课表");
+            scheduleName.setTime(System.currentTimeMillis());
+            scheduleName.save();
+            id = scheduleName.getId();
+            ShareTools.put(this, ShareConstants.INT_SCHEDULE_NAME_ID, id);
         }
-        majorTextView.setText(major);
-        majorTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(getContext(),major,Toast.LENGTH_SHORT).show();
+        List<TimetableModel> dataModels = ScheduleDao.getAllWithScheduleId(id);
+        if (dataModels != null) {
+            mTimetableView.data(ScheduleSupport.transform(dataModels)).updateView();
+            mWeekView.data(ScheduleSupport.transform(dataModels)).showView();
+
+            if (dataModels.size() == 0) {
+                tipTextView.setVisibility(View.VISIBLE);
+            } else {
+                tipTextView.setVisibility(View.GONE);
             }
-        });
+        }
     }
 
-    Callback<ObjResult<TimetableResultModel>> getByMajorCallback=new Callback<ObjResult<TimetableResultModel>>() {
-        @Override
-        public void onResponse(Call<ObjResult<TimetableResultModel>> call, Response<ObjResult<TimetableResultModel>> response) {
-            ObjResult<TimetableResultModel> result=response.body();
-            if(result!=null){
-                int code=result.getCode();
-                if(code==200){
-                    Log.d(TAG, "onResponse: ");
-                    TimetableResultModel resultModel=result.getData();
-                    List<TimetableModel> haveList=resultModel.getHaveList();
-                    for(TimetableModel model:haveList){
-                        model.setTag(0);
-                        model.save();
-                    }
-                    if(haveList!=null&&haveList.size()!=0){
-                        ShareTools.putString(getContext(),ShareConstants.KEY_CUR_TERM,haveList.get(0).getTerm());
-                    }
-                    mTimetableView.setData(ScheduleSupport.transform(haveList)).updateView();
-                    mWeekView.setData(ScheduleSupport.transform(haveList)).showView();
-                }else{
-                    ToastTools.show(getContext(),result.getMsg());
-                }
-            }
-
-        }
-
-        @Override
-        public void onFailure(Call<ObjResult<TimetableResultModel>> call, Throwable t) {
-            ToastTools.show(getContext(),t.getMessage());
-        }
-    };
-
-
     @OnClick(R.id.id_main_menu)
-    public void toMenuActivity(){
+    public void toMenuActivity() {
         ActivityTools.toActivity(getContext(), MenuActivity.class);
     }
 
-    @OnClick(R.id.id_title)
-    public void onTitleClicked(){
-        Log.d(TAG, "onTitleClicked: "+mWeekView.isShowing());
-        if(isShow){
-            mWeekView.setVisibility(View.GONE);
-            isShow=false;
-            mTimetableView.changeWeekForce(mTimetableView.getCurWeek());
-        }else{
-            mWeekView.setVisibility(View.VISIBLE);
-            isShow=true;
+    @OnClick(R.id.id_layout)
+    public void onTitleClicked() {
+        if (mWeekView.isShowing()) {
+            mWeekView.isShow(false);
+            mTimetableView.changeWeekForce(mTimetableView.curWeek());
+        } else {
+            mWeekView.isShow(true);
+            mWeekView.scrollToIndex(mTimetableView.curWeek() - 1);
         }
     }
 }

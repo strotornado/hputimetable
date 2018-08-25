@@ -10,6 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.zhuangfei.hputimetable.constants.ShareConstants;
+import com.zhuangfei.hputimetable.tools.TimetableTools;
 import com.zhuangfei.timetable.model.Schedule;
 import com.zhuangfei.toolkit.model.BundleModel;
 import com.zhuangfei.toolkit.tools.ActivityTools;
@@ -51,7 +52,7 @@ public class TimetableDetailActivity extends AppCompatActivity {
     }
 
     private void loadData() {
-        int cur_week = ShareTools.getInt(this,ShareConstants.KEY_CUR_WEEK,1);
+        int cur_week = TimetableTools.getCurWeek(this);
         BundleModel model = BundleTools.getModel(this);
         if (model != null && model.get("timetable") != null) {
             schedules = (List<Schedule>) model.get("timetable");
@@ -89,7 +90,7 @@ public class TimetableDetailActivity extends AppCompatActivity {
         if(schedule==null) return view;
 
         nameTextView.setText(schedule.getName());
-        roomTextView.setText("教室\t" + schedule.getRoom());
+        roomTextView.setText(schedule.getRoom());
 
         if (schedule.getWeekList().indexOf(cur_week) != -1) {
             nameTextView.setText(schedule.getName() + "(本周)");
@@ -104,14 +105,14 @@ public class TimetableDetailActivity extends AppCompatActivity {
         String teacher="";
         if(schedule.getTeacher()!=null) teacher=schedule.getTeacher();
 
-        weeksTextView.setText("周次\t" + weeks);
-        dayTextView.setText("节次\t周" + day + ",\t" + schedule.getStart() + "-" + (schedule.getStart() + schedule.getStep() - 1) + "节");
-        teacherTextView.setText("教师\t" +teacher);
+        weeksTextView.setText(weeks);
+        dayTextView.setText("周" + day + "    第" + schedule.getStart() + "-" + (schedule.getStart() + schedule.getStep() - 1) + "节");
+        teacherTextView.setText(teacher);
         return view;
     }
 
     public String getDay(int day) {
-        String str = "一二三四五六七";
+        String str = "一二三四五六日";
         return str.charAt(day - 1) + "";
     }
 

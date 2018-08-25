@@ -1,224 +1,390 @@
 package com.zhuangfei.hputimetable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.CardView;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bigkoo.pickerview.OptionsPickerView;
+import com.aigestudio.wheelpicker.WheelPicker;
+import com.zhuangfei.hputimetable.api.model.ScheduleName;
 import com.zhuangfei.hputimetable.api.model.TimetableModel;
+import com.zhuangfei.hputimetable.appwidget.ScheduleAppWidget;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
+import com.zhuangfei.hputimetable.model.AddModel;
+import com.zhuangfei.hputimetable.tools.BroadcastUtils;
 import com.zhuangfei.hputimetable.tools.TimetableTools;
-import com.zhuangfei.smartalert.core.WeekAlert;
-import com.zhuangfei.smartalert.listener.OnWeekAlertListener;
-import com.zhuangfei.toolkit.model.BundleModel;
 import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.BundleTools;
 import com.zhuangfei.toolkit.tools.ShareTools;
 
+import org.litepal.crud.DataSupport;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import es.dmoral.toasty.Toasty;
 
-public class AddTimetableActivity extends Activity implements OnWeekAlertListener{
+public class AddTimetableActivity extends Activity {
 
     private static final String TAG = "AddTimetableActivity";
-    @BindView(R.id.id_addcourse_name)
+    @BindView(R.id.et_name)
     public EditText nameEditText;
 
-    @BindView(R.id.id_addcourse_room)
-    public EditText roomEditText;
-
-    @BindView(R.id.id_addcourse_teacher)
+    @BindView(R.id.et_teacher)
     public EditText teacherEditText;
 
-    @BindView(R.id.id_addcourse_weeks_textview)
-    public TextView weekTextView;
+    @BindView(R.id.id_add_container)
+    public LinearLayout containerLayout;
 
-    @BindView(R.id.id_addcourse_days_textview)
-    public TextView dayTextView;
+    @BindView(R.id.cv_add)
+    public CardView addDuringCardView;
 
-    private List<Integer> weeksList = new ArrayList<>();
-    private int day=-1;
-    private int start=-1;
-    private int step=-1;
-    private String weeks;
+    private Class returnClass = MainActivity.class;
+    private LayoutInflater inflate;
 
-    ArrayList<String> optionsItems;
-    ArrayList<ArrayList<String>> options2Items;
-    ArrayList<ArrayList<ArrayList<String>>> options3Items;
+    public static final String KEY_NAME = "name";
+    public static final String KEY_ROOM = "room";
+    public static final String KEY_TEACHER = "teacher";
+    public static final String KEY_START = "start";
+    public static final String KEY_STEP = "step";
+    public static final String KEY_DAY = "day";
+    public static final String KEY_WEEKS = "weeks";
 
-    private WeekAlert weekAlert;
+    private List<String> dayList = Arrays.asList("周一", "周二", "周三", "周四", "周五", "周六", "周日");
+    private List<String> nodeList = new ArrayList<>();
 
-    private Class returnClass=TimetableManagerActivity.class;
+    private List<Boolean> statusList=new ArrayList<>();
 
-    LinearLayout backLayout;
+    private int curScheduleNameId=-1;
+    private ScheduleName scheduleName=null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_timetable);
+        setContentView(R.layout.activity_add_timetable2);
         ButterKnife.bind(this);
         initsData();
     }
 
     private void initsData() {
-        backLayout=findViewById(R.id.id_back);
-        backLayout.setOnClickListener(new View.OnClickListener() {
+        inflate = LayoutInflater.from(this);
+        returnClass = BundleTools.getFromClass(this, MainActivity.class);
+        String name = BundleTools.getString(this, KEY_NAME, "");
+        String room = BundleTools.getString(this, KEY_ROOM, "");
+        String teacher = BundleTools.getString(this, KEY_TEACHER, "");
+        String weeks=BundleTools.getString(this,KEY_WEEKS,"");
+
+        int day= (int) BundleTools.getInt(this,KEY_DAY,1);
+        int start= (int) BundleTools.getInt(this,KEY_START,1);
+        int step= (int) BundleTools.getInt(this,KEY_STEP,1);
+
+        nameEditText.setText("" + name);
+        teacherEditText.setText(teacher);
+
+        for (int i = 1; i <= 12; i++) {
+            nodeList.add("第 " + i + " 节");
+        }
+
+        for(int i=1;i<=25;i++){
+            statusList.add(false);
+        }
+        statusList.set(0,true);
+
+
+        curScheduleNameId=ShareTools.getInt(this,ShareConstants.INT_SCHEDULE_NAME_ID,-1);
+        if(curScheduleNameId==-1){
+            Toasty.error(this,"你还没有课表，请前去创建或应用",Toast.LENGTH_SHORT).show();
+            ActivityTools.toBackActivityAnim(this,MultiScheduleActivity.class);
+        }else{
+            scheduleName=DataSupport.find(ScheduleName.class,curScheduleNameId);
+            addItemView();
+            View itemView = containerLayout.getChildAt(0);
+            if(itemView!=null){
+                TextView time = itemView.findViewById(R.id.et_time);
+                TextView weeksText = itemView.findViewById(R.id.et_weeks);
+                TextView roomText = itemView.findViewById(R.id.et_room);
+                AddModel model= (AddModel) itemView.getTag();
+                model.setDay(day);
+                model.setStart(start);
+                model.setEnd(start+step-1);
+                model.setRoom(room);
+                List<Integer> weekList=TimetableTools.getWeekList(weeks);
+                List<Boolean> statusList=model.getStatus();
+                for(int i=1;i<=25;i++){
+                    if(weekList.contains(i)){
+                        statusList.set(i-1,true);
+                    }else{
+                        statusList.set(i-1,false);
+                    }
+                }
+                time.setText("周" + getDayString(model.getDay()) + "    第" + model.getStart() + " - " + model.getEnd() + "节");
+                if(weekList!=null&&weekList.size()>0){
+                    weeksText.setText(weekList.toString());
+                }
+                roomText.setText(model.getRoom());
+            }
+        }
+    }
+
+    @OnClick(R.id.cv_add)
+    public void addItemView() {
+        final View itemView = inflate.inflate(R.layout.item_add, null, false);
+        ImageView iv = itemView.findViewById(R.id.iv_delete);
+        iv.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                goBack();
+                if (containerLayout.indexOfChild(itemView) != -1) {
+                    if (containerLayout.getChildCount() <= 1) {
+                        Toasty.warning(AddTimetableActivity.this, "至少保留一个时间段", Toast.LENGTH_SHORT).show();
+                    } else {
+                        containerLayout.removeView(itemView);
+                    }
+                }
             }
         });
 
-        weekAlert=new WeekAlert(this);
-        weekAlert.setTitle("选择周数")
-                .setCancelEnable(true)
-                .setOnWeekAlertListener(this)
-                .create();
-
-        String[] dayArray = {"周一", "周二", "周三", "周四", "周五", "周六", "周日"};
-        String[] startArray = {"第一节", "第二节", "第三节", "第四节", "第五节", "第六节", "第七节", "第八节", "第九节", "第十节", "第十一节", "第十二节"};
-        optionsItems = new ArrayList<>();
-        options2Items = new ArrayList<>();
-        options3Items = new ArrayList<>();
-        for (int i = 0; i < dayArray.length; i++) {
-            optionsItems.add(dayArray[i]);
-            ArrayList<String> optionItems2_01 = new ArrayList<>();
-            ArrayList<ArrayList<String>> optionItems3_01 = new ArrayList<>();
-
-            for (int j = 0; j < startArray.length; j++) {
-                optionItems2_01.add(startArray[j]);
-                ArrayList<String> optionItems3_01_01 = new ArrayList<>();
-                for (int m = j; m < startArray.length; m++) {
-                    optionItems3_01_01.add(startArray[m]);
-                }
-                optionItems3_01.add(optionItems3_01_01);
+        final AddModel model = new AddModel();
+        final LinearLayout timelayout = itemView.findViewById(R.id.ll_time);
+        final LinearLayout weeksLayout = itemView.findViewById(R.id.ll_weeks);
+        final TextView weeks=itemView.findViewById(R.id.et_weeks);
+        final TextView time = itemView.findViewById(R.id.et_time);
+        timelayout.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showTimeAlert(model, time);
             }
-            options2Items.add(optionItems2_01);
-            options3Items.add(optionItems3_01);
-        }
+        });
 
-        returnClass=BundleTools.getFromClass(this,TimetableManagerActivity.class);
-        String name=BundleTools.getString(this,"name","");
-        String room=BundleTools.getString(this,"room","");
-        String teacher=BundleTools.getString(this,"teacher","");
-        start= Integer.parseInt(BundleTools.getString(this,"start","-1"));
-        step= Integer.parseInt(BundleTools.getString(this,"step","-1"));
-        day= Integer.parseInt(BundleTools.getString(this,"day","-1"));
-        weeks=BundleTools.getString(this,"weeks","");
-        nameEditText.setText(""+name);
-        roomEditText.setText(""+room);
-        teacherEditText.setText(teacher);
-
-        if(start>0&&step>0&&day>0){
-            //返回的分别是三个级别的选中位置
-            String tx = optionsItems.get(day-1)
-                    + ","+start+ "-"+(start+step-1)+"节";
-            dayTextView.setText(tx);
-        }
-
-        if(weeks!=null&&!TextUtils.isEmpty(weeks)){
-            try{
-                weeksList=TimetableTools.getWeekList(weeks);
-                weekTextView.setText(weeks);
-            }catch (Exception e){
-
+        weeksLayout.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showWeekAlert(model,weeks);
             }
-        }
+        });
+        itemView.setTag(model);
+        containerLayout.addView(itemView);
     }
 
-    @OnClick(R.id.id_addcourse_savebutton)
-	public void save(){
-        String name=nameEditText.getText().toString().trim();
-        String teacher=teacherEditText.getText().toString().trim();
-        String room=roomEditText.getText().toString().trim();
-        String term=ShareTools.getString(this, ShareConstants.KEY_CUR_TERM,"term");
-        if(start<=0||step<=0||day<=0|| TextUtils.isEmpty(name)||TextUtils.isEmpty(teacher)||TextUtils.isEmpty(room)||weeksList==null||(weeksList.size()==0)){
-            Toast.makeText(this, "不可为空!",Toast.LENGTH_SHORT).show();
+    @OnClick(R.id.tv_save)
+    public void save() {
+        String name = nameEditText.getText().toString().trim();
+        String teacher = teacherEditText.getText().toString().trim();
+        String term = ShareTools.getString(this, ShareConstants.KEY_CUR_TERM, "term");
+
+        if (TextUtils.isEmpty(name) || TextUtils.isEmpty(teacher)) {
+            Toasty.warning(this, "请填写课程以及教师名称!", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        String major=ShareTools.getString(this,ShareConstants.KEY_MAJOR_NAME,"major");
-        TimetableModel model=new TimetableModel(term,name,room,teacher,weeksList,start,step,day,-1,"");
-        model.setTag(1);
-        model.setMajor(major);
-        model.setWeeks(weeks);
-        boolean isSuccess=model.save();
-
-        if(isSuccess){
-            Toast.makeText(this, "保存成功",Toast.LENGTH_SHORT).show();
-            ActivityTools.toBackActivityAnim(this,returnClass);
-        }else{
-            Toast.makeText(this, "保存失败!",Toast.LENGTH_SHORT).show();
-        }
-	}
-
-    @OnClick(R.id.id_addcourse_days)
-    public void showOptionDialog() {
-        //条件选择器
-        OptionsPickerView pvOptions = new OptionsPickerView.Builder(this, new OptionsPickerView.OnOptionsSelectListener() {
-            @Override
-            public void onOptionsSelect(int options1, int option2, int options3, View v) {
-                day=options1+1;
-                start=option2+1;
-                step=options3+1;
-                //返回的分别是三个级别的选中位置
-                String tx = optionsItems.get(day-1)
-                        + ","+start+ "-"+(start+step-1)+"节";
-                dayTextView.setText(tx);
+        List<TimetableModel> models = new ArrayList<>();
+        for (int i = 0; i < containerLayout.getChildCount(); i++) {
+            View v = containerLayout.getChildAt(i);
+            AddModel model = (AddModel) v.getTag();
+            EditText roomEdit = v.findViewById(R.id.et_room);
+            String room = roomEdit.getText().toString();
+            List<Integer> weekList=new ArrayList<>();
+            for(int m=0;m<model.getStatus().size();m++){
+                if(model.getStatus().get(m)){
+                    weekList.add(m+1);
+                }
             }
-        }).setSubmitText("确定")//确定按钮文字
-                .setCancelText("取消")//取消按钮文字
-                .setTitleText("节次选择")//标题
-                .build();
+            if (TextUtils.isEmpty(room) || weekList.size() == 0) {
+                Toasty.warning(this, "请补充时间段" + (i + 1) + "的信息", Toast.LENGTH_SHORT).show();
+                return;
+            }
 
-        pvOptions.setPicker(optionsItems, options2Items, options3Items);
-        pvOptions.show();
-    }
-
-    @OnClick(R.id.id_addcourse_weeks)
-    public void showWeekAlert() {
-        weekAlert.setDefault(weeksList)
-                .show();
+            TimetableModel timetableModel = new TimetableModel(term, name, room, teacher, weekList, model.getStart(), model.getEnd() - model.getStart() + 1, model.getDay(), -1, "");
+            timetableModel.setScheduleName(scheduleName);
+            models.add(timetableModel);
+        }
+        DataSupport.saveAll(models);
+        ShareTools.putInt(this, "course_update", 1);
+        BroadcastUtils.refreshAppWidget(this);
+        Toasty.success(this, "保存成功", Toast.LENGTH_SHORT).show();
+        ActivityTools.toBackActivityAnim(this,MainActivity.class);
     }
 
     @Override
     public void onBackPressed() {
-        ActivityTools.toBackActivityAnim(this,returnClass);
+        goBack();
     }
 
-    @Override
-    public void onConfirm(WeekAlert messageAlert, List<Integer> result) {
-        weeks="";
-        for(int i=0;i<result.size();i++){
-            weeks+=result.get(i);
-            if(i!=result.size()-1) weeks+=",";
+    @OnClick(R.id.tv_back)
+    public void goBack() {
+        ActivityTools.toBackActivityAnim(this, returnClass);
+    }
+
+    public void showTimeAlert(final AddModel model, final TextView time) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, AlertDialog.THEME_HOLO_DARK);
+        View view = LayoutInflater.from(this).inflate(R.layout.view_select_time, null, false);
+
+        WheelPicker wpDay = view.findViewById(R.id.wp_day);
+        WheelPicker wpStart = view.findViewById(R.id.wp_start);
+        final WheelPicker wpEnd = view.findViewById(R.id.wp_end);
+
+        wpDay.setData(dayList);
+        wpStart.setData(nodeList);
+        wpEnd.setData(nodeList);
+
+        wpDay.setSelectedItemPosition(model.getDay() - 1);
+        wpStart.setSelectedItemPosition(model.getStart() - 1);
+        wpEnd.setSelectedItemPosition(model.getEnd() - 1);
+
+        wpDay.setOnItemSelectedListener(new WheelPicker.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(WheelPicker picker, Object data, int position) {
+                model.setDay(position + 1);
+            }
+        });
+
+        wpStart.setOnItemSelectedListener(new WheelPicker.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(WheelPicker picker, Object data, int position) {
+                model.setStart(position + 1);
+                if (model.getEnd() < model.getStart()) {
+                    wpEnd.setSelectedItemPosition(model.getStart() - 1);
+                    model.setEnd(model.getStart() - 1);
+                }
+            }
+        });
+
+        wpEnd.setOnItemSelectedListener(new WheelPicker.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(WheelPicker picker, Object data, int position) {
+                model.setEnd(position + 1);
+                if (model.getEnd() < model.getStart()) {
+                    wpEnd.setSelectedItemPosition(model.getStart() - 1);
+                    model.setEnd(model.getStart() - 1);
+                }
+            }
+        });
+
+        Button btnCancel = view.findViewById(R.id.btn_cancel);
+        Button btnSave = view.findViewById(R.id.btn_save);
+
+        builder.setView(view);
+        final AlertDialog alertDialog = builder.create();
+        alertDialog.setCanceledOnTouchOutside(false);
+
+        btnCancel.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (alertDialog != null) {
+                    alertDialog.dismiss();
+                }
+            }
+        });
+
+        btnSave.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (model.getEnd() < model.getStart()) {
+                    Toasty.error(AddTimetableActivity.this, "结束节次应该大于等于开始节次", Toast.LENGTH_SHORT).show();
+                } else {
+                    if (alertDialog != null) {
+                        alertDialog.dismiss();
+                    }
+                    time.setText("周" + getDayString(model.getDay()) + "    第" + model.getStart() + " - " + model.getEnd() + "节");
+                }
+            }
+        });
+
+        alertDialog.show();
+    }
+
+    public void showWeekAlert(final AddModel model, final TextView week) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this, AlertDialog.THEME_HOLO_DARK);
+        View view = LayoutInflater.from(this).inflate(R.layout.view_select_week, null, false);
+        GridView gridView = view.findViewById(R.id.ll_week);
+        final SelectWeekAdapter adapter=new SelectWeekAdapter(this,model.getStatus());
+        gridView.setAdapter(adapter);
+
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                boolean status=model.getStatus().get(i);
+                if(status){
+                    model.getStatus().set(i,false);
+                }else{
+                    model.getStatus().set(i,true);
+                }
+                adapter.notifyDataSetChanged();
+            }
+        });
+//        Button btnCancel = view.findViewById(R.id.btn_cancel);
+        Button btnSave = view.findViewById(R.id.btn_save);
+
+        builder.setView(view);
+        final AlertDialog alertDialog = builder.create();
+        alertDialog.setCanceledOnTouchOutside(false);
+
+        btnSave.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                List<Integer> weekList=new ArrayList<>();
+                for(int m=0;m<model.getStatus().size();m++){
+                    if(model.getStatus().get(m)){
+                        weekList.add(m+1);
+                    }
+                }
+                if(weekList.size()==0){
+                    Toasty.error(AddTimetableActivity.this, "最少选择一周", Toast.LENGTH_SHORT).show();
+                }else{
+                    week.setText(weekList.toString());
+                    if (alertDialog != null) {
+                        alertDialog.dismiss();
+                    }
+                }
+            }
+        });
+
+        alertDialog.show();
+    }
+
+
+    public String getDayString(int day) {
+        String str = "一";
+        switch (day) {
+            case 1:
+                str = "一";
+                break;
+            case 2:
+                str = "二";
+                break;
+            case 3:
+                str = "三";
+                break;
+            case 4:
+                str = "四";
+                break;
+            case 5:
+                str = "五";
+                break;
+            case 6:
+                str = "六";
+                break;
+            case 7:
+                str = "日";
+                break;
         }
-        messageAlert.hide();
-        weeksList=result;
-        if(result.size()==0) weekTextView.setText("选择周数");
-        else{
-            weekTextView.setText(weeks+"周上");
-        }
+        return str;
     }
-
-    @Override
-    public void onCancel(WeekAlert messageAlert) {
-        messageAlert.hide();
-    }
-
-    public void goBack(){
-        ActivityTools.toBackActivityAnim(this,MenuActivity.class);
-    }
-
 }

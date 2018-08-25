@@ -3,101 +3,157 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@color/app_white"
-    android:orientation="vertical" >
+    android:orientation="vertical">
 
-    <LinearLayout 
+    <LinearLayout
         android:id="@+id/id_course_detail_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-        
-        <LinearLayout 
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_marginTop="15dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
+            android:layout_height="50dp"
+            android:background="@color/app_white"
             android:orientation="horizontal">
-            
-            <TextView 
-            android:id="@+id/id_coursedetail_name"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="40dp"
-            android:textSize="17sp"
-            android:textStyle="bold"
-            android:gravity="center_vertical"
-            />
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:padding="16dp"
+                android:src="@drawable/ic_edit_course" />
+
+            <TextView
+                android:id="@+id/id_coursedetail_name"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:gravity="center_vertical"
+                android:hint="课程名称"
+                android:lines="1"
+                android:singleLine="true"
+                android:textSize="14sp" />
+
         </LinearLayout>
-  
-        <LinearLayout 
+
+        <View
             android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:gravity="center_vertical"
+            android:layout_height="1px"
+            android:layout_marginLeft="50dp"
+            android:background="@color/app_panel_bg" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@color/app_white"
             android:orientation="horizontal">
-            <TextView 
-            android:id="@+id/id_coursedetail_room"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="15sp"
-            android:singleLine="true"
-            android:ellipsize="middle"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"/>
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:padding="16dp"
+                android:src="@drawable/ic_person" />
+
+            <TextView
+                android:id="@+id/id_coursedetail_teacher"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@null"
+                android:gravity="center_vertical"
+                android:hint="授课老师"
+                android:lines="1"
+                android:singleLine="true"
+                android:textSize="14sp" />
         </LinearLayout>
-   
-        <LinearLayout 
+
+        <View
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="30dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-            <TextView 
-            android:id="@+id/id_coursedetail_weeks"
+            android:layout_height="1px"
+            android:layout_marginLeft="50dp"
+            android:background="@color/app_panel_bg" />
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="15sp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"/>
-        </LinearLayout>
-      
-        <LinearLayout 
-            android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-            <TextView 
-            android:id="@+id/id_coursedetail_day"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="15sp"
-            android:singleLine="true"
-            android:ellipsize="middle"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"/>
-        </LinearLayout>
-        <LinearLayout 
-            android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:layout_marginBottom="15dp"
+            android:layout_height="50dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
-            <TextView 
-            android:id="@+id/id_coursedetail_teacher"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="15sp"
-            android:singleLine="true"
-            android:ellipsize="middle"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"/>
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="1dp"
+                android:padding="16dp"
+                android:src="@drawable/ic_edit_room" />
+
+            <TextView
+                android:id="@+id/id_coursedetail_room"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="15dp"
+                android:ellipsize="middle"
+                android:singleLine="true"
+                android:textSize="15sp" />
         </LinearLayout>
-      
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_marginLeft="50dp"
+            android:background="@color/app_panel_bg" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:padding="16dp"
+                android:src="@drawable/ic_edit_week" />
+
+            <TextView
+                android:id="@+id/id_coursedetail_weeks"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="15dp"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:layout_marginLeft="50dp"
+            android:background="@color/app_panel_bg" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="1dp"
+                android:padding="16dp"
+                android:src="@drawable/ic_edit_time" />
+
+            <TextView
+                android:id="@+id/id_coursedetail_day"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="15dp"
+                android:ellipsize="middle"
+                android:singleLine="true"
+                android:textSize="15sp" />
+        </LinearLayout>
+
     </LinearLayout>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="10dp"
-        android:background="@color/app_panel_bg"/>
+        android:background="@color/app_panel_bg" />
 </LinearLayout>

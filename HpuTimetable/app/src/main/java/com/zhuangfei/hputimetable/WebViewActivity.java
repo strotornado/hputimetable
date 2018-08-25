@@ -75,6 +75,9 @@ public class WebViewActivity extends AppCompatActivity {
     //退课
     public static final String URL_COURSE_DELETE="https://vpn.hpu.edu.cn/web/1/http/2/218.196.240.97/xkAction.do?actionType=7";
 
+    //选课结果
+    public static final String URL_COURSE_RESULT="https://vpn.hpu.edu.cn/web/1/http/2/218.196.240.97/xkAction.do?actionType=6";
+
     @BindView(R.id.id_webview_layout)
     LinearLayout layout;
 
@@ -160,6 +163,12 @@ public class WebViewActivity extends AppCompatActivity {
         webView.loadUrl(URL_COURSE_DELETE);
     }
 
+    @OnClick(R.id.id_webview_btn6)
+    public void onButton6CLicked(){
+        layout.setVisibility(View.GONE);
+        webView.loadUrl(URL_COURSE_RESULT);
+    }
+
     private void initView() {
         titleTextView.setText(title);
         closeLayout = (LinearLayout) findViewById(R.id.id_close);
@@ -234,7 +243,6 @@ public class WebViewActivity extends AppCompatActivity {
         } else {
             ActivityTools.toBackActivityAnim(this, returnClass);
         }
-
     }
 
     @Override

@@ -1,14 +1,10 @@
 package com.zhuangfei.hputimetable;
 
-import android.annotation.TargetApi;
-import android.app.Application;
-
 import com.tencent.tinker.loader.app.TinkerApplication;
 import com.tencent.tinker.loader.shareutil.ShareConstants;
+import com.uuzuche.lib_zxing.activity.ZXingLibrary;
 
 import org.litepal.LitePal;
-
-import java.util.Locale;
 
 /**
  * Created by Liu ZhuangFei on 2018/3/7.
@@ -27,6 +23,8 @@ public class MyApplication extends TinkerApplication{
         super.onCreate();
         instance=this;
         LitePal.initialize(this);
+        ZXingLibrary.initDisplayOpinion(this);
+//        LeakCanary.install(this);
     }
 
     public static MyApplication getInstance(){

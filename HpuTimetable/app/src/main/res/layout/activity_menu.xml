@@ -4,185 +4,206 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/app_panel_bg"
     android:orientation="vertical">
 
     <include layout="@layout/header_timetable_menu" />
 
-    <ImageView
-        android:id="@+id/id_show"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
     <LinearLayout
-        android:id="@+id/id_menu_score"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@drawable/layout_ripple"
+        android:layout_height="40dp"
+        android:background="@color/app_white"
         android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp">
-
+        android:orientation="horizontal">
         <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="成绩查询"
-            android:textSize="16sp" />
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:paddingLeft="15dp"
+            android:text="河南理工专区"
+            android:textColor="@color/app_gray" />
 
         <TextView
+            android:id="@+id/id_menu_require_space"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="5dp"
-            android:text="网页"
+            android:layout_height="40dp"
+            android:gravity="center_vertical"
+            android:text="申请专区"
             android:textColor="@color/app_gray" />
 
         <ImageView
             android:layout_width="20dp"
             android:layout_height="20dp"
-            android:src="@drawable/ic_point_right" />
-    </LinearLayout>
-
-    <include layout="@layout/view_line"/>
-
-    <LinearLayout
-        android:id="@+id/id_menu_notice"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@drawable/layout_ripple"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="最新公告"
-            android:textSize="16sp" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginRight="5dp"
-            android:text="网页"
-            android:textColor="@color/app_gray" />
-
-        <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:src="@drawable/ic_point_right" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/id_menu_search"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginTop="10dp"
-        android:background="@drawable/layout_ripple"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp">
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="课程仓库"
-            android:textSize="16sp" />
-
-    </LinearLayout>
-    <include layout="@layout/view_line"/>
-    <LinearLayout
-        android:id="@+id/id_menu_changeclass"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@drawable/layout_ripple"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="切换班级"
-            android:textSize="16sp" />
-    </LinearLayout>
-
-    <include layout="@layout/view_line"/>
-
-    <LinearLayout
-        android:id="@+id/id_menu_manager"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@drawable/layout_ripple"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="课程管理"
-            android:textSize="16sp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/id_menu_issues"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_marginTop="10dp"
-        android:background="@drawable/layout_ripple"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingLeft="15dp"
-        android:paddingRight="10dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="问题反馈"
-            android:textSize="16sp" />
-
-    </LinearLayout>
-    <include layout="@layout/view_line" />
-    <LinearLayout
-        android:id="@+id/id_menu_update"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@drawable/layout_ripple"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingLeft="15dp"
-        android:paddingRight="10dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="版本更新"
-            android:textSize="16sp" />
+            android:layout_marginRight="10dp"
+            android:src="@drawable/ic_point_right"/>
     </LinearLayout>
 
     <include layout="@layout/view_line" />
 
-    <LinearLayout
-        android:id="@+id/id_menu_clear"
+    <TableLayout
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@drawable/layout_ripple"
-        android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:paddingLeft="15dp"
-        android:paddingRight="10dp">
+        android:layout_height="wrap_content"
+        android:background="@color/app_white"
+        android:stretchColumns="0,1,2,3">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="清空数据"
-            android:textSize="16sp" />
-    </LinearLayout>
+        <TableRow>
+
+            <TextView
+                android:id="@+id/id_menu_score"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:background="@drawable/layout_ripple"
+                android:gravity="center"
+                android:text="成绩查询"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/id_menu_notice"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:background="@drawable/layout_ripple"
+                android:gravity="center"
+                android:text="最新公告"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/id_menu_search"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:background="@drawable/layout_ripple"
+                android:gravity="center"
+                android:text="课程仓库"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/id_menu_changeclass"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:background="@drawable/layout_ripple"
+                android:gravity="center"
+                android:text="导入班级"
+                android:textSize="14sp" />
+
+        </TableRow>
+    </TableLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="15dp"
+        android:background="@color/app_white"
+        android:gravity="center_vertical"
+        android:paddingLeft="15dp"
+        android:text="课程管理"
+        android:textColor="@color/app_gray" />
+
+    <include layout="@layout/view_line" />
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/app_white"
+        android:stretchColumns="0,1,2,3">
+
+        <TableRow>
+
+            <TextView
+                android:id="@+id/id_menu_schedule"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:background="@drawable/layout_ripple"
+                android:gravity="center"
+                android:text="  多课表  "
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/id_menu_import"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:background="@drawable/layout_ripple"
+                android:gravity="center"
+                android:text="超表导出"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/id_menu_scan"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:background="@drawable/layout_ripple"
+                android:gravity="center"
+                android:text="扫码导入"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/id_menu_add"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:background="@drawable/layout_ripple"
+                android:gravity="center"
+                android:text="添加课程"
+                android:textSize="14sp" />
+
+        </TableRow>
+    </TableLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="15dp"
+        android:background="@color/app_white"
+        android:gravity="center_vertical"
+        android:paddingLeft="15dp"
+        android:text="产品相关"
+        android:textColor="@color/app_gray" />
+
+    <include layout="@layout/view_line" />
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/app_white"
+        android:stretchColumns="0,1,2,3">
+
+        <TableRow>
+
+            <TextView
+                android:id="@+id/id_menu_about"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:background="@drawable/layout_ripple"
+                android:gravity="center"
+                android:text="关于软件"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/id_menu_issues"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:background="@drawable/layout_ripple"
+                android:gravity="center"
+                android:text="常见问题"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/id_menu_share"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:background="@drawable/layout_ripple"
+                android:gravity="center"
+                android:text="分享软件"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/id_menu_update"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:background="@drawable/layout_ripple"
+                android:gravity="center"
+                android:text="版本更新"
+                android:textSize="14sp" />
+
+        </TableRow>
+    </TableLayout>
 </LinearLayout>
 

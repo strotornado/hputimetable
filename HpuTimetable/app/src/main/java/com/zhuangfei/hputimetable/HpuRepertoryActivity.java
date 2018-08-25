@@ -1,33 +1,25 @@
 package com.zhuangfei.hputimetable;
 
 import android.app.Activity;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
-import android.widget.TextView;
 
 import com.zhuangfei.hputimetable.api.TimetableRequest;
 import com.zhuangfei.hputimetable.api.model.ListResult;
-import com.zhuangfei.hputimetable.api.model.MajorModel;
 import com.zhuangfei.hputimetable.api.model.TimetableModel;
-import com.zhuangfei.hputimetable.constants.ShareConstants;
 import com.zhuangfei.toolkit.model.BundleModel;
 import com.zhuangfei.toolkit.tools.ActivityTools;
-import com.zhuangfei.toolkit.tools.BundleTools;
-import com.zhuangfei.toolkit.tools.ShareTools;
 import com.zhuangfei.toolkit.tools.ToastTools;
 
-import java.sql.Time;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,7 +33,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class SearchActivity extends AppCompatActivity {
+public class HpuRepertoryActivity extends AppCompatActivity {
 
     Activity context;
 
@@ -84,15 +76,25 @@ public class SearchActivity extends AppCompatActivity {
 
     @OnItemClick(R.id.id_search_course_listview)
     public void onCourseItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        int day=1,start=1,step=1;
+        if(!TextUtils.isEmpty(courseDatas.get(i).get("day"))){
+            day=Integer.valueOf(courseDatas.get(i).get("day"));
+        }
+        if(!TextUtils.isEmpty(courseDatas.get(i).get("start"))){
+            start=Integer.valueOf(courseDatas.get(i).get("start"));
+        }
+        if(!TextUtils.isEmpty(courseDatas.get(i).get("step"))){
+            step=Integer.valueOf(courseDatas.get(i).get("step"));
+        }
         BundleModel model=new BundleModel()
-                .setFromClass(SearchActivity.class)
-                .put("name",courseDatas.get(i).get("name"))
-                .put("room",courseDatas.get(i).get("room"))
-                .put("teacher",courseDatas.get(i).get("teacher"))
-                .put("start",courseDatas.get(i).get("start"))
-                .put("day",courseDatas.get(i).get("day"))
-                .put("step",courseDatas.get(i).get("step"))
-                .put("weeks",courseDatas.get(i).get("weeks"));
+                .setFromClass(HpuRepertoryActivity.class)
+                .put(AddTimetableActivity.KEY_NAME,courseDatas.get(i).get("name"))
+                .put(AddTimetableActivity.KEY_ROOM,courseDatas.get(i).get("room"))
+                .put(AddTimetableActivity.KEY_TEACHER,courseDatas.get(i).get("teacher"))
+                .put(AddTimetableActivity.KEY_START,start)
+                .put(AddTimetableActivity.KEY_DAY,day)
+                .put(AddTimetableActivity.KEY_STEP,step)
+                .put(AddTimetableActivity.KEY_WEEKS,courseDatas.get(i).get("weeks"));
         ActivityTools.toActivity(this,AddTimetableActivity.class,model);
     }
 

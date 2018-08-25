@@ -21,6 +21,8 @@ public class TimetableModel extends DataSupport implements ScheduleEnable,Serial
 
 	private static final String TAG = "TimetableModel";
 
+	private ScheduleName scheduleName;
+
 	private int id;
 
 	private String major;
@@ -63,7 +65,7 @@ public class TimetableModel extends DataSupport implements ScheduleEnable,Serial
 	 * 周几上
 	 */
 	private int day;
-	
+
 	private String term;
 
 	/**
@@ -82,7 +84,15 @@ public class TimetableModel extends DataSupport implements ScheduleEnable,Serial
 		setWeekList(TimetableTools.getWeekList(weeks));
 	}
 
-	public void setMajor(String major) {
+    public void setScheduleName(ScheduleName scheduleName) {
+        this.scheduleName = scheduleName;
+    }
+
+    public ScheduleName getScheduleName() {
+        return scheduleName;
+    }
+
+    public void setMajor(String major) {
 		this.major = major;
 	}
 
@@ -101,27 +111,15 @@ public class TimetableModel extends DataSupport implements ScheduleEnable,Serial
 	public String getTime() {
 		return time;
 	}
-	
+
 	public void setTerm(String term) {
 		this.term = term;
 	}
-	
+
 	public String getTerm() {
 		return term;
 	}
 
-//	public TimetableModel(String term,String name, String room, String teacher, List<Integer> weekList, int start, int step, int day, int colorRandom) {
-//		super();
-//		this.term=term;
-//		this.name = name;
-//		this.room = room;
-//		this.teacher = teacher;
-//		this.weekList=weekList;
-//		this.start = start;
-//		this.step = step;
-//		this.day = day;
-//		this.colorRandom = colorRandom;
-//	}
 	
 	public TimetableModel(String term, String name, String room, String teacher, List<Integer> weekList, int start, int step, int day, int colorRandom, String time) {
 		super();
@@ -210,7 +208,9 @@ public class TimetableModel extends DataSupport implements ScheduleEnable,Serial
 		schedule.setStart(getStart());
 		schedule.setStep(getStep());
 		schedule.setTeacher(getTeacher());
-		setWeekList(TimetableTools.getWeekList(getWeeks()));
+		if(getWeeks()!=null){
+			setWeekList(TimetableTools.getWeekList(getWeeks()));
+		}
 		schedule.setWeekList(getWeekList());
 		schedule.setColorRandom(2);
 		return schedule;

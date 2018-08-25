@@ -9,7 +9,9 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/lib-zxing" />
             <option value="$PROJECT_DIR$/smartalert" />
+            <option value="$PROJECT_DIR$/superbox" />
             <option value="$PROJECT_DIR$/toolkit" />
           </set>
         </option>
