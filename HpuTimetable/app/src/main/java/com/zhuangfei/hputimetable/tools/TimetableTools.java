@@ -68,6 +68,26 @@ public class TimetableTools {
         return cal.getTime();
     }
 
+    public static List<Integer> getWeekListThrowExcept(String weeksString) {
+        List<Integer> weekList = new ArrayList<>();
+        if (weeksString == null || weeksString.length() == 0) return weekList;
+
+        try{
+            weeksString = weeksString.replaceAll("[^\\d\\-\\,]", "");
+            if (weeksString.indexOf(",") != -1) {
+                String[] arr = weeksString.split(",");
+                for (int i = 0; i < arr.length; i++) {
+                    weekList.addAll(getWeekList2(arr[i]));
+                }
+            } else {
+                weekList.addAll(getWeekList2(weeksString));
+            }
+            return weekList;
+        }catch (Exception e){
+            return weekList;
+        }
+    }
+
     public static List<Integer> getWeekList(String weeksString) {
         List<Integer> weekList = new ArrayList<>();
         if (weeksString == null || weeksString.length() == 0) return weekList;
@@ -84,6 +104,7 @@ public class TimetableTools {
             }
             return weekList;
         }catch (Exception e){
+            e.printStackTrace();
             return weekList;
         }
     }

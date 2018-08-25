@@ -1,5 +1,6 @@
 package com.zhuangfei.hputimetable.api.model;
 
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.zhuangfei.hputimetable.tools.TimetableTools;
@@ -208,7 +209,7 @@ public class TimetableModel extends DataSupport implements ScheduleEnable,Serial
 		schedule.setStart(getStart());
 		schedule.setStep(getStep());
 		schedule.setTeacher(getTeacher());
-		if(getWeeks()!=null){
+		if(!TextUtils.isEmpty(getWeeks())){
 			setWeekList(TimetableTools.getWeekList(getWeeks()));
 		}
 		schedule.setWeekList(getWeekList());

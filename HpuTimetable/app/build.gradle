@@ -18,8 +18,8 @@ android {
         // 开启multidex
         multiDexEnabled true
 
-        versionCode 5
-        versionName "1.0.4"
+        versionCode 6
+        versionName "1.0.5"
     }
 
     // 签名配置

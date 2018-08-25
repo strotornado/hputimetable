@@ -22,7 +22,7 @@ public class ScheduleName extends DataSupport implements Serializable{
     private String desc;
 
     public List<TimetableModel> getModels() {
-        return DataSupport.where("schedulename_id=?",String.valueOf(id)).find(TimetableModel.class);
+        return DataSupport.where("schedulename_id=?",String.valueOf(id)).find(TimetableModel.class,true);
     }
 
     public void setModels(List<TimetableModel> models) {

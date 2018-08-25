@@ -3,6 +3,7 @@ package com.zhuangfei.hputimetable;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.zhuangfei.classbox.utils.SuperUtils;
 import com.zhuangfei.hputimetable.api.model.ScheduleName;
 import com.zhuangfei.hputimetable.api.model.TimetableModel;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
@@ -12,8 +13,10 @@ import com.zhuangfei.hputimetable.tools.TimetableTools;
 import com.zhuangfei.timetable.TimetableView;
 import com.zhuangfei.timetable.listener.ISchedule;
 import com.zhuangfei.timetable.listener.IWeekView;
+import com.zhuangfei.timetable.listener.OnSlideBuildAdapter;
 import com.zhuangfei.timetable.model.Schedule;
 import com.zhuangfei.timetable.model.ScheduleSupport;
+import com.zhuangfei.timetable.utils.ColorUtils;
 import com.zhuangfei.timetable.view.WeekView;
 import com.zhuangfei.toolkit.model.BundleModel;
 import com.zhuangfei.toolkit.tools.ActivityTools;
@@ -29,6 +32,7 @@ import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.litepal.crud.DataSupport;
@@ -73,6 +77,9 @@ public class MainActivity extends Activity {
 
     final int SUCCESSCODE = 1;
 
+    @BindView(R.id.container)
+    LinearLayout containerLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -81,6 +88,8 @@ public class MainActivity extends Activity {
         inits();
         shouldcheckPermission();
         adjustAndGetData();
+        boolean is= SuperUtils.isSuperUrl("http://deeplink.super.cn/?action=copy&t=1&i=15380233&p=1&v=9.4.1&y=2016&n=LF%E5%B0%8F%E9%A3%9E&tm=2");
+        Log.d(TAG, "onCreate: "+is);
     }
 
     private void shouldcheckPermission() {
@@ -118,6 +127,7 @@ public class MainActivity extends Activity {
         checkData();
         mTimetableView.onDateBuildListener().onHighLight();
         int newCurWeek = TimetableTools.getCurWeek(this);
+        if(newCurWeek>25) newCurWeek=25;
         Log.d(TAG, "onStart: " + newCurWeek);
         if (newCurWeek != mTimetableView.curWeek()) {
             mTimetableView.onDateBuildListener().onUpdateDate(mTimetableView.curWeek(), newCurWeek);
@@ -146,6 +156,47 @@ public class MainActivity extends Activity {
             ShareTools.put(this, "course_update", 0);
         }
 
+        int changed=ShareTools.getInt(this,"hidenotcur_changed",0);
+        if(changed==1){
+            int status=ShareTools.getInt(this,"hidenotcur",0);
+            if(status==0){
+                mTimetableView.isShowNotCurWeek(true).updateView();;
+            }else {
+                mTimetableView.isShowNotCurWeek(false).updateView();
+            }
+            ShareTools.putInt(this, "hidenotcur_changed", 0);
+        }
+
+        int mainThemechanged=ShareTools.getInt(this,"mainalpha_changed",0);
+        if(mainThemechanged==1){
+            int status=ShareTools.getInt(this,"mainalpha",0);
+            if(status==0){
+                setWhiteBg(true);
+            }else {
+                setTransportBg(true);
+            }
+            ShareTools.putInt(this, "mainalpha_changed", 0);
+        }
+    }
+
+    public void setWhiteBg(boolean isUpdate){
+        mTitleTextView.setTextColor(context.getResources().getColor(R.color.app_course_textcolor_blue));
+        menuImageView.setColorFilter(Color.GRAY);
+        mCurScheduleTextView.setTextColor(Color.GRAY);
+        containerLayout.setBackgroundColor(Color.WHITE);
+        if(isUpdate){
+            mTimetableView.alpha(1).updateView();
+        }
+    }
+
+    public void setTransportBg(boolean isUpdate){
+        mTitleTextView.setTextColor(Color.WHITE);
+        menuImageView.setColorFilter(Color.WHITE);
+        mCurScheduleTextView.setTextColor(Color.WHITE);
+        containerLayout.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.main_bg));
+        if(isUpdate){
+            mTimetableView.alpha(0.2f,0.05f,0.75f).updateView();
+        }
     }
 
     private void inits() {
@@ -163,9 +214,12 @@ public class MainActivity extends Activity {
 
         int curWeek = TimetableTools.getCurWeek(this);
 
+        if(curWeek>=25) curWeek=25;
+
         //设置周次选择属性
         mWeekView.data(schedules)
                 .curWeek(curWeek)
+                .itemCount(25)
                 .callback(new IWeekView.OnWeekItemClickedListener() {
                     @Override
                     public void onWeekClicked(int curWeek) {
@@ -182,11 +236,32 @@ public class MainActivity extends Activity {
                 })
                 .isShow(false);
         mWeekView.showView();
-        mWeekView.setBackgroundColor(Color.TRANSPARENT);
 
+        int status=ShareTools.getInt(this,"hidenotcur",0);
+        if(status==0){
+            mTimetableView.isShowNotCurWeek(true);
+        }else {
+            mTimetableView.isShowNotCurWeek(false);
+        }
+
+        int status2=ShareTools.getInt(this,"mainalpha",0);
+        float alpha1,alpha2,alpha3;
+        if(status2==0){
+            setWhiteBg(false);
+            alpha1=1f;
+            alpha2=1f;
+            alpha3=1f;
+        }else {
+            setTransportBg(false);
+            alpha1=0.2f;
+            alpha2=0.05f;
+            alpha3=0.75f;
+        }
+
+        mTimetableView.colorPool().setUselessColor(getResources().getColor(R.color.app_gray3));
         mTimetableView.curWeek(curWeek)
                 .maxSlideItem(10)
-                .alpha(0.2f, 0.05f, 0.5f)
+                .alpha(alpha1,alpha2,alpha3)
                 .callback(new ISchedule.OnItemClickListener() {
                     @Override
                     public void onItemClick(View v, List<Schedule> scheduleList) {
@@ -232,8 +307,8 @@ public class MainActivity extends Activity {
      * 周次选择布局的左侧被点击时回调
      */
     protected void onWeekLeftLayoutClicked() {
-        final String items[] = new String[20];
-        for (int i = 0; i < 20; i++) {
+        final String items[] = new String[25];
+        for (int i = 0; i < 25; i++) {
             items[i] = "第" + (i + 1) + "周";
         }
         target = -1;

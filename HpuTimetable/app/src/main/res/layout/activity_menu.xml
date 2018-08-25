@@ -205,5 +205,58 @@
 
         </TableRow>
     </TableLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:layout_marginTop="15dp"
+        android:background="@color/app_white"
+        android:gravity="center_vertical"
+        android:paddingLeft="15dp"
+        android:text="设置相关"
+        android:textColor="@color/app_gray" />
+
+    <include layout="@layout/view_line" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="center_vertical"
+        android:background="@color/app_white"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:layout_marginLeft="15dp"
+            android:text="隐藏非本周"/>
+        <android.support.v7.widget.SwitchCompat
+            android:id="@+id/id_switch_hidenotcur"
+            android:layout_marginRight="15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="center_vertical"
+        android:background="@color/app_white"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:layout_marginLeft="15dp"
+            android:text="主界面风格透明"/>
+        <android.support.v7.widget.SwitchCompat
+            android:id="@+id/id_switch_mainalpha"
+            android:gravity="center_vertical"
+            android:layout_marginRight="15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
 </LinearLayout>
 

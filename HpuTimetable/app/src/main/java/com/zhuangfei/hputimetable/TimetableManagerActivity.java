@@ -6,7 +6,9 @@ import java.util.List;
 import com.zhuangfei.hputimetable.api.model.TimetableModel;
 import com.zhuangfei.hputimetable.appwidget.ScheduleAppWidget;
 import com.zhuangfei.hputimetable.constants.ExtrasConstants;
+import com.zhuangfei.hputimetable.model.ScheduleDao;
 import com.zhuangfei.hputimetable.tools.BroadcastUtils;
+import com.zhuangfei.hputimetable.tools.TimetableTools;
 import com.zhuangfei.smartalert.core.MessageAlert;
 import com.zhuangfei.smartalert.listener.OnMessageAlertAdapter;
 import com.zhuangfei.toolkit.tools.ActivityTools;
@@ -16,6 +18,8 @@ import com.zhuangfei.toolkit.tools.ShareTools;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -79,13 +83,10 @@ public class TimetableManagerActivity extends Activity implements OnClickListene
 			Toasty.error(this,"页面传值出现异常!",Toast.LENGTH_SHORT).show();
 			ActivityTools.toBackActivityAnim(this,MultiScheduleActivity.class);
 		}else{
-			List<TimetableModel> modelList = DataSupport.findAll(TimetableModel.class,true);
-			for(TimetableModel model:modelList){
-				if(model!=null&&model.getScheduleName()!=null){
-					if(model.getScheduleName().getId()==scheduleNameId){
-						courseList.add(model);
-					}
-				}
+			List<TimetableModel> modelList = ScheduleDao.getAllWithScheduleId(scheduleNameId);
+			if(modelList!=null){
+				courseList.clear();
+				courseList.addAll(modelList);
 			}
 			if(courseList.size()==0){
 				Toasty.info(this,"没有课程！",Toast.LENGTH_SHORT).show();
@@ -140,8 +141,14 @@ public class TimetableManagerActivity extends Activity implements OnClickListene
 
 			nameTextView.setText(course.getName());
 
+			if(!TextUtils.isEmpty(course.getWeeks())){
+				List<Integer> list=TimetableTools.getWeekList(course.getWeeks());
+				weeksTextView.setText("周次:\t" + (list==null?"null":list.toString()));
+			}else{
+				weeksTextView.setText("周次:\t" + (course.getWeekList()==null?"null":course.getWeekList().toString()));
+			}
+
 			roomTextView.setText("教室:\t" + course.getRoom());
-			weeksTextView.setText("周次:\t" + course.getWeekList().toString());
 			dayTextView.setText("节次:\t周" + getDay(course.getDay()) + ",\t" + course.getStart() + "-"
 					+ (course.getStart() + course.getStep() - 1) + "节");
 			teacherTextView.setText("教师:\t" + course.getTeacher());

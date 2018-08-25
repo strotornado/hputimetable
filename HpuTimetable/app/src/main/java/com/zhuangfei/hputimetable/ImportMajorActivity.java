@@ -9,6 +9,7 @@ import android.text.TextWatcher;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
@@ -51,6 +52,9 @@ public class ImportMajorActivity extends AppCompatActivity{
     @BindView(R.id.id_find_major_edittext)
     EditText findMajorEditText;
 
+    @BindView(R.id.id_loadlayout)
+    LinearLayout loadLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +62,7 @@ public class ImportMajorActivity extends AppCompatActivity{
         ButterKnife.bind(this);
         context=this;
         inits();
+        setLoadLayout(true);
         TimetableRequest.findMajor(this, "1", findMajorCallback);
     }
 
@@ -68,11 +73,18 @@ public class ImportMajorActivity extends AppCompatActivity{
         findMajorEditText.addTextChangedListener(textWatcher);
     }
 
+    public void setLoadLayout(boolean isShow){
+        if(isShow){
+            loadLayout.setVisibility(View.VISIBLE);
+        }else {
+            loadLayout.setVisibility(View.GONE);
+        }
+    }
+
     @OnItemClick(R.id.id_set_major_listview)
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
         String major=datas.get(i).get("major");
-        ShareTools.putString(getContext(), ShareConstants.KEY_MAJOR_NAME,major);
-        Toasty.info(ImportMajorActivity.this,"正在加载数据").show();
+        setLoadLayout(true);
         TimetableRequest.getByMajor(getContext(), major, new GetByMajorCallback(major));
     }
 
@@ -84,6 +96,7 @@ public class ImportMajorActivity extends AppCompatActivity{
         @Override
         public void onResponse(Call<ListResult<MajorModel>> call, Response<ListResult<MajorModel>> response) {
             ListResult<MajorModel> result = response.body();
+            setLoadLayout(false);
             if (result != null) {
                 int code = result.getCode();
                 if (code == 200) {
@@ -129,6 +142,7 @@ public class ImportMajorActivity extends AppCompatActivity{
                 datas.clear();
                 simpleAdapter.notifyDataSetChanged();
             }else{
+                setLoadLayout(true);
                 TimetableRequest.findMajor(getContext(), key, findMajorCallback);
             }
         }
@@ -143,6 +157,7 @@ public class ImportMajorActivity extends AppCompatActivity{
     public void search() {
         String key = findMajorEditText.getText().toString();
         if (!TextUtils.isEmpty(key)) {
+            setLoadLayout(true);
             TimetableRequest.findMajor(this, key, findMajorCallback);
         }
     }
@@ -155,6 +170,7 @@ public class ImportMajorActivity extends AppCompatActivity{
         @Override
         public void onResponse(Call<ObjResult<TimetableResultModel>> call, Response<ObjResult<TimetableResultModel>> response) {
             ObjResult<TimetableResultModel> result = response.body();
+            setLoadLayout(false);
             if (result != null) {
                 int code = result.getCode();
                 if (code == 200) {

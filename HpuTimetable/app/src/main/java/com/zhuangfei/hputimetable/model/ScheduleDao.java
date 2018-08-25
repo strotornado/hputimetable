@@ -5,10 +5,13 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.ContextMenu;
 
+import com.tencent.bugly.crashreport.BuglyLog;
 import com.zhuangfei.classbox.model.SuperLesson;
 import com.zhuangfei.hputimetable.api.model.ScheduleName;
 import com.zhuangfei.hputimetable.api.model.TimetableModel;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
+import com.zhuangfei.hputimetable.tools.TimetableTools;
+import com.zhuangfei.timetable.model.ScheduleSupport;
 import com.zhuangfei.toolkit.tools.ShareTools;
 
 import org.litepal.crud.DataSupport;
@@ -88,11 +91,25 @@ public class ScheduleDao {
     }
 
     private static List<Integer> splitToWeekList(String period){
+        BuglyLog.d("ScheduleDao",period);
         List<Integer> weekList=new ArrayList<>();
         if(TextUtils.isEmpty(period)) return weekList;
-        String[] arr=period.split(" ");
-        for(int i=0;i<arr.length;i++){
-            weekList.add(Integer.valueOf(arr[i]));
+
+        if(period.indexOf(",")!=-1||period.indexOf("-")!=-1||period.indexOf("周")!=-1){
+            weekList.addAll(TimetableTools.getWeekList(period));
+        }else{
+            if(period.length()==1){
+                try {
+                    weekList.add(Integer.valueOf(period));
+                }catch (Exception e){
+
+                }
+            }else{
+                String[] arr=period.split(" ");
+                for(int i=0;i<arr.length;i++){
+                    weekList.add(Integer.valueOf(arr[i]));
+                }
+            }
         }
         return weekList;
     }
