@@ -7,7 +7,7 @@ android {
     defaultConfig {
         applicationId "com.zhuangfei.hputimetable"
         minSdkVersion 15
-        targetSdkVersion 27
+        targetSdkVersion 25
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
         ndk {
@@ -18,8 +18,8 @@ android {
         // 开启multidex
         multiDexEnabled true
 
-        versionCode 6
-        versionName "1.0.5"
+        versionCode 5
+        versionName "1.0.4"
     }
 
     // 签名配置
