@@ -12,7 +12,10 @@ import com.tencent.bugly.Bugly;
 import com.tencent.bugly.beta.Beta;
 import com.tencent.bugly.beta.interfaces.BetaPatchListener;
 import com.tencent.tinker.loader.app.DefaultApplicationLike;
+import com.uuzuche.lib_zxing.activity.ZXingLibrary;
 import com.zhuangfei.toolkit.tools.ToastTools;
+
+import org.litepal.LitePal;
 
 import java.util.Locale;
 
@@ -54,6 +57,9 @@ public class MyApplicationLike extends DefaultApplicationLike {
         // 安装tinker
         // TinkerManager.installTinker(this); 替换成下面Bugly提供的方法
         Beta.installTinker(this);
+
+        LitePal.initialize(base);
+        ZXingLibrary.initDisplayOpinion(base);
 
         Beta.betaPatchListener = new BetaPatchListener() {
             @Override
