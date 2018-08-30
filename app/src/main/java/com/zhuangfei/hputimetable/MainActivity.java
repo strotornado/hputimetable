@@ -258,7 +258,6 @@ public class MainActivity extends Activity {
             alpha3=0.75f;
         }
 
-        mTimetableView.colorPool().setUselessColor(getResources().getColor(R.color.app_gray3));
         mTimetableView.curWeek(curWeek)
                 .maxSlideItem(10)
                 .alpha(alpha1,alpha2,alpha3)

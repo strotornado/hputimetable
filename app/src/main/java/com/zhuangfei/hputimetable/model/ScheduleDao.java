@@ -95,21 +95,9 @@ public class ScheduleDao {
         List<Integer> weekList=new ArrayList<>();
         if(TextUtils.isEmpty(period)) return weekList;
 
-        if(period.indexOf(",")!=-1||period.indexOf("-")!=-1||period.indexOf("周")!=-1){
-            weekList.addAll(TimetableTools.getWeekList(period));
-        }else{
-            if(period.length()==1){
-                try {
-                    weekList.add(Integer.valueOf(period));
-                }catch (Exception e){
-
-                }
-            }else{
-                String[] arr=period.split(" ");
-                for(int i=0;i<arr.length;i++){
-                    weekList.add(Integer.valueOf(arr[i]));
-                }
-            }
+        String[] arr=period.trim().split(" ");
+        for(int i=0;i<arr.length;i++){
+            weekList.add(Integer.valueOf(arr[i]));
         }
         return weekList;
     }

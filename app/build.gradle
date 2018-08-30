@@ -18,8 +18,8 @@ android {
         // 开启multidex
         multiDexEnabled true
 
-        versionCode 6
-        versionName "1.0.5"
+        versionCode 7
+        versionName "1.0.6"
     }
 
     // 签名配置
@@ -73,7 +73,7 @@ dependencies {
     api 'cn.aigestudio.wheelpicker:WheelPicker:1.1.2'
     compile 'cn.yipianfengye.android:zxing-library:2.2'
 
-    compile 'com.zhuangfei:SuperBox:1.0.2'
+    compile 'com.zhuangfei:SuperBox:1.0.3'
 }
 
 apply plugin: 'bugly'

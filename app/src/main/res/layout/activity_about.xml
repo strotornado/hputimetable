@@ -62,7 +62,7 @@
                 android:paddingLeft="48dp"
                 android:paddingRight="48dp"
                 android:paddingTop="16dp"
-                android:text="版本号：1.0.3"
+                android:text="版本号：1.0.6"
                 android:textSize="12sp" />
 
             <TextView
