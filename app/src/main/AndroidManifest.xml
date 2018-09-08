@@ -4,12 +4,12 @@
 
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
-
     <uses-permission android:name="android.permission.CAMERA" />
+
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
-    <uses-permission android:name="android.permission.VIBRATE" />
 
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:name=".MyApplication"
@@ -48,12 +48,11 @@
             <intent-filter>
                 <action android:name="android.intent.action.TIME_SET" />
             </intent-filter>
-
             <intent-filter>
                 <action android:name="com.zhuangfei.action.POINTER_CLICK" />
             </intent-filter>
             <intent-filter>
-                <action android:name="com.zhuangfei.action.APPWIDGET_UPDATE"/>
+                <action android:name="com.zhuangfei.action.APPWIDGET_UPDATE" />
             </intent-filter>
 
             <meta-data
@@ -70,9 +69,9 @@
         <activity android:name=".AboutActivity" />
         <activity android:name=".ScanActivity" />
         <activity android:name=".MultiScheduleActivity" />
-        <activity android:name=".CreateScheduleNameActivity"></activity>
-        <activity android:name=".ModifyScheduleNameActivity"></activity>
-
+        <activity android:name=".CreateScheduleNameActivity" />
+        <activity android:name=".ModifyScheduleNameActivity" />
+        <activity android:name=".specialarea.SpecialAreaActivity"></activity>
     </application>
 
 </manifest>

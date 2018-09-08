@@ -28,7 +28,6 @@ public class ScheduleAppWidget extends AppWidgetProvider {
     private static final String TAG = "ScheduleAppWidget";
     public static final String CLICK_ACTION = "com.example.action.CLICK";
     public static final String UPDATE_ACTION = "com.zhuangfei.action.APPWIDGET_UPDATE";
-    public static final String POINTER_CLICK_ACTION = "com.zhuangfei.action.POINTER_CLICK";
     public static final String UPDATE_APPWIDGET="android.appwidget.action.APPWIDGET_UPDATE";
 
     public static final String INT_EXTRA_SIZE = "int_extra_size";
@@ -39,40 +38,12 @@ public class ScheduleAppWidget extends AppWidgetProvider {
     @Override
     public void onReceive(final Context context, Intent intent) {
         super.onReceive(context, intent);
-        if (intent.getAction().equals(UPDATE_APPWIDGET)||intent.getAction().equals(UPDATE_ACTION) || intent.getAction().equals(Intent.ACTION_TIME_CHANGED)) {
+        if (intent.getAction().equals(UPDATE_ACTION) || intent.getAction().equals(Intent.ACTION_TIME_CHANGED)) {
             AppWidgetManager mgr = AppWidgetManager.getInstance(context);
             ComponentName cn = new ComponentName(context, ScheduleAppWidget.class);
-            int startIndex=intent.getIntExtra(INT_EXTRA_START,-1);
-            if (startIndex!=-1) {
-                ShareTools.put(context,ScheduleAppWidget.INT_EXTRA_START,startIndex);
-            }
             mgr.notifyAppWidgetViewDataChanged(mgr.getAppWidgetIds(cn), R.id.id_widget_listview);
-            onUpdate(context,mgr,mgr.getAppWidgetIds(cn));
-        }
-
-        if (intent.getAction().equals(POINTER_CLICK_ACTION)) {
-            int curIndex = intent.getIntExtra(ScheduleAppWidget.INT_EXTRA_INDEX, 0);
-            boolean isFirst = intent.getBooleanExtra(ScheduleAppWidget.BOOLEAN_EXTRA_FIRST, true);
-            int size = intent.getIntExtra(ScheduleAppWidget.INT_EXTRA_SIZE, 0);
-
-            AppWidgetManager mgr = AppWidgetManager.getInstance(context);
-            ComponentName cn = new ComponentName(context, ScheduleAppWidget.class);
-
-            // click first pointer imageview
-            if (isFirst) {
-                if (curIndex != 0) {
-                    ShareTools.put(context,ScheduleAppWidget.INT_EXTRA_START,curIndex-1);
-                    mgr.notifyAppWidgetViewDataChanged(mgr.getAppWidgetIds(cn), R.id.id_widget_listview);
-                }
-            } else {
-                if (curIndex < size - 1) {
-                    ShareTools.put(context,ScheduleAppWidget.INT_EXTRA_START,curIndex);
-                    mgr.notifyAppWidgetViewDataChanged(mgr.getAppWidgetIds(cn), R.id.id_widget_listview);
-                }
-            }
         }
     }
-
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId, ComponentName provider) {

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="white_alpha50">#80FFFFFF</color>
-    <color name="white_alpha25">#B3FFFFFF</color><!--30-->
+    <color name="white_alpha25">#BFFFFFFF</color><!--30-->
     <color name="app_gold">#FF7A59</color>
     <color name="app_white_slight">#FBFBFB</color>
 

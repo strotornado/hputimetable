@@ -1,4 +1,4 @@
-package com.zhuangfei.hputimetable;
+package com.zhuangfei.hputimetable.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -11,6 +11,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.zhuangfei.hputimetable.R;
 import com.zhuangfei.hputimetable.api.model.ScheduleName;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
 import com.zhuangfei.toolkit.tools.ShareTools;

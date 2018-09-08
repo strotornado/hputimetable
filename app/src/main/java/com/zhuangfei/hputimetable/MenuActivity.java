@@ -19,11 +19,13 @@ import com.aigestudio.wheelpicker.widgets.WheelDatePicker;
 import com.tencent.bugly.beta.Beta;
 import com.zhuangfei.classbox.activity.AuthActivity;
 import com.zhuangfei.classbox.model.SuperLesson;
+import com.zhuangfei.classbox.model.SuperResult;
 import com.zhuangfei.classbox.utils.SuperUtils;
 import com.zhuangfei.hputimetable.api.model.ScheduleName;
 import com.zhuangfei.hputimetable.api.model.TimetableModel;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
 import com.zhuangfei.hputimetable.model.ScheduleDao;
+import com.zhuangfei.hputimetable.specialarea.SpecialAreaActivity;
 import com.zhuangfei.hputimetable.tools.TimetableTools;
 import com.zhuangfei.toolkit.model.BundleModel;
 import com.zhuangfei.toolkit.tools.ActivityTools;
@@ -243,9 +245,11 @@ public class MenuActivity extends AppCompatActivity {
 
     @OnClick(R.id.id_menu_add)
     public void toAdd() {
-        BundleModel model = new BundleModel();
-        model.setFromClass(MenuActivity.class);
-        ActivityTools.toActivity(this, AddTimetableActivity.class, model);
+//        BundleModel model = new BundleModel();
+//        model.setFromClass(MenuActivity.class);
+//        ActivityTools.toActivity(this, AddTimetableActivity.class, model);
+//        finish();
+        ActivityTools.toActivity(this, SpecialAreaActivity.class);
         finish();
     }
 
@@ -260,15 +264,25 @@ public class MenuActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_IMPORT && resultCode == AuthActivity.RESULT_STATUS) {
-            List<SuperLesson> lessons = SuperUtils.getLessons(data);
-            ScheduleName newName = ScheduleDao.saveSuperShareLessons(lessons);
-            if (newName != null) {
-                Toasty.success(context, "已存储于[" + newName.getName() + "]").show();
-                ActivityTools.toActivity(this, MultiScheduleActivity.class);
-                finish();
-            } else {
-                Toasty.error(context, "解析出现异常").show();
+            SuperResult result=SuperUtils.getResult(data);
+            if(result==null){
+                Toasty.error(context, "result is null").show();
+            }else{
+                if(result.isSuccess()){
+                    List<SuperLesson> lessons = result.getLessons();
+                    ScheduleName newName = ScheduleDao.saveSuperShareLessons(lessons);
+                    if (newName != null) {
+                        Toasty.success(context, "已存储于[" + newName.getName() + "]").show();
+                        ActivityTools.toActivity(this, MultiScheduleActivity.class);
+                        finish();
+                    } else {
+                        Toasty.error(context, "ScheduleName is null").show();
+                    }
+                }else{
+                    Toasty.error(context, ""+result.getErrMsg()).show();
+                }
             }
+
         }
     }
 

@@ -16,6 +16,7 @@ import com.uuzuche.lib_zxing.activity.CaptureFragment;
 import com.uuzuche.lib_zxing.activity.CodeUtils;
 import com.zhuangfei.classbox.SuperBox;
 import com.zhuangfei.classbox.listener.OnSuperAuthAdapter;
+import com.zhuangfei.classbox.model.SuperResult;
 import com.zhuangfei.classbox.utils.SuperUtils;
 import com.zhuangfei.classbox.activity.AuthActivity;
 import com.zhuangfei.classbox.model.SuperLesson;
@@ -104,38 +105,11 @@ public class ScanActivity extends AppCompatActivity {
     };
 
     public void analyzeCode(String url) {
-        boolean hasLocal = SuperUtils.isHasLocalData(this);
         if (SuperUtils.isSuperUrl(url)) {
-            //如果以经有本地数据了，直接请求
-            //否则需要去输入一个账号
-            if (hasLocal) {
-                new SuperBox(this).request(url, new OnSuperAuthAdapter() {
-                    @Override
-                    public void onScanSuccess(List<SuperLesson> lessons) {
-                        super.onScanSuccess(lessons);
-                        displayLessons(lessons);
-                    }
-
-                    @Override
-                    public void onError(String msg) {
-                        super.onError(msg);
-                        Toast.makeText(ScanActivity.this, "" + msg, Toast.LENGTH_SHORT).show();
-                        goBack();
-                    }
-
-                    @Override
-                    public void onException(Throwable t) {
-                        super.onException(t);
-                        Toast.makeText(ScanActivity.this, "" + t.getMessage(), Toast.LENGTH_SHORT).show();
-                        goBack();
-                    }
-                });
-            } else {
-                Intent intent = new Intent(this, AuthActivity.class);
-                intent.putExtra(AuthActivity.FLAG_TYPE, AuthActivity.TYPE_SCAN);
-                intent.putExtra(AuthActivity.PARAMS_SCAN_URL, url);
-                startActivityForResult(intent, REQUEST_SCAN);
-            }
+            Intent intent = new Intent(this, AuthActivity.class);
+            intent.putExtra(AuthActivity.FLAG_TYPE, AuthActivity.TYPE_SCAN);
+            intent.putExtra(AuthActivity.PARAMS_SCAN_URL, url);
+            startActivityForResult(intent, REQUEST_SCAN);
         } else {
             Toast.makeText(this, "扫描的二维码不是超表课程码", Toast.LENGTH_SHORT).show();
             goBack();
@@ -153,8 +127,8 @@ public class ScanActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == REQUEST_SCAN && resultCode == AuthActivity.RESULT_STATUS) {
-            List<SuperLesson> lessons = SuperUtils.getLessons(data);
-            displayLessons(lessons);
+            SuperResult result=SuperUtils.getResult(data);
+            displayLessons(result);
         }
 
         if (requestCode == REQUEST_OPEN_LOCAL) {
@@ -180,13 +154,21 @@ public class ScanActivity extends AppCompatActivity {
         }
     }
 
-    public void displayLessons(List<SuperLesson> lessons) {
-        ScheduleName newName = ScheduleDao.saveSuperLessons(lessons);
-        if (newName != null) {
-            Toasty.success(this, "已存储于[" + newName.getName() + "]").show();
-            ActivityTools.toActivity(this, MultiScheduleActivity.class);
-            finish();
-        } else goBack();
+    public void displayLessons(SuperResult result) {
+        if(result==null){
+            Toasty.error(this, "result is null").show();
+        }else{
+            if(result.isSuccess()){
+                ScheduleName newName = ScheduleDao.saveSuperLessons(result.getLessons());
+                if (newName != null) {
+                    Toasty.success(this, "已存储于[" + newName.getName() + "]").show();
+                    ActivityTools.toActivity(this, MultiScheduleActivity.class);
+                    finish();
+                } else goBack();
+            }else{
+                Toasty.error(this, ""+result.getErrMsg()).show();
+            }
+        }
     }
 
     public void goBack() {

@@ -54,15 +54,12 @@ public class ScheduleService extends RemoteViewsService {
         public void onCreate() {
             data = new ArrayList<>();
             data.addAll(findTodayData(context));
-            startIndex = intent.getIntExtra(ScheduleAppWidget.INT_EXTRA_START, 0);
         }
 
         @Override
         public void onDataSetChanged() {
             data.clear();
             data.addAll(findTodayData(context));
-            startIndex = ShareTools.getInt(context, ScheduleAppWidget.INT_EXTRA_START, 0);
-            if (startIndex >= data.size()) startIndex = 0;
         }
 
         @Override
@@ -72,61 +69,23 @@ public class ScheduleService extends RemoteViewsService {
 
         @Override
         public int getCount() {
-            return 1;
+            return data.size();
         }
 
         @Override
         public RemoteViews getViewAt(int i) {
-            RemoteViews itemViews = new RemoteViews(context.getPackageName(), R.layout.schedule_app_widget_itemcontainer);
-
-            if (data.size() == 0) {
-                RemoteViews emptyView = new RemoteViews(context.getPackageName(), R.layout.schedule_app_widget_empty);
-                itemViews.addView(R.id.id_widget_item_container, emptyView);
-                return itemViews;
-            }
-
-            for (int m = startIndex; m < startIndex + 2; m++) {
-                addItemView(itemViews, m);
-            }
-            return itemViews;
-        }
-
-        public void addItemView(RemoteViews parent, int index) {
-            if (index < 0 || index >= data.size()) return;
+            Log.d(TAG, "getViewAt: "+startIndex);
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.schedule_app_widget_item);
-            Schedule schedule = data.get(index);
+            Schedule schedule = data.get(i);
             views.setTextViewText(R.id.id_widget_item_name, schedule.getName());
             views.setTextViewText(R.id.id_widget_item_room, schedule.getRoom());
             views.setTextViewText(R.id.id_widget_item_start, schedule.getStart() + "-" + (schedule.getStart() + schedule.getStep() - 1));
 
-            if (index == startIndex) {
-                if (index == 0)
-                    views.setImageViewResource(R.id.id_widget_item_pointer, R.drawable.ic_pointer_up_normal);
-                else
-                    views.setImageViewResource(R.id.id_widget_item_pointer, R.drawable.ic_pointer_up_light);
-
-            } else {
-                if (index == data.size() - 1)
-                    views.setImageViewResource(R.id.id_widget_item_pointer, R.drawable.ic_pointer_down_normal);
-                else
-                    views.setImageViewResource(R.id.id_widget_item_pointer, R.drawable.ic_pointer_down_light);
-            }
-
-            Intent intent = new Intent();
-            intent.setClass(context, ScheduleAppWidget.class);
-            intent.setAction(ScheduleAppWidget.POINTER_CLICK_ACTION);
-
-            intent.putExtra(ScheduleAppWidget.INT_EXTRA_INDEX, index);
-            intent.putExtra(ScheduleAppWidget.INT_EXTRA_SIZE, data.size());
-            intent.putExtra(ScheduleAppWidget.BOOLEAN_EXTRA_FIRST, index == startIndex);
-            PendingIntent pi = PendingIntent.getBroadcast(context, index, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
             Intent clickIntent = new Intent(context, MainActivity.class);
-            PendingIntent clickPi = PendingIntent.getActivity(context, index, clickIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-            views.setOnClickPendingIntent(R.id.id_widget_item_pointer_layout, pi);
+            PendingIntent clickPi = PendingIntent.getActivity(context, i, clickIntent, PendingIntent.FLAG_UPDATE_CURRENT);
             views.setOnClickPendingIntent(R.id.id_widget_item_clicklayout, clickPi);
-            parent.addView(R.id.id_widget_item_container, views);
+
+            return views;
         }
 
         @Override

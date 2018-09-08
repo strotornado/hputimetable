@@ -1,15 +1,14 @@
 package com.zhuangfei.hputimetable;
 
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.zhuangfei.hputimetable.adapter.MultiScheduleAdapter;
 import com.zhuangfei.hputimetable.api.model.ScheduleName;
-import com.zhuangfei.hputimetable.appwidget.ScheduleAppWidget;
 import com.zhuangfei.hputimetable.constants.ExtrasConstants;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
 import com.zhuangfei.hputimetable.tools.BroadcastUtils;

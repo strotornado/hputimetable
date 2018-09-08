@@ -268,7 +268,7 @@ public class CustomWeekView extends LinearLayout implements WeekViewEnable<Custo
      * @param isShow true:显示，false:隐藏
      */
     @Override
-    public WeekView isShow(boolean isShow){
+    public CustomWeekView isShow(boolean isShow){
         if(isShow){
             root.setVisibility(VISIBLE);
         }else{
