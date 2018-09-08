@@ -8,6 +8,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.zhuangfei.hputimetable.api.model.ScheduleName;
+import com.zhuangfei.toolkit.model.BundleModel;
 import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.BundleTools;
 
@@ -74,6 +75,7 @@ public class ModifyScheduleNameActivity extends AppCompatActivity {
 
     @OnClick(R.id.id_back)
     public void goBack() {
-        ActivityTools.toBackActivityAnim(this, MultiScheduleActivity.class);
+        ActivityTools.toBackActivityAnim(this, MainActivity.class,
+                new BundleModel().setToItem(2));
     }
 }

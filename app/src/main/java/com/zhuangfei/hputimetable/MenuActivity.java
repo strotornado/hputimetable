@@ -204,7 +204,7 @@ public class MenuActivity extends AppCompatActivity {
 
     @OnClick(R.id.id_menu_schedule)
     public void toMultiScheduleActivity() {
-        ActivityTools.toActivity(getContext(), MultiScheduleActivity.class);
+        ActivityTools.toActivity(getContext(), MainActivity.class,new BundleModel().setToItem(2));
         finish();
     }
 
@@ -273,7 +273,7 @@ public class MenuActivity extends AppCompatActivity {
                     ScheduleName newName = ScheduleDao.saveSuperShareLessons(lessons);
                     if (newName != null) {
                         Toasty.success(context, "已存储于[" + newName.getName() + "]").show();
-                        ActivityTools.toActivity(this, MultiScheduleActivity.class);
+                        ActivityTools.toActivity(this, MainActivity.class,new BundleModel().setToItem(2));
                         finish();
                     } else {
                         Toasty.error(context, "ScheduleName is null").show();

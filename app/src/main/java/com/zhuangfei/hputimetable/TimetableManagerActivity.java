@@ -11,6 +11,7 @@ import com.zhuangfei.hputimetable.tools.BroadcastUtils;
 import com.zhuangfei.hputimetable.tools.TimetableTools;
 import com.zhuangfei.smartalert.core.MessageAlert;
 import com.zhuangfei.smartalert.listener.OnMessageAlertAdapter;
+import com.zhuangfei.toolkit.model.BundleModel;
 import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.BundleTools;
 import com.zhuangfei.toolkit.tools.ShareTools;
@@ -81,7 +82,7 @@ public class TimetableManagerActivity extends Activity implements OnClickListene
 		int scheduleNameId= (int) BundleTools.getInt(this,ExtrasConstants.INT_SCHEDULE_NAME_ID,-1);
 		if(scheduleNameId==-1){
 			Toasty.error(this,"页面传值出现异常!",Toast.LENGTH_SHORT).show();
-			ActivityTools.toBackActivityAnim(this,MultiScheduleActivity.class);
+			ActivityTools.toBackActivityAnim(this,MainActivity.class,new BundleModel().setToItem(2));
 		}else{
 			List<TimetableModel> modelList = ScheduleDao.getAllWithScheduleId(scheduleNameId);
 			if(modelList!=null){
@@ -164,14 +165,14 @@ public class TimetableManagerActivity extends Activity implements OnClickListene
 
 	@Override
 	public void onBackPressed() {
-		ActivityTools.toBackActivityAnim(this, MultiScheduleActivity.class);
+		ActivityTools.toBackActivityAnim(this, MainActivity.class,new BundleModel().setToItem(2));
 	}
 
 	@Override
 	public void onClick(View arg0) {
 		switch (arg0.getId()) {
 			case R.id.id_back:
-				ActivityTools.toBackActivityAnim(TimetableManagerActivity.this, MultiScheduleActivity.class);
+				ActivityTools.toBackActivityAnim(TimetableManagerActivity.this, MainActivity.class,new BundleModel().setToItem(2));
 				break;
 
 			case R.id.id_manager_allcheck:

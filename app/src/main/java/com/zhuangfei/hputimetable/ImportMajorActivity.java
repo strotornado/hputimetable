@@ -22,6 +22,7 @@ import com.zhuangfei.hputimetable.api.model.ScheduleName;
 import com.zhuangfei.hputimetable.api.model.TimetableModel;
 import com.zhuangfei.hputimetable.api.model.TimetableResultModel;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
+import com.zhuangfei.toolkit.model.BundleModel;
 import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.ShareTools;
 import com.zhuangfei.toolkit.tools.ToastTools;
@@ -40,7 +41,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class ImportMajorActivity extends AppCompatActivity{
+public class ImportMajorActivity extends AppCompatActivity {
 
     Activity context;
 
@@ -60,7 +61,7 @@ public class ImportMajorActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_set_major);
         ButterKnife.bind(this);
-        context=this;
+        context = this;
         inits();
         setLoadLayout(true);
         TimetableRequest.findMajor(this, "1", findMajorCallback);
@@ -73,17 +74,17 @@ public class ImportMajorActivity extends AppCompatActivity{
         findMajorEditText.addTextChangedListener(textWatcher);
     }
 
-    public void setLoadLayout(boolean isShow){
-        if(isShow){
+    public void setLoadLayout(boolean isShow) {
+        if (isShow) {
             loadLayout.setVisibility(View.VISIBLE);
-        }else {
+        } else {
             loadLayout.setVisibility(View.GONE);
         }
     }
 
     @OnItemClick(R.id.id_set_major_listview)
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        String major=datas.get(i).get("major");
+        String major = datas.get(i).get("major");
         setLoadLayout(true);
         TimetableRequest.getByMajor(getContext(), major, new GetByMajorCallback(major));
     }
@@ -115,7 +116,7 @@ public class ImportMajorActivity extends AppCompatActivity{
 
     private void updateListData(List<MajorModel> resultModels) {
         datas.clear();
-        if (resultModels == null || resultModels.size() == 0){
+        if (resultModels == null || resultModels.size() == 0) {
             simpleAdapter.notifyDataSetChanged();
             return;
         }
@@ -137,11 +138,11 @@ public class ImportMajorActivity extends AppCompatActivity{
 
         @Override
         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            String key=charSequence.toString();
-            if (TextUtils.isEmpty(key)){
+            String key = charSequence.toString();
+            if (TextUtils.isEmpty(key)) {
                 datas.clear();
                 simpleAdapter.notifyDataSetChanged();
-            }else{
+            } else {
                 setLoadLayout(true);
                 TimetableRequest.findMajor(getContext(), key, findMajorCallback);
             }
@@ -162,11 +163,13 @@ public class ImportMajorActivity extends AppCompatActivity{
         }
     }
 
-    class GetByMajorCallback implements Callback<ObjResult<TimetableResultModel>>{
-        private String major=null;
-        public GetByMajorCallback(String major){
-            this.major=major;
+    class GetByMajorCallback implements Callback<ObjResult<TimetableResultModel>> {
+        private String major = null;
+
+        public GetByMajorCallback(String major) {
+            this.major = major;
         }
+
         @Override
         public void onResponse(Call<ObjResult<TimetableResultModel>> call, Response<ObjResult<TimetableResultModel>> response) {
             ObjResult<TimetableResultModel> result = response.body();
@@ -174,9 +177,9 @@ public class ImportMajorActivity extends AppCompatActivity{
             if (result != null) {
                 int code = result.getCode();
                 if (code == 200) {
-                    ScheduleName scheduleName=new ScheduleName();
+                    ScheduleName scheduleName = new ScheduleName();
                     scheduleName.setTime(System.currentTimeMillis());
-                    scheduleName.setName(major==null?"默认课表":major);
+                    scheduleName.setName(major == null ? "默认课表" : major);
                     scheduleName.save();
                     TimetableResultModel resultModel = result.getData();
                     List<TimetableModel> haveList = resultModel.getHaveList();
@@ -187,8 +190,9 @@ public class ImportMajorActivity extends AppCompatActivity{
                     if (haveList != null && haveList.size() != 0) {
                         ShareTools.putString(getContext(), ShareConstants.KEY_CUR_TERM, haveList.get(0).getTerm());
                     }
-                    Toasty.success(ImportMajorActivity.this,"已存储于["+scheduleName.getName()+"]").show();
-                    ActivityTools.toActivity(ImportMajorActivity.this,MultiScheduleActivity.class);
+                    Toasty.success(ImportMajorActivity.this, "已存储于[" + scheduleName.getName() + "]").show();
+                    ActivityTools.toActivity(ImportMajorActivity.this, MainActivity.class, new BundleModel()
+                            .setToItem(2));
                     finish();
                 } else {
                     ToastTools.show(getContext(), result.getMsg());
@@ -201,10 +205,12 @@ public class ImportMajorActivity extends AppCompatActivity{
         public void onFailure(Call<ObjResult<TimetableResultModel>> call, Throwable t) {
             ToastTools.show(getContext(), t.getMessage());
         }
-    };
+    }
+
+    ;
 
     @Override
     public void onBackPressed() {
-        ActivityTools.toBackActivityAnim(this,MenuActivity.class);
+        ActivityTools.toBackActivityAnim(this, MenuActivity.class);
     }
 }

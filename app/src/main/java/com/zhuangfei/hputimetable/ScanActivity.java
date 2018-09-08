@@ -23,6 +23,7 @@ import com.zhuangfei.classbox.model.SuperLesson;
 import com.zhuangfei.hputimetable.api.model.ScheduleName;
 import com.zhuangfei.hputimetable.model.ScheduleDao;
 import com.zhuangfei.hputimetable.tools.ImageUtil;
+import com.zhuangfei.toolkit.model.BundleModel;
 import com.zhuangfei.toolkit.tools.ActivityTools;
 
 import java.util.HashMap;
@@ -162,7 +163,8 @@ public class ScanActivity extends AppCompatActivity {
                 ScheduleName newName = ScheduleDao.saveSuperLessons(result.getLessons());
                 if (newName != null) {
                     Toasty.success(this, "已存储于[" + newName.getName() + "]").show();
-                    ActivityTools.toActivity(this, MultiScheduleActivity.class);
+                    ActivityTools.toActivity(this, MainActivity.class,
+                            new BundleModel().setToItem(2));
                     finish();
                 } else goBack();
             }else{

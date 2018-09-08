@@ -30,8 +30,10 @@ import com.zhuangfei.hputimetable.tools.TimetableTools;
 import com.zhuangfei.timetable.TimetableView;
 import com.zhuangfei.timetable.listener.ISchedule;
 import com.zhuangfei.timetable.listener.IWeekView;
+import com.zhuangfei.timetable.listener.OnDateBuildAapter;
 import com.zhuangfei.timetable.model.Schedule;
 import com.zhuangfei.timetable.model.ScheduleSupport;
+import com.zhuangfei.timetable.utils.ScreenUtils;
 import com.zhuangfei.toolkit.model.BundleModel;
 import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.ShareTools;
@@ -91,7 +93,7 @@ public class ScheduleFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ButterKnife.bind(context,view);
+        ButterKnife.bind(this,view);
         inits();
         adjustAndGetData();
     }
@@ -102,14 +104,12 @@ public class ScheduleFragment extends Fragment {
         checkData();
         mTimetableView.onDateBuildListener().onHighLight();
         int newCurWeek = TimetableTools.getCurWeek(context);
-        if(newCurWeek>25) newCurWeek=25;
-        if (newCurWeek != mTimetableView.curWeek()) {
+        if(newCurWeek<=25&&newCurWeek != mTimetableView.curWeek()) {
             mTimetableView.onDateBuildListener().onUpdateDate(mTimetableView.curWeek(), newCurWeek);
             mTimetableView.changeWeekForce(newCurWeek);
             mWeekView.curWeek(newCurWeek).updateView();
         }
     }
-
 
     public void checkData() {
         int v = ShareTools.getInt(context, "course_update", 0);
@@ -129,28 +129,6 @@ public class ScheduleFragment extends Fragment {
                 }
             }
             ShareTools.put(context, "course_update", 0);
-        }
-
-        int changed=ShareTools.getInt(context,"hidenotcur_changed",0);
-        if(changed==1){
-            int status=ShareTools.getInt(context,"hidenotcur",0);
-            if(status==0){
-                mTimetableView.isShowNotCurWeek(true).updateView();;
-            }else {
-                mTimetableView.isShowNotCurWeek(false).updateView();
-            }
-            ShareTools.putInt(context, "hidenotcur_changed", 0);
-        }
-
-        int mainThemechanged=ShareTools.getInt(context,"mainalpha_changed",0);
-        if(mainThemechanged==1){
-            int status=ShareTools.getInt(context,"mainalpha",0);
-            if(status==0){
-                setWhiteBg(true);
-            }else {
-                setTransportBg(true);
-            }
-            ShareTools.putInt(context, "mainalpha_changed", 0);
         }
     }
 
@@ -236,12 +214,13 @@ public class ScheduleFragment extends Fragment {
         mTimetableView.curWeek(curWeek)
                 .maxSlideItem(10)
                 .alpha(alpha1,alpha2,alpha3)
+                .itemHeight(ScreenUtils.dip2px(context,50))
                 .callback(new ISchedule.OnItemClickListener() {
                     @Override
                     public void onItemClick(View v, List<Schedule> scheduleList) {
                         BundleModel model = new BundleModel();
                         model.put("timetable", scheduleList);
-                        model.setFromClass(ScheduleFragment.class);
+                        model.setFromClass(getActivity().getClass());
                         ActivityTools.toActivity(getContext(), TimetableDetailActivity.class, model);
                     }
                 })
@@ -257,7 +236,7 @@ public class ScheduleFragment extends Fragment {
                     @Override
                     public void onLongClick(View v, int day, int start) {
                         BundleModel model = new BundleModel();
-                        model.setFromClass(ScheduleFragment.class)
+                        model.setFromClass(getActivity().getClass())
                                 .put(AddTimetableActivity.KEY_DAY, day)
                                 .put(AddTimetableActivity.KEY_START, start);
                         ActivityTools.toActivity(getContext(), AddTimetableActivity.class, model);
@@ -268,7 +247,7 @@ public class ScheduleFragment extends Fragment {
                     public void onFlaglayoutClick(int day, int start) {
                         mTimetableView.hideFlaglayout();
                         BundleModel model = new BundleModel();
-                        model.setFromClass(ScheduleFragment.class)
+                        model.setFromClass(getActivity().getClass())
                                 .put(AddTimetableActivity.KEY_DAY, day + 1)
                                 .put(AddTimetableActivity.KEY_START, start);
                         ActivityTools.toActivity(getContext(), AddTimetableActivity.class, model);
@@ -339,6 +318,7 @@ public class ScheduleFragment extends Fragment {
     @OnClick(R.id.id_main_menu)
     public void toMenuActivity() {
         ActivityTools.toActivity(getContext(), MenuActivity.class);
+        getActivity().finish();
     }
 
     @OnClick(R.id.id_layout)

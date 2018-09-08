@@ -20,8 +20,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
-            android:launchMode="singleTask">
+            android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -68,7 +67,6 @@
 
         <activity android:name=".AboutActivity" />
         <activity android:name=".ScanActivity" />
-        <activity android:name=".MultiScheduleActivity" />
         <activity android:name=".CreateScheduleNameActivity" />
         <activity android:name=".ModifyScheduleNameActivity" />
         <activity android:name=".specialarea.SpecialAreaActivity"></activity>

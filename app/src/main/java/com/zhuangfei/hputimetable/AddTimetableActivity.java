@@ -109,11 +109,10 @@ public class AddTimetableActivity extends Activity {
         }
         statusList.set(0,true);
 
-
         curScheduleNameId=ShareTools.getInt(this,ShareConstants.INT_SCHEDULE_NAME_ID,-1);
         if(curScheduleNameId==-1){
             Toasty.error(this,"你还没有课表，请前去创建或应用",Toast.LENGTH_SHORT).show();
-            ActivityTools.toBackActivityAnim(this,MultiScheduleActivity.class);
+            ActivityTools.toBackActivityAnim(this,returnClass);
         }else{
             scheduleName=DataSupport.find(ScheduleName.class,curScheduleNameId);
             addItemView();
