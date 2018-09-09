@@ -5,25 +5,16 @@ import java.util.List;
 
 import com.zhuangfei.hputimetable.fragment.FuncFragment;
 import com.zhuangfei.hputimetable.adapter.MyFragmentPagerAdapter;
-import com.zhuangfei.hputimetable.fragment.MultiScheduleFragment;
 import com.zhuangfei.hputimetable.fragment.ScheduleFragment;
-import com.zhuangfei.timetable.TimetableView;
-import com.zhuangfei.timetable.model.Schedule;
 import com.zhuangfei.toolkit.tools.BundleTools;
 import com.zhuangfei.toolkit.tools.ToastTools;
 
 import android.Manifest;
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import butterknife.BindView;
 import butterknife.ButterKnife;
 import kr.co.namee.permissiongen.PermissionFail;
 import kr.co.namee.permissiongen.PermissionGen;
@@ -55,7 +46,6 @@ public class MainActivity extends AppCompatActivity{
         mFragmentList = new ArrayList<>();
         mFragmentList.add(new FuncFragment());
         mFragmentList.add(new ScheduleFragment());
-        mFragmentList.add(new MultiScheduleFragment());
         mAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager(), mFragmentList);
         mViewPager.setAdapter(mAdapter);
         int item= BundleTools.getToItem(this,1);

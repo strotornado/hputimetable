@@ -163,8 +163,7 @@ public class ScanActivity extends AppCompatActivity {
                 ScheduleName newName = ScheduleDao.saveSuperLessons(result.getLessons());
                 if (newName != null) {
                     Toasty.success(this, "已存储于[" + newName.getName() + "]").show();
-                    ActivityTools.toActivity(this, MainActivity.class,
-                            new BundleModel().setToItem(2));
+                    ActivityTools.toActivity(this, MultiScheduleActivity.class);
                     finish();
                 } else goBack();
             }else{

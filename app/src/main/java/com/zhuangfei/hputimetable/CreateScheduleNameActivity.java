@@ -56,7 +56,6 @@ public class CreateScheduleNameActivity extends AppCompatActivity {
 
     @OnClick(R.id.id_back)
     public void goBack() {
-        ActivityTools.toBackActivityAnim(this,MainActivity.class,
-                new BundleModel().setToItem(2));
+        ActivityTools.toBackActivityAnim(this,MultiScheduleActivity.class);
     }
 }

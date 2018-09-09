@@ -82,7 +82,7 @@ public class TimetableManagerActivity extends Activity implements OnClickListene
 		int scheduleNameId= (int) BundleTools.getInt(this,ExtrasConstants.INT_SCHEDULE_NAME_ID,-1);
 		if(scheduleNameId==-1){
 			Toasty.error(this,"页面传值出现异常!",Toast.LENGTH_SHORT).show();
-			ActivityTools.toBackActivityAnim(this,MainActivity.class,new BundleModel().setToItem(2));
+			ActivityTools.toBackActivityAnim(this,MultiScheduleActivity.class);
 		}else{
 			List<TimetableModel> modelList = ScheduleDao.getAllWithScheduleId(scheduleNameId);
 			if(modelList!=null){
@@ -165,14 +165,14 @@ public class TimetableManagerActivity extends Activity implements OnClickListene
 
 	@Override
 	public void onBackPressed() {
-		ActivityTools.toBackActivityAnim(this, MainActivity.class,new BundleModel().setToItem(2));
+		ActivityTools.toBackActivityAnim(this, MultiScheduleActivity.class);
 	}
 
 	@Override
 	public void onClick(View arg0) {
 		switch (arg0.getId()) {
 			case R.id.id_back:
-				ActivityTools.toBackActivityAnim(TimetableManagerActivity.this, MainActivity.class,new BundleModel().setToItem(2));
+				ActivityTools.toBackActivityAnim(TimetableManagerActivity.this, MultiScheduleActivity.class);
 				break;
 
 			case R.id.id_manager_allcheck:

@@ -191,8 +191,7 @@ public class ImportMajorActivity extends AppCompatActivity {
                         ShareTools.putString(getContext(), ShareConstants.KEY_CUR_TERM, haveList.get(0).getTerm());
                     }
                     Toasty.success(ImportMajorActivity.this, "已存储于[" + scheduleName.getName() + "]").show();
-                    ActivityTools.toActivity(ImportMajorActivity.this, MainActivity.class, new BundleModel()
-                            .setToItem(2));
+                    ActivityTools.toActivity(ImportMajorActivity.this,MultiScheduleActivity.class);
                     finish();
                 } else {
                     ToastTools.show(getContext(), result.getMsg());

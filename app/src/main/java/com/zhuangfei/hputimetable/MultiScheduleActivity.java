@@ -1,25 +1,15 @@
-package com.zhuangfei.hputimetable.fragment;
+package com.zhuangfei.hputimetable;
 
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.zhuangfei.hputimetable.CreateScheduleNameActivity;
-import com.zhuangfei.hputimetable.ModifyScheduleNameActivity;
-import com.zhuangfei.hputimetable.R;
-import com.zhuangfei.hputimetable.TimetableManagerActivity;
 import com.zhuangfei.hputimetable.adapter.MultiScheduleAdapter;
 import com.zhuangfei.hputimetable.api.model.ScheduleName;
 import com.zhuangfei.hputimetable.constants.ExtrasConstants;
@@ -43,7 +33,7 @@ import butterknife.OnClick;
 import butterknife.OnItemClick;
 import es.dmoral.toasty.Toasty;
 
-public class MultiScheduleFragment extends LazyLoadFragment {
+public class MultiScheduleActivity extends Activity {
     private static final String TAG = "MultiScheduleFragment";
 
     @BindView(R.id.id_multi_listview)
@@ -55,34 +45,22 @@ public class MultiScheduleFragment extends LazyLoadFragment {
     @BindView(R.id.id_title)
     TextView titleTextView;
 
-    private View mView;
     private Activity context;
 
     @BindView(R.id.id_loadlayout)
     public LinearLayout loadLayout;
-    
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        mView=inflater.inflate(R.layout.fragment_multi_schedule, container, false);
-        return mView;
-    }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        ButterKnife.bind(this,view);
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_multi_schedule);
+        ButterKnife.bind(this);
         inits();
-        super.onViewCreated(view, savedInstanceState);
-    }
-
-    @Override
-    protected void lazyLoad() {
-        Log.d(TAG, "lazyLoad: ");
         getData();
     }
 
     private void inits() {
-        context=getActivity();
+        context=this;
         scheduleCounts = new ArrayList<>();
         nameList = new ArrayList<>();
         scheduleCounts = new ArrayList<>();
@@ -188,7 +166,7 @@ public class MultiScheduleFragment extends LazyLoadFragment {
         executor.listen(new FindMultiCallback() {
             @Override
             public <T> void onFinish(final List<T> t) {
-                getActivity().runOnUiThread(new Runnable() {
+                context.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         nameList.addAll((Collection<? extends ScheduleName>) t);
@@ -229,5 +207,15 @@ public class MultiScheduleFragment extends LazyLoadFragment {
     @OnItemClick(R.id.id_multi_listview)
     public void toManagerActivity(int pos) {
         showListDialog(pos);
+    }
+
+    @Override
+    public void onBackPressed() {
+        goBack();
+    }
+
+    @OnClick(R.id.iv_back)
+    public void goBack(){
+        ActivityTools.toBackActivityAnim(this,MainActivity.class);
     }
 }
