@@ -60,5 +60,14 @@
                 android:textSize="17sp" />
         </LinearLayout>
     </RelativeLayout>
+
+    <TextView
+        android:text="扫描同学的超级课程表二维码"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textSize="17sp"
+        android:textColor="@color/app_blue1"
+        android:layout_marginTop="350dp"/>
 </FrameLayout>
 

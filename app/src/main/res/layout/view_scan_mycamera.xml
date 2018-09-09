@@ -24,5 +24,4 @@
         app:inner_scan_speed="10"
         app:inner_scan_iscircle="false"
         />
-
 </FrameLayout>

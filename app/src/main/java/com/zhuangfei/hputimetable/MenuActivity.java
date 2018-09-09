@@ -54,8 +54,8 @@ public class MenuActivity extends AppCompatActivity {
     @BindView(R.id.id_switch_hidenotcur)
     SwitchCompat hideNotCurSwitch;
 
-    @BindView(R.id.id_switch_mainalpha)
-    SwitchCompat mainAlphaSwitch;
+    @BindView(R.id.id_switch_hideweekends)
+    SwitchCompat hideWeekendsSwitch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,11 +82,11 @@ public class MenuActivity extends AppCompatActivity {
             hideNotCurSwitch.setChecked(true);
         }
 
-        int alpha = ShareTools.getInt(this, "mainalpha", 0);
+        int alpha = ShareTools.getInt(this, "hideweekends", 0);
         if (alpha == 0) {
-            mainAlphaSwitch.setChecked(false);
+            hideWeekendsSwitch.setChecked(false);
         } else {
-            mainAlphaSwitch.setChecked(true);
+            hideWeekendsSwitch.setChecked(true);
         }
     }
 
@@ -202,21 +202,9 @@ public class MenuActivity extends AppCompatActivity {
         finish();
     }
 
-    @OnClick(R.id.id_menu_schedule)
-    public void toMultiScheduleActivity() {
-        ActivityTools.toActivity(getContext(), MainActivity.class,new BundleModel().setToItem(2));
-        finish();
-    }
-
     @OnClick(R.id.id_menu_update)
     public void onUpdateLayoutClick() {
         Beta.checkUpgrade();
-    }
-
-    @OnClick(R.id.id_menu_scan)
-    public void onScanLayoutClick() {
-        ActivityTools.toActivity(getContext(), ScanActivity.class);
-        finish();
     }
 
     @OnClick(R.id.id_menu_share)
@@ -231,60 +219,6 @@ public class MenuActivity extends AppCompatActivity {
         startActivity(share_intent);
     }
 
-    /**
-     * 去授权<br/>
-     * 在授权页面，会要求输入账号和密码，验证成功后会加载课程，
-     * 并将加载的结果返回，你可以在onActivityResult对结果接收
-     */
-    @OnClick(R.id.id_menu_import)
-    public void toAuth() {
-        Intent intent = new Intent(this, AuthActivity.class);
-        intent.putExtra(AuthActivity.FLAG_TYPE, AuthActivity.TYPE_IMPORT);
-        startActivityForResult(intent, REQUEST_IMPORT);
-    }
-
-    @OnClick(R.id.id_menu_add)
-    public void toAdd() {
-//        BundleModel model = new BundleModel();
-//        model.setFromClass(MenuActivity.class);
-//        ActivityTools.toActivity(this, AddTimetableActivity.class, model);
-//        finish();
-        ActivityTools.toActivity(this, SpecialAreaActivity.class);
-        finish();
-    }
-
-    /**
-     * 接收授权页面获取的课程信息
-     *
-     * @param requestCode
-     * @param resultCode
-     * @param data
-     */
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_IMPORT && resultCode == AuthActivity.RESULT_STATUS) {
-            SuperResult result=SuperUtils.getResult(data);
-            if(result==null){
-                Toasty.error(context, "result is null").show();
-            }else{
-                if(result.isSuccess()){
-                    List<SuperLesson> lessons = result.getLessons();
-                    ScheduleName newName = ScheduleDao.saveSuperShareLessons(lessons);
-                    if (newName != null) {
-                        Toasty.success(context, "已存储于[" + newName.getName() + "]").show();
-                        ActivityTools.toActivity(this, MainActivity.class,new BundleModel().setToItem(2));
-                        finish();
-                    } else {
-                        Toasty.error(context, "ScheduleName is null").show();
-                    }
-                }else{
-                    Toasty.error(context, ""+result.getErrMsg()).show();
-                }
-            }
-
-        }
-    }
 
     @OnCheckedChanged(R.id.id_switch_hidenotcur)
     public void onHideNotCurSwitchClicked(boolean b) {
@@ -293,16 +227,14 @@ public class MenuActivity extends AppCompatActivity {
         } else {
             ShareTools.putInt(this, "hidenotcur", 0);
         }
-        ShareTools.putInt(this, "hidenotcur_changed", 1);
     }
 
-    @OnCheckedChanged(R.id.id_switch_mainalpha)
-    public void onMainAlphaSwitchClicked(boolean b) {
+    @OnCheckedChanged(R.id.id_switch_hideweekends)
+    public void onHideWeekendsSwitchClicked(boolean b) {
         if (b) {
-            ShareTools.putInt(this, "mainalpha", 1);
+            ShareTools.putInt(this, "hideweekends", 1);
         } else {
-            ShareTools.putInt(this, "mainalpha", 0);
+            ShareTools.putInt(this, "hideweekends", 0);
         }
-        ShareTools.putInt(this, "mainalpha_changed", 1);
     }
 }

@@ -1,6 +1,7 @@
 package com.zhuangfei.hputimetable.fragment;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -24,13 +25,15 @@ import com.zhuangfei.hputimetable.TimetableDetailActivity;
 import com.zhuangfei.hputimetable.api.model.ScheduleName;
 import com.zhuangfei.hputimetable.api.model.TimetableModel;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
+import com.zhuangfei.hputimetable.listener.OnSwitchTableListener;
+import com.zhuangfei.hputimetable.listener.OnTitleClickedListener;
+import com.zhuangfei.hputimetable.listener.OnStatusChangedListener;
 import com.zhuangfei.hputimetable.model.ScheduleDao;
 import com.zhuangfei.hputimetable.tools.BroadcastUtils;
 import com.zhuangfei.hputimetable.tools.TimetableTools;
 import com.zhuangfei.timetable.TimetableView;
 import com.zhuangfei.timetable.listener.ISchedule;
 import com.zhuangfei.timetable.listener.IWeekView;
-import com.zhuangfei.timetable.listener.OnDateBuildAapter;
 import com.zhuangfei.timetable.model.Schedule;
 import com.zhuangfei.timetable.model.ScheduleSupport;
 import com.zhuangfei.timetable.utils.ScreenUtils;
@@ -46,8 +49,9 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import es.dmoral.toasty.Toasty;
 
-public class ScheduleFragment extends Fragment {
+public class ScheduleFragment extends Fragment implements OnTitleClickedListener,OnSwitchTableListener {
 
     private static final String TAG = "MainActivity";
     private Activity context;
@@ -58,12 +62,6 @@ public class ScheduleFragment extends Fragment {
     @BindView(R.id.id_weekview)
     public CustomWeekView mWeekView;
 
-    @BindView(R.id.id_title)
-    public TextView mTitleTextView;
-
-    @BindView(R.id.id_schedulename)
-    public TextView mCurScheduleTextView;
-
     private List<Schedule> schedules;
 
     public Activity getContext() {
@@ -72,8 +70,7 @@ public class ScheduleFragment extends Fragment {
 
     int target;
 
-    @BindView(R.id.id_main_menu)
-    ImageView menuImageView;
+    OnStatusChangedListener onWeekChangedListener;
 
     @BindView(R.id.id_tiptext)
     TextView tipTextView;
@@ -99,75 +96,44 @@ public class ScheduleFragment extends Fragment {
     }
 
     @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if(context instanceof OnStatusChangedListener){
+            onWeekChangedListener= (OnStatusChangedListener) context;
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        onWeekChangedListener=null;
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
-        checkData();
         mTimetableView.onDateBuildListener().onHighLight();
         int newCurWeek = TimetableTools.getCurWeek(context);
-        if(newCurWeek<=25&&newCurWeek != mTimetableView.curWeek()) {
+        if(newCurWeek != mTimetableView.curWeek()) {
             mTimetableView.onDateBuildListener().onUpdateDate(mTimetableView.curWeek(), newCurWeek);
             mTimetableView.changeWeekForce(newCurWeek);
             mWeekView.curWeek(newCurWeek).updateView();
         }
     }
 
-    public void checkData() {
-        int v = ShareTools.getInt(context, "course_update", 0);
-        if (v == 1) {
-            int id = ScheduleDao.getApplyScheduleId(context);
-            ScheduleName scheduleName = DataSupport.find(ScheduleName.class, id);
-            mCurScheduleTextView.setText("" + scheduleName.getName());
-
-            List<TimetableModel> dataModels = ScheduleDao.getAllWithScheduleId(id);
-            if (dataModels != null) {
-                mTimetableView.data(ScheduleSupport.transform(dataModels)).updateView();
-                mWeekView.data(ScheduleSupport.transform(dataModels)).showView();
-                if (dataModels.size() == 0) {
-                    tipTextView.setVisibility(View.VISIBLE);
-                } else {
-                    tipTextView.setVisibility(View.GONE);
-                }
-            }
-            ShareTools.put(context, "course_update", 0);
-        }
-    }
-
-    public void setWhiteBg(boolean isUpdate){
-        mTitleTextView.setTextColor(context.getResources().getColor(R.color.app_course_textcolor_blue));
-        menuImageView.setColorFilter(Color.GRAY);
-        mCurScheduleTextView.setTextColor(Color.GRAY);
-        containerLayout.setBackgroundColor(Color.WHITE);
-        if(isUpdate){
-            mTimetableView.alpha(1).updateView();
-        }
-    }
-
-    public void setTransportBg(boolean isUpdate){
-        mTitleTextView.setTextColor(Color.WHITE);
-        menuImageView.setColorFilter(Color.WHITE);
-        mCurScheduleTextView.setTextColor(Color.WHITE);
-        containerLayout.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.main_bg));
-        if(isUpdate){
-            mTimetableView.alpha(0.2f,0.05f,0.75f).updateView();
-        }
-    }
-
     private void inits() {
         context = getActivity();
-        menuImageView.setColorFilter(Color.WHITE);
         schedules = new ArrayList<>();
 
         int id = ScheduleDao.getApplyScheduleId(context);
         ScheduleName scheduleName = DataSupport.find(ScheduleName.class, id);
         if (scheduleName != null) {
-            mCurScheduleTextView.setText("" + scheduleName.getName());
+            onWeekChangedListener.onScheduleNameChanged("" + scheduleName.getName());
         } else {
-            mCurScheduleTextView.setText("默认课表");
+            onWeekChangedListener.onScheduleNameChanged("默认课表");
         }
 
         int curWeek = TimetableTools.getCurWeek(context);
-
-        if(curWeek>=25) curWeek=25;
 
         //设置周次选择属性
         mWeekView.data(schedules)
@@ -197,23 +163,15 @@ public class ScheduleFragment extends Fragment {
             mTimetableView.isShowNotCurWeek(false);
         }
 
-        int status2=ShareTools.getInt(context,"mainalpha",0);
-        float alpha1,alpha2,alpha3;
+        int status2=ShareTools.getInt(context,"hideweekends",0);
         if(status2==0){
-            setWhiteBg(false);
-            alpha1=1f;
-            alpha2=1f;
-            alpha3=1f;
+            mTimetableView.isShowWeekends(true);
         }else {
-            setTransportBg(false);
-            alpha1=0.2f;
-            alpha2=0.05f;
-            alpha3=0.75f;
+            mTimetableView.isShowWeekends(false);
         }
 
         mTimetableView.curWeek(curWeek)
                 .maxSlideItem(10)
-                .alpha(alpha1,alpha2,alpha3)
                 .itemHeight(ScreenUtils.dip2px(context,50))
                 .callback(new ISchedule.OnItemClickListener() {
                     @Override
@@ -228,8 +186,9 @@ public class ScheduleFragment extends Fragment {
                     @Override
                     public void onWeekChanged(int curWeek) {
                         mTimetableView.onDateBuildListener().onUpdateDate(mTimetableView.curWeek(), curWeek);
-                        String text = "第" + curWeek + "周";
-                        mTitleTextView.setText(text);
+                        if(onWeekChangedListener!=null){
+                            onWeekChangedListener.onWeekChanged(curWeek);
+                        }
                     }
                 })
                 .callback(new ISchedule.OnItemLongClickListener() {
@@ -315,14 +274,8 @@ public class ScheduleFragment extends Fragment {
         }
     }
 
-    @OnClick(R.id.id_main_menu)
-    public void toMenuActivity() {
-        ActivityTools.toActivity(getContext(), MenuActivity.class);
-        getActivity().finish();
-    }
-
-    @OnClick(R.id.id_layout)
-    public void onTitleClicked() {
+    @Override
+    public void onTitleClick() {
         if (mWeekView.isShowing()) {
             mWeekView.isShow(false);
             mTimetableView.changeWeekForce(mTimetableView.curWeek());
@@ -330,5 +283,25 @@ public class ScheduleFragment extends Fragment {
             mWeekView.isShow(true);
             mWeekView.scrollToIndex(mTimetableView.curWeek() - 1);
         }
+    }
+
+    @Override
+    public void onSwitchTable(ScheduleName scheduleName) {
+        if (scheduleName == null) return;
+        int id = scheduleName.getId();
+        ShareTools.put(context, ShareConstants.INT_SCHEDULE_NAME_ID, id);
+
+        onWeekChangedListener.onScheduleNameChanged("" + scheduleName.getName());
+        List<TimetableModel> dataModels = ScheduleDao.getAllWithScheduleId(id);
+        if (dataModels != null) {
+            mTimetableView.data(ScheduleSupport.transform(dataModels)).updateView();
+            mWeekView.data(ScheduleSupport.transform(dataModels)).showView();
+            if (dataModels.size() == 0) {
+                tipTextView.setVisibility(View.VISIBLE);
+            } else {
+                tipTextView.setVisibility(View.GONE);
+            }
+        }
+        Toasty.success(context, "切换课表成功").show();
     }
 }

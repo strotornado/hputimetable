@@ -1,6 +1,8 @@
 package com.zhuangfei.hputimetable;
 
 import android.app.Activity;
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -190,9 +192,7 @@ public class ImportMajorActivity extends AppCompatActivity {
                     if (haveList != null && haveList.size() != 0) {
                         ShareTools.putString(getContext(), ShareConstants.KEY_CUR_TERM, haveList.get(0).getTerm());
                     }
-                    Toasty.success(ImportMajorActivity.this, "已存储于[" + scheduleName.getName() + "]").show();
-                    ActivityTools.toActivity(ImportMajorActivity.this,MultiScheduleActivity.class);
-                    finish();
+                    showDialogOnApply(scheduleName);
                 } else {
                     ToastTools.show(getContext(), result.getMsg());
                 }
@@ -206,6 +206,29 @@ public class ImportMajorActivity extends AppCompatActivity {
         }
     }
 
+    private void showDialogOnApply(final ScheduleName name) {
+        if(name==null) return;
+        AlertDialog.Builder builder=new AlertDialog.Builder(this);
+        builder.setMessage("你导入的数据已存储在多课表["+name.getName()+"]下!\n是否直接设置为当前课表?")
+                .setTitle("课表导入成功")
+                .setPositiveButton("设为当前课表", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        int id = name.getId();
+                        ShareTools.put(ImportMajorActivity.this, ShareConstants.INT_SCHEDULE_NAME_ID, id);
+                        if(dialogInterface!=null) dialogInterface.dismiss();
+                        ActivityTools.toBackActivityAnim(ImportMajorActivity.this,MainActivity.class);
+                    }
+                })
+                .setNegativeButton("稍后设置", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if(dialogInterface!=null) dialogInterface.dismiss();
+                        ActivityTools.toBackActivityAnim(ImportMajorActivity.this, MenuActivity.class);
+                    }
+                });
+        builder.create().show();
+    }
     ;
 
     @Override

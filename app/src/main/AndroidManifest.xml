@@ -38,6 +38,7 @@
         <activity android:name=".MenuActivity" />
         <activity android:name=".WebViewActivity" />
         <activity android:name=".TimetableManagerActivity" />
+        <activity android:name=".MultiScheduleActivity" />
 
         <!-- 桌面小部件 -->
         <receiver android:name=".appwidget.ScheduleAppWidget">

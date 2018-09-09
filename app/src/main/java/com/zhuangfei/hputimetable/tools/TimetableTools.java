@@ -34,7 +34,10 @@ public class TimetableTools {
             ShareTools.putString(context,ShareConstants.STRING_START_TIME,getStartSchoolTime(1));
             return 1;
         }
-        return ScheduleSupport.timeTransfrom(startTime);
+        int r=ScheduleSupport.timeTransfrom(startTime);
+        if(r>25) return 25;
+        if(r<0) return 0;
+        return r;
     }
 
     /**
