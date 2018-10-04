@@ -1,0 +1,24 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <include layout="@layout/header_upload_html"/>
+    <ScrollView
+        android:visibility="gone"
+        android:id="@+id/scrollview_display"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/id_display"/>
+    </ScrollView>
+
+    <WebView
+        android:id="@+id/id_webview"
+        android:background="@color/app_white"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>

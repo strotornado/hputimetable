@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/app_panel_bg"
+    android:background="@color/app_white"
     android:orientation="vertical">
 
     <LinearLayout
@@ -26,7 +26,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="多课表"
-            android:layout_marginLeft="15dp"
             android:textStyle="bold"
             android:textSize="17sp" />
 
@@ -52,18 +51,17 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="@color/app_panel_bg"
         android:divider="@null"/>
 
     <android.support.v7.widget.CardView
         android:id="@+id/cv_create"
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:layout_marginLeft="64dp"
-        android:layout_marginRight="64dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginRight="32dp"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
-        app:cardBackgroundColor="@color/app_white"
+        app:cardBackgroundColor="@color/app_blue1"
         app:cardCornerRadius="24dp"
         app:cardElevation="1dp">
 
@@ -73,7 +71,7 @@
             android:layout_gravity="center"
             android:gravity="center"
             android:text="创建课表"
-            android:textColor="@color/app_gold" />
+            android:textColor="@color/app_white" />
 
     </android.support.v7.widget.CardView>
 </LinearLayout>

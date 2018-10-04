@@ -274,7 +274,7 @@ public class CustomWeekView extends LinearLayout implements WeekViewEnable<Custo
         }else{
             root.setVisibility(GONE);
         }
-        return null;
+        return this;
     }
 
     /**

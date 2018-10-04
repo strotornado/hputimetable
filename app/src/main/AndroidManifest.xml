@@ -20,7 +20,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity">
+            android:name=".MainActivity"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -70,7 +71,10 @@
         <activity android:name=".ScanActivity" />
         <activity android:name=".CreateScheduleNameActivity" />
         <activity android:name=".ModifyScheduleNameActivity" />
-        <activity android:name=".specialarea.SpecialAreaActivity"></activity>
+        <activity android:name=".specialarea.SpecialAreaActivity" />
+        <activity android:name=".SearchSchoolActivity" />
+        <activity android:name=".UploadHtmlActivity" />
+        <activity android:name=".AdapterTipActivity"></activity>
     </application>
 
 </manifest>

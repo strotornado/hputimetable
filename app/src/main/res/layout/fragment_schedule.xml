@@ -5,6 +5,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <include layout="@layout/header"/>
+
     <TextView
         android:id="@+id/id_tiptext"
         android:layout_width="match_parent"

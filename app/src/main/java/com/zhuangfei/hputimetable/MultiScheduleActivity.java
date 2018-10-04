@@ -1,19 +1,32 @@
 package com.zhuangfei.hputimetable;
 
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.zhuangfei.hputimetable.adapter.MultiScheduleAdapter;
+import com.zhuangfei.hputimetable.api.TimetableRequest;
+import com.zhuangfei.hputimetable.api.model.ObjResult;
 import com.zhuangfei.hputimetable.api.model.ScheduleName;
+import com.zhuangfei.hputimetable.api.model.ShareModel;
+import com.zhuangfei.hputimetable.api.model.TimetableModel;
+import com.zhuangfei.hputimetable.api.model.ValuePair;
 import com.zhuangfei.hputimetable.constants.ExtrasConstants;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
+import com.zhuangfei.hputimetable.model.ScheduleDao;
 import com.zhuangfei.hputimetable.tools.BroadcastUtils;
 import com.zhuangfei.toolkit.model.BundleModel;
 import com.zhuangfei.toolkit.tools.ActivityTools;
@@ -32,6 +45,10 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnItemClick;
 import es.dmoral.toasty.Toasty;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MultiScheduleActivity extends Activity {
     private static final String TAG = "MultiScheduleFragment";
@@ -115,7 +132,7 @@ public class MultiScheduleActivity extends Activity {
 
 
     public void showListDialog(final int pos) {
-        final String items[] = {"课表详情", "修改课表名", "删除本课表", "设置为当前课表"};
+        final String items[] = {"课程管理", "修改课表名", "删除本课表","分享本课表","设置为当前课表"};
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("选择操作");
@@ -139,6 +156,18 @@ public class MultiScheduleActivity extends Activity {
                         deleteScheduleName(nameList.get(pos));
                         break;
                     case 3:
+                        Toasty.info(MultiScheduleActivity.this,"正在上传..").show();
+                        ScheduleName newName=nameList.get(pos);
+                        if(newName!=null){
+                            List<TimetableModel> modelList = ScheduleDao.getAllWithScheduleId(newName.getId());
+                            ShareModel shareModel=new ShareModel();
+                            shareModel.setType(ShareModel.TYPE_PER_TABLE);
+                            shareModel.setData(modelList);
+                            String value=new Gson().toJson(shareModel);
+                            putValue(value);
+                        }
+                        break;
+                    case 4:
                         apply(nameList.get(pos));
                         getData();
                         BroadcastUtils.refreshAppWidget(context);
@@ -156,6 +185,54 @@ public class MultiScheduleActivity extends Activity {
                 .put(ModifyScheduleNameActivity.STRING_EXTRA_NAME, scheduleName.getName())
                 .put(ModifyScheduleNameActivity.INT_EXTRA_ID, scheduleName.getId());
         ActivityTools.toActivity(context, ModifyScheduleNameActivity.class, model);
+    }
+
+    public void putValue(String value){
+        TimetableRequest.putValue(this, value, new Callback<ObjResult<ValuePair>>() {
+            @Override
+            public void onResponse(Call<ObjResult<ValuePair>> call, Response<ObjResult<ValuePair>> response) {
+                ObjResult<ValuePair> result=response.body();
+                if(result!=null){
+                    if(result.getCode()==200){
+                        ValuePair pair=result.getData();
+                        if(pair!=null){
+                            shareTable(pair);
+                        }else{
+                            Toasty.error(MultiScheduleActivity.this,"PutValue:data is null").show();
+                        }
+                    }else{
+                        Toasty.error(MultiScheduleActivity.this,"PutValue:"+result.getMsg()).show();
+                    }
+                }else{
+                    Toasty.error(MultiScheduleActivity.this,"PutValue:result is null").show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ObjResult<ValuePair>> call, Throwable t) {
+                Toasty.error(MultiScheduleActivity.this,"Error:"+t.getMessage()).show();
+            }
+        });
+    }
+
+    private void shareTable(ValuePair pair) {
+        if(pair!=null){
+            String content = "哈喽，你收到了来自怪兽课表的分享！\n复制这条消息，打开「怪兽课表」即可导入#"+pair.getId()+"";
+
+            //获取剪贴板管理器：
+            ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData mClipData = ClipData.newPlainText("Label", content);
+            cm.setPrimaryClip(mClipData);
+            Toasty.success(this,"已复制到剪切板,快复制给你的朋友吧!").show();
+
+            Intent share_intent = new Intent();
+            share_intent.setAction(Intent.ACTION_SEND);//设置分享行为
+            share_intent.setType("text/plain");//设置分享内容的类型
+            share_intent.putExtra(Intent.EXTRA_SUBJECT, "分享课程");
+            share_intent.putExtra(Intent.EXTRA_TEXT, content);//添加分享内容
+            share_intent = Intent.createChooser(share_intent, "分享课程");
+            startActivity(share_intent);
+        }
     }
 
     public void getData() {

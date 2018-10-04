@@ -22,6 +22,8 @@ public class TimetableModel extends DataSupport implements ScheduleEnable,Serial
 
 	private static final String TAG = "TimetableModel";
 
+	public static final String EXTRA_ID="id";
+
 	private ScheduleName scheduleName;
 
 	private int id;
@@ -214,7 +216,12 @@ public class TimetableModel extends DataSupport implements ScheduleEnable,Serial
 		}
 		schedule.setWeekList(getWeekList());
 		schedule.setColorRandom(2);
+		schedule.putExtras(EXTRA_ID,getId());
 		return schedule;
+	}
+
+	public int getId() {
+		return id;
 	}
 
 	public void setTag(int tag) {

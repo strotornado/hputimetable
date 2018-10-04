@@ -1,41 +1,31 @@
 package com.zhuangfei.hputimetable;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
 import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.ViewManager;
 import android.webkit.DownloadListener;
+import android.webkit.JavascriptInterface;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
-import android.widget.TabHost;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.tencent.bugly.crashreport.BuglyLog;
-import com.zhuangfei.generalpage.BaseActivity;
-import com.zhuangfei.hputimetable.constants.ShareConstants;
-import com.zhuangfei.toolkit.model.BundleModel;
 import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.BundleTools;
-import com.zhuangfei.toolkit.tools.ShareTools;
-import com.zhuangfei.toolkit.tools.ToastTools;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -84,6 +74,11 @@ public class WebViewActivity extends AppCompatActivity {
     @BindView(R.id.id_webview_help)
     TextView helpView;
 
+    String html=null;
+
+    @BindView(R.id.id_display)
+    TextView displayTextView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -121,6 +116,11 @@ public class WebViewActivity extends AppCompatActivity {
                         break;
                     case R.id.top2:
                         webView.loadUrl(url);
+                        break;
+                    case R.id.top3:
+                        if(!TextUtils.isEmpty(html)){
+                            displayTextView.setText(html);
+                        }
                         break;
                     default:
                         break;
@@ -187,6 +187,7 @@ public class WebViewActivity extends AppCompatActivity {
         webView.loadUrl(url);
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
+        webView.addJavascriptInterface(new ShowSourceJs(),"source");
         settings.setDefaultTextEncodingName("gb2312");
         settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
 
@@ -205,6 +206,14 @@ public class WebViewActivity extends AppCompatActivity {
         });
 
         webView.setWebViewClient(new WebViewClient(){
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                // 这里可以过滤一下url
+                webView.loadUrl("javascript:source.showHtml(document.documentElement.outerHTML);");
+            }
+
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
                 Log.d(TAG, "shouldOverrideUrlLoading: "+url);
@@ -255,5 +264,14 @@ public class WebViewActivity extends AppCompatActivity {
             webView= null;
         }
         super.onDestroy();
+    }
+
+    public class ShowSourceJs {
+        private static final String TAG = "ShowSourceJs";
+
+        @JavascriptInterface
+        public void showHtml(String content) {
+            html=content;
+        }
     }
 }

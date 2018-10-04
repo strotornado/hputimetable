@@ -212,7 +212,7 @@ public class HpuRepertoryActivity extends AppCompatActivity {
     }
 
     public void goBack(){
-        ActivityTools.toBackActivityAnim(getContext(),MenuActivity.class);
+        ActivityTools.toBackActivityAnim(getContext(),MainActivity.class);
     }
 
     @Override

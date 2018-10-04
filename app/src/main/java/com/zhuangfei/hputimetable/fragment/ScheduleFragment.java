@@ -1,33 +1,38 @@
 package com.zhuangfei.hputimetable.fragment;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
+import android.support.v7.widget.PopupMenu;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.zhuangfei.classbox.activity.AuthActivity;
 import com.zhuangfei.hputimetable.AddTimetableActivity;
 import com.zhuangfei.hputimetable.CustomWeekView;
 import com.zhuangfei.hputimetable.MenuActivity;
+import com.zhuangfei.hputimetable.MultiScheduleActivity;
 import com.zhuangfei.hputimetable.R;
+import com.zhuangfei.hputimetable.ScanActivity;
 import com.zhuangfei.hputimetable.TimetableDetailActivity;
 import com.zhuangfei.hputimetable.api.model.ScheduleName;
 import com.zhuangfei.hputimetable.api.model.TimetableModel;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
 import com.zhuangfei.hputimetable.listener.OnSwitchTableListener;
-import com.zhuangfei.hputimetable.listener.OnTitleClickedListener;
-import com.zhuangfei.hputimetable.listener.OnStatusChangedListener;
 import com.zhuangfei.hputimetable.model.ScheduleDao;
 import com.zhuangfei.hputimetable.tools.BroadcastUtils;
 import com.zhuangfei.hputimetable.tools.TimetableTools;
@@ -42,18 +47,23 @@ import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.ShareTools;
 
 import org.litepal.crud.DataSupport;
+import org.litepal.crud.async.FindMultiExecutor;
+import org.litepal.crud.callback.FindMultiCallback;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import es.dmoral.toasty.Toasty;
 
-public class ScheduleFragment extends Fragment implements OnTitleClickedListener,OnSwitchTableListener {
+public class ScheduleFragment extends Fragment implements OnSwitchTableListener {
 
     private static final String TAG = "MainActivity";
+
     private Activity context;
 
     @BindView(R.id.id_timetableView)
@@ -70,8 +80,6 @@ public class ScheduleFragment extends Fragment implements OnTitleClickedListener
 
     int target;
 
-    OnStatusChangedListener onWeekChangedListener;
-
     @BindView(R.id.id_tiptext)
     TextView tipTextView;
 
@@ -79,6 +87,17 @@ public class ScheduleFragment extends Fragment implements OnTitleClickedListener
     LinearLayout containerLayout;
 
     private View mView;
+
+    @BindView(R.id.id_title)
+    public TextView mTitleTextView;
+
+    @BindView(R.id.id_schedulename)
+    public TextView mCurScheduleTextView;
+
+    @BindView(R.id.id_main_menu)
+    ImageView menuImageView;
+
+    public static final int REQUEST_IMPORT = 1;
 
     @Nullable
     @Override
@@ -95,42 +114,72 @@ public class ScheduleFragment extends Fragment implements OnTitleClickedListener
         adjustAndGetData();
     }
 
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if(context instanceof OnStatusChangedListener){
-            onWeekChangedListener= (OnStatusChangedListener) context;
-        }
-    }
+    /**
+     * 检测课表切换
+     */
+    Handler handler=new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            mTimetableView.onDateBuildListener().onHighLight();
+            int newCurWeek = TimetableTools.getCurWeek(context);
+            if(newCurWeek != mTimetableView.curWeek()) {
+                mTimetableView.onDateBuildListener().onUpdateDate(mTimetableView.curWeek(), newCurWeek);
+                mTimetableView.changeWeekForce(newCurWeek);
+                mWeekView.curWeek(newCurWeek).updateView();
+            }
 
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        onWeekChangedListener=null;
-    }
+            int isScanImport=ShareTools.getInt(getActivity(),"isScanImport", 0);
+            if(isScanImport==1){
+                int id = ScheduleDao.getApplyScheduleId(context);
+                ScheduleName newName = DataSupport.find(ScheduleName.class, id);
+                showDialogOnApply(newName);
+                ShareTools.put(getActivity(), "isScanImport", 0);
+            }
+        }
+    };
 
     @Override
     public void onResume() {
         super.onResume();
-        mTimetableView.onDateBuildListener().onHighLight();
-        int newCurWeek = TimetableTools.getCurWeek(context);
-        if(newCurWeek != mTimetableView.curWeek()) {
-            mTimetableView.onDateBuildListener().onUpdateDate(mTimetableView.curWeek(), newCurWeek);
-            mTimetableView.changeWeekForce(newCurWeek);
-            mWeekView.curWeek(newCurWeek).updateView();
-        }
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                handler.sendEmptyMessage(0x123);
+            }
+        },300);
+    }
+
+    private void showDialogOnApply(final ScheduleName name) {
+        if(name==null) return;
+        AlertDialog.Builder builder=new AlertDialog.Builder(context);
+        builder.setMessage("你导入的数据已存储在多课表["+name.getName()+"]下!\n是否直接设置为当前课表?")
+                .setTitle("课表导入成功")
+                .setPositiveButton("设为当前课表", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        onSwitchTable (name);
+                        BroadcastUtils.refreshAppWidget(context);
+                        if(dialogInterface!=null){
+                            dialogInterface.dismiss();
+                        }
+                    }
+                })
+                .setNegativeButton("稍后设置",null);
+        builder.create().show();
     }
 
     private void inits() {
+        menuImageView.setColorFilter(Color.GRAY);
         context = getActivity();
         schedules = new ArrayList<>();
 
         int id = ScheduleDao.getApplyScheduleId(context);
         ScheduleName scheduleName = DataSupport.find(ScheduleName.class, id);
         if (scheduleName != null) {
-            onWeekChangedListener.onScheduleNameChanged("" + scheduleName.getName());
+            mCurScheduleTextView.setText(scheduleName.getName());
         } else {
-            onWeekChangedListener.onScheduleNameChanged("默认课表");
+            mCurScheduleTextView.setText("默认课表");
         }
 
         int curWeek = TimetableTools.getCurWeek(context);
@@ -141,10 +190,12 @@ public class ScheduleFragment extends Fragment implements OnTitleClickedListener
                 .itemCount(25)
                 .callback(new IWeekView.OnWeekItemClickedListener() {
                     @Override
-                    public void onWeekClicked(int curWeek) {
-                        if (mTimetableView.dataSource() != null) {
-                            mTimetableView.changeWeekOnly(curWeek);
-                        }
+                    public void onWeekClicked(int week) {
+                        int cur = mTimetableView.curWeek();
+                        //更新切换后的日期，从当前周cur->切换的周week
+                        mTimetableView.onDateBuildListener()
+                                .onUpdateDate(cur, week);
+                        mTimetableView.changeWeekOnly(week);
                     }
                 })
                 .callback(new IWeekView.OnWeekLeftClickedListener() {
@@ -153,8 +204,8 @@ public class ScheduleFragment extends Fragment implements OnTitleClickedListener
                         onWeekLeftLayoutClicked();
                     }
                 })
-                .isShow(false);
-        mWeekView.showView();
+                .isShow(false)
+                .showView();
 
         int status=ShareTools.getInt(context,"hidenotcur",0);
         if(status==0){
@@ -180,15 +231,13 @@ public class ScheduleFragment extends Fragment implements OnTitleClickedListener
                         model.put("timetable", scheduleList);
                         model.setFromClass(getActivity().getClass());
                         ActivityTools.toActivity(getContext(), TimetableDetailActivity.class, model);
+                        getActivity().finish();
                     }
                 })
                 .callback(new ISchedule.OnWeekChangedListener() {
                     @Override
                     public void onWeekChanged(int curWeek) {
-                        mTimetableView.onDateBuildListener().onUpdateDate(mTimetableView.curWeek(), curWeek);
-                        if(onWeekChangedListener!=null){
-                            onWeekChangedListener.onWeekChanged(curWeek);
-                        }
+                        mTitleTextView.setText("第"+curWeek+"周");
                     }
                 })
                 .callback(new ISchedule.OnItemLongClickListener() {
@@ -199,6 +248,7 @@ public class ScheduleFragment extends Fragment implements OnTitleClickedListener
                                 .put(AddTimetableActivity.KEY_DAY, day)
                                 .put(AddTimetableActivity.KEY_START, start);
                         ActivityTools.toActivity(getContext(), AddTimetableActivity.class, model);
+                        getActivity().finish();
                     }
                 })
                 .callback(new ISchedule.OnFlaglayoutClickListener() {
@@ -210,6 +260,7 @@ public class ScheduleFragment extends Fragment implements OnTitleClickedListener
                                 .put(AddTimetableActivity.KEY_DAY, day + 1)
                                 .put(AddTimetableActivity.KEY_START, start);
                         ActivityTools.toActivity(getContext(), AddTimetableActivity.class, model);
+                        getActivity().finish();
                     }
                 })
                 .showView();
@@ -236,7 +287,6 @@ public class ScheduleFragment extends Fragment implements OnTitleClickedListener
         builder.setPositiveButton("设置为当前周", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                Log.d(TAG, "onClick: " + which);
                 if (target != -1) {
                     mWeekView.curWeek(target + 1).updateView();
                     mWeekView.scrollToIndex(target);
@@ -261,20 +311,65 @@ public class ScheduleFragment extends Fragment implements OnTitleClickedListener
             id = scheduleName.getId();
             ShareTools.put(context, ShareConstants.INT_SCHEDULE_NAME_ID, id);
         }
-        List<TimetableModel> dataModels = ScheduleDao.getAllWithScheduleId(id);
-        if (dataModels != null) {
-            mTimetableView.data(ScheduleSupport.transform(dataModels)).updateView();
-            mWeekView.data(ScheduleSupport.transform(dataModels)).showView();
 
-            if (dataModels.size() == 0) {
-                tipTextView.setVisibility(View.VISIBLE);
-            } else {
-                tipTextView.setVisibility(View.GONE);
+        if(scheduleName==null) return;
+        ScheduleName newName = DataSupport.find(ScheduleName.class, id);
+        if(newName==null) return;
+        FindMultiExecutor executor=newName.getModelsAsync();
+        executor.listen(new FindMultiCallback() {
+            @Override
+            public <T> void onFinish(List<T> t) {
+                List<TimetableModel> dataModels = (List<TimetableModel>) t;
+                if (dataModels != null) {
+                    mTimetableView.data(ScheduleSupport.transform(dataModels)).updateView();
+                    mWeekView.data(ScheduleSupport.transform(dataModels)).showView();
+
+                    if (dataModels.size() == 0) {
+                        tipTextView.setVisibility(View.VISIBLE);
+                    } else {
+                        tipTextView.setVisibility(View.GONE);
+                    }
+                }
             }
-        }
+        });
     }
 
-    @Override
+    @OnClick(R.id.id_main_menu)
+    public void showPopMenu(){
+        //创建弹出式菜单对象（最低版本11）
+        PopupMenu popup = new PopupMenu(context, menuImageView);//第二个参数是绑定的那个view
+        //获取菜单填充器
+        MenuInflater inflater = popup.getMenuInflater();
+        inflater.inflate(R.menu.main_menu, popup.getMenu());
+        popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()){
+                    case R.id.id_menu1:
+                        ActivityTools.toActivity(context,MultiScheduleActivity.class);
+                        break;
+                    case R.id.id_menu2:
+                        ActivityTools.toActivity(context,AddTimetableActivity.class);
+                        break;
+                    case R.id.id_menu3:
+                        ActivityTools.toActivity(context,ScanActivity.class);
+                        break;
+                    case R.id.id_menu4:
+                        Intent intent = new Intent(context, AuthActivity.class);
+                        intent.putExtra(AuthActivity.FLAG_TYPE, AuthActivity.TYPE_IMPORT);
+                        startActivityForResult(intent, REQUEST_IMPORT);
+                        break;
+                    case R.id.id_menu5:
+                        ActivityTools.toActivity(context,MenuActivity.class);
+                        break;
+                }
+                return false;
+            }
+        });
+        popup.show(); //这一行代码不要忘记了
+    }
+
+    @OnClick(R.id.id_layout)
     public void onTitleClick() {
         if (mWeekView.isShowing()) {
             mWeekView.isShow(false);
@@ -290,8 +385,7 @@ public class ScheduleFragment extends Fragment implements OnTitleClickedListener
         if (scheduleName == null) return;
         int id = scheduleName.getId();
         ShareTools.put(context, ShareConstants.INT_SCHEDULE_NAME_ID, id);
-
-        onWeekChangedListener.onScheduleNameChanged("" + scheduleName.getName());
+        mCurScheduleTextView.setText("" + scheduleName.getName());
         List<TimetableModel> dataModels = ScheduleDao.getAllWithScheduleId(id);
         if (dataModels != null) {
             mTimetableView.data(ScheduleSupport.transform(dataModels)).updateView();

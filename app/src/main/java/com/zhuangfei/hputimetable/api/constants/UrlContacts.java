@@ -25,4 +25,12 @@ public class UrlContacts {
 
     public final static String URL_ISSUES="https://github.com/zfman/HpuTimetableClient/issues";
 
+    //获取已适配学校列表
+    public final static String URL_GET_ADAPTER_SCHOOLS="index.php?c=Adapter&a=getAdapterList";
+
+    public final static String URL_BASE_SCHOOLS="http://www.liuzhuangfei.com/apis/area/";
+
+    //上次html
+    public final static String URL_PUT_HTML="index.php?c=Adapter&a=putSchoolHtml";
+
 }

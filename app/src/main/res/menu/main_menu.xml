@@ -9,6 +9,6 @@
     <item android:id="@+id/id_menu4"
         android:title="超表导出"/>
     <item android:id="@+id/id_menu5"
-    android:title="课表设置"/>
+    android:title="辅助设置"/>
 
 </menu>

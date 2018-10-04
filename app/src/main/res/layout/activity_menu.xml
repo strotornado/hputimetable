@@ -9,89 +9,9 @@
 
     <include layout="@layout/header_timetable_menu" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:background="@color/app_white"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-        <TextView
-            android:layout_weight="1"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:paddingLeft="15dp"
-            android:text="河南理工专区"
-            android:textColor="@color/app_gray" />
-
-        <TextView
-            android:id="@+id/id_menu_require_space"
-            android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:gravity="center_vertical"
-            android:text="申请专区"
-            android:textColor="@color/app_gray" />
-
-        <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginRight="10dp"
-            android:src="@drawable/ic_point_right"/>
-    </LinearLayout>
-
-    <include layout="@layout/view_line" />
-
-    <TableLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/app_white"
-        android:stretchColumns="0,1,2,3">
-
-        <TableRow>
-
-            <TextView
-                android:id="@+id/id_menu_score"
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:background="@drawable/layout_ripple"
-                android:gravity="center"
-                android:text="成绩查询"
-                android:textSize="14sp" />
-
-            <TextView
-                android:id="@+id/id_menu_notice"
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:background="@drawable/layout_ripple"
-                android:gravity="center"
-                android:text="最新公告"
-                android:textSize="14sp" />
-
-            <TextView
-                android:id="@+id/id_menu_search"
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:background="@drawable/layout_ripple"
-                android:gravity="center"
-                android:text="课程仓库"
-                android:textSize="14sp" />
-
-            <TextView
-                android:id="@+id/id_menu_changeclass"
-                android:layout_width="wrap_content"
-                android:layout_height="50dp"
-                android:background="@drawable/layout_ripple"
-                android:gravity="center"
-                android:text="导入班级"
-                android:textSize="14sp" />
-
-        </TableRow>
-    </TableLayout>
-
     <TextView
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:layout_marginTop="15dp"
         android:background="@color/app_white"
         android:gravity="center_vertical"
         android:paddingLeft="15dp"

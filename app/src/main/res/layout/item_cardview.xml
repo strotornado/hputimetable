@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/id_widget_item_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <include layout="@layout/view_line" />
+
+    <LinearLayout
+        android:id="@+id/id_item_clicklayout"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/app_white"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/id_item_start"
+            android:layout_width="45dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:layout_marginLeft="10dp"
+            android:text="1-2"
+            android:textSize="15sp"
+            android:textColor="@color/app_course_textcolor_blue" />
+
+        <TextView
+            android:layout_width="1px"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_height="match_parent"
+            android:background="@color/app_panel_bg" />
+
+        <TextView
+            android:id="@+id/id_item_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="15dp"
+            android:ellipsize="middle"
+            android:textSize="15sp"
+            android:gravity="center_vertical"
+            android:singleLine="true"
+            android:textColor="@color/theme_dark" />
+    </LinearLayout>
+
+</LinearLayout>

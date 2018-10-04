@@ -1,6 +1,7 @@
 package com.zhuangfei.hputimetable.api.model;
 
 import org.litepal.crud.DataSupport;
+import org.litepal.crud.async.FindMultiExecutor;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -23,6 +24,10 @@ public class ScheduleName extends DataSupport implements Serializable{
 
     public List<TimetableModel> getModels() {
         return DataSupport.where("schedulename_id=?",String.valueOf(id)).find(TimetableModel.class,true);
+    }
+
+    public FindMultiExecutor getModelsAsync() {
+        return DataSupport.where("schedulename_id=?",String.valueOf(id)).findAsync(TimetableModel.class,true);
     }
 
     public void setModels(List<TimetableModel> models) {

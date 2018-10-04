@@ -34,4 +34,16 @@ public class ApiUtils {
                 .build();
         return retrofit;
     }
+
+    public static Retrofit getRetrofitForSchool(Context context) {
+        OkHttpClient builder = new OkHttpClient.Builder()
+                .build();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .client(builder)
+                .baseUrl(UrlContacts.URL_BASE_SCHOOLS)
+                .addConverterFactory(GsonConverterFactory.create(getGson()))
+                .build();
+        return retrofit;
+    }
 }

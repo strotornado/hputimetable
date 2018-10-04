@@ -3,6 +3,7 @@ package com.zhuangfei.hputimetable;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
+import android.content.BroadcastReceiver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,7 +24,9 @@ import com.zhuangfei.classbox.model.SuperResult;
 import com.zhuangfei.classbox.utils.SuperUtils;
 import com.zhuangfei.hputimetable.api.model.ScheduleName;
 import com.zhuangfei.hputimetable.api.model.TimetableModel;
+import com.zhuangfei.hputimetable.constants.ConfigConstants;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
+import com.zhuangfei.hputimetable.fragment.ScheduleFragment;
 import com.zhuangfei.hputimetable.model.ScheduleDao;
 import com.zhuangfei.hputimetable.specialarea.SpecialAreaActivity;
 import com.zhuangfei.hputimetable.tools.TimetableTools;
@@ -115,54 +118,6 @@ public class MenuActivity extends AppCompatActivity {
         builder.create().show();
     }
 
-    @OnClick(R.id.id_menu_changeclass)
-    public void changeClass() {
-        ActivityTools.toActivity(this, ImportMajorActivity.class);
-        finish();
-    }
-
-    @OnClick(R.id.id_menu_notice)
-    public void onNoticeLayoutCLicked() {
-        BundleModel model = new BundleModel();
-        model.setFromClass(MenuActivity.class)
-                .put("title", "最新公告")
-                .put("url", "https://vpn.hpu.edu.cn")
-                .put("isUse", 1);
-        ActivityTools.toActivity(this, WebViewActivity.class, model);
-        finish();
-    }
-
-    @OnClick(R.id.id_menu_score)
-    public void score() {
-        int show = ShareTools.getInt(this, ShareConstants.KEY_SHOW_ALERTDIALOG, 1);
-        if (show == 1) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("查询指南")
-                    .setMessage("步骤如下：\n\n1.点击[确认]\n2.登录VPN,若失败,可以使用其他同学的校园网账号,vpn密码默认是身份证后六位" +
-                            "\n3.登陆教务处,输入个人教务处账号,密码默认为学号\n4.登陆成功后,网页无法点击,这是正常现象." +
-                            "\n4.此时,点击右上角,选择[兼容模式菜单],选择需要的功能即可\n");
-
-            builder.setPositiveButton("确认", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    BundleModel model = new BundleModel();
-                    model.setFromClass(MenuActivity.class);
-                    model.put("title", "成绩查询");
-                    model.put("url", "https://vpn.hpu.edu.cn/por/login_psw.csp");
-                    ShareTools.putInt(MenuActivity.this, ShareConstants.KEY_SHOW_ALERTDIALOG, 0);
-                    ActivityTools.toActivity(MenuActivity.this, WebViewActivity.class, model);
-                }
-            }).setNegativeButton("取消", null);
-            builder.create().show();
-        } else {
-            BundleModel model = new BundleModel();
-            model.setFromClass(MenuActivity.class);
-            model.put("title", "成绩查询");
-            model.put("url", "https://vpn.hpu.edu.cn/por/login_psw.csp");
-            ActivityTools.toActivity(MenuActivity.this, WebViewActivity.class, model);
-        }
-    }
-
     @OnClick(R.id.id_menu_about)
     public void about() {
         ActivityTools.toActivity(MenuActivity.this, AboutActivity.class);
@@ -178,15 +133,6 @@ public class MenuActivity extends AppCompatActivity {
         finish();
     }
 
-    @OnClick(R.id.id_menu_require_space)
-    public void requireSpace() {
-        ActivityTools.toActivity(MenuActivity.this, WebViewActivity.class,
-                new BundleModel().setFromClass(MenuActivity.class)
-                        .put("title", "专区申请")
-                        .put("url", "https://github.com/zfman/hputimetable/wiki/%E5%AD%A6%E6%A0%A1%E4%B8%93%E5%8C%BA%E7%94%B3%E8%AF%B7%E7%96%91%E9%97%AE%E8%A7%A3%E7%AD%94"));
-        finish();
-    }
-
     public void goBack() {
         ActivityTools.toBackActivityAnim(getContext(), MainActivity.class);
     }
@@ -194,12 +140,6 @@ public class MenuActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         goBack();
-    }
-
-    @OnClick(R.id.id_menu_search)
-    public void toSearchActivity() {
-        ActivityTools.toActivity(getContext(), HpuRepertoryActivity.class);
-        finish();
     }
 
     @OnClick(R.id.id_menu_update)
