@@ -17,6 +17,8 @@ import android.webkit.DownloadListener;
 import android.webkit.JavascriptInterface;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebChromeClient;
+import android.webkit.WebResourceError;
+import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -63,15 +65,9 @@ public class UploadHtmlActivity extends AppCompatActivity {
     TextView titleTextView;
     String url, school;
 
-    @BindView(R.id.id_display)
-    TextView displayTextView;
-
     boolean isNeedLoad = false;
     List<String> frameList = new ArrayList<>();
     Queue<String> taskQueue = new LinkedList<>();
-
-    @BindView(R.id.scrollview_display)
-    ScrollView scrollView;
 
     StringBuffer sb = new StringBuffer();
 
@@ -114,7 +110,7 @@ public class UploadHtmlActivity extends AppCompatActivity {
         settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
 
         settings.setSupportZoom(true);
-        settings.setBuiltInZoomControls(true);
+//        settings.setBuiltInZoomControls(true);
 
         webView.setDownloadListener(new DownloadListener() {
             @Override
@@ -173,7 +169,7 @@ public class UploadHtmlActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (webView.canGoBack()) {
+        if (webView.canGoBack()&&!isNeedLoad) {
             webView.goBack();
         } else {
             ActivityTools.toBackActivityAnim(this, returnClass);
@@ -208,7 +204,6 @@ public class UploadHtmlActivity extends AppCompatActivity {
                     //任务队列不空，开始执行第一个任务
                     if (!taskQueue.isEmpty()) webView.loadUrl(taskQueue.poll());
                     else {
-                        displayTextView.setText(sb.toString());
                         putHtml(sb.toString());
                     }
                 }
@@ -232,22 +227,22 @@ public class UploadHtmlActivity extends AppCompatActivity {
                 }else{
                     Toasty.error(UploadHtmlActivity.this,"result is null!").show();
                 }
+                ActivityTools.toBackActivityAnim(UploadHtmlActivity.this, returnClass);
             }
 
             @Override
             public void onFailure(Call<BaseResult> call, Throwable t) {
                 Toasty.error(UploadHtmlActivity.this,t.getMessage()).show();
+                ActivityTools.toBackActivityAnim(UploadHtmlActivity.this, returnClass);
             }
         });
     }
 
-    @OnClick(R.id.id_webview_code)
+    @OnClick(R.id.cv_webview_code)
     @SuppressLint("SetJavaScriptEnabled")
     public void onBtnClicked() {
-        displayTextView.setText("");
         frameList.clear();
         isNeedLoad = true;
-        scrollView.setVisibility(View.VISIBLE);
         sb.setLength(0);
         webView.loadUrl("javascript:window.source.showHtml('<head>'+" + "document.getElementsByTagName('html')[0].innerHTML+'</head>');");
     }

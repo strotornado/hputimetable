@@ -57,7 +57,7 @@ public class MultiScheduleActivity extends Activity {
     ListView listView;
     MultiScheduleAdapter adapter;
     List<ScheduleName> nameList;
-    List<Integer> scheduleCounts;
+//    List<Integer> scheduleCounts;
 
     @BindView(R.id.id_title)
     TextView titleTextView;
@@ -78,10 +78,8 @@ public class MultiScheduleActivity extends Activity {
 
     private void inits() {
         context=this;
-        scheduleCounts = new ArrayList<>();
         nameList = new ArrayList<>();
-        scheduleCounts = new ArrayList<>();
-        adapter = new MultiScheduleAdapter(context, nameList, scheduleCounts);
+        adapter = new MultiScheduleAdapter(context, nameList);
         listView.setAdapter(adapter);
         registerForContextMenu(listView);
     }
@@ -91,6 +89,7 @@ public class MultiScheduleActivity extends Activity {
         int id = scheduleName.getId();
         ShareTools.put(context, "course_update", 1);
         ShareTools.put(context, ShareConstants.INT_SCHEDULE_NAME_ID, id);
+        BroadcastUtils.refreshAppWidget(MultiScheduleActivity.this);
         Toasty.success(context, "切换课表成功").show();
         adapter.notifyDataSetChanged();
     }
@@ -248,7 +247,6 @@ public class MultiScheduleActivity extends Activity {
                     public void run() {
                         nameList.addAll((Collection<? extends ScheduleName>) t);
                         titleTextView.setText("多课表(" + nameList.size() + ")");
-                        scheduleCounts.clear();
 
                         int index = -1;
                         int cur = ShareTools.getInt(context, ShareConstants.INT_SCHEDULE_NAME_ID, -1);
@@ -257,15 +255,12 @@ public class MultiScheduleActivity extends Activity {
                             if (cur != -1 && cur == nameBean.getId()) {
                                 index = i;
                             }
-                            scheduleCounts.add(nameBean.getModels().size());
                         }
 
                         if (index != -1) {
                             ScheduleName curName = nameList.get(index);
                             nameList.remove(index);
                             nameList.add(0, curName);
-                            scheduleCounts.remove(index);
-                            scheduleCounts.add(0, curName.getModels().size());
                         }
 
                         adapter.notifyDataSetChanged();

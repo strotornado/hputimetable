@@ -6,7 +6,4 @@
     <item android:id="@+id/top2"
         android:title="切换账户"/>
 
-    <item android:id="@+id/top3"
-        android:title="提取源码"/>
-
 </menu>

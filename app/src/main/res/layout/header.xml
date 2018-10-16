@@ -4,7 +4,7 @@
     android:layout_height="45dp"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:background="@color/colorPrimary">
+    android:background="@color/app_white_slight">
 
     <LinearLayout
         android:id="@+id/id_layout"
@@ -18,7 +18,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="课程表"
-            android:textColor="@color/app_white"
             android:textStyle="bold"
             android:layout_marginLeft="15dp"
             android:textSize="17sp" />
@@ -27,26 +26,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="默认课表"
-            android:textColor="@color/app_white"
             android:layout_marginLeft="10dp"
             android:singleLine="true"
             android:ellipsize="end"
-            android:alpha="0.6"
             android:textSize="15sp" />
     </LinearLayout>
-
-    <ImageView
-        android:id="@+id/id_main_backup"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
-        android:padding="10dp"
-        android:layout_marginLeft="20dp"
-        android:src="@drawable/ic_backup"/>
 
     <ImageView
         android:id="@+id/id_main_menu"
         android:layout_width="45dp"
         android:layout_height="45dp"
+        android:layout_marginLeft="10dp"
         android:padding="5dp"
         android:layout_marginRight="10dp"
         android:src="@drawable/ic_menu"/>

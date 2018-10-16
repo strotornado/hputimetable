@@ -6,17 +6,6 @@
     android:orientation="vertical">
 
     <include layout="@layout/header"/>
-
-    <TextView
-        android:id="@+id/id_tiptext"
-        android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:paddingLeft="15dp"
-        android:paddingRight="15dp"
-        android:gravity="center_vertical"
-        android:background="@color/app_timeline_graybg"
-        android:text="Tips:\n1.点击空白格子或者长按有课格子可以添加课程\n2.在工具箱中可扫描超表课程码\n3.开学时将当前周设为1即可"/>
-
     <com.zhuangfei.hputimetable.CustomWeekView
         android:id="@+id/id_weekview"
         android:layout_width="match_parent"

@@ -80,9 +80,6 @@ public class ScheduleFragment extends Fragment implements OnSwitchTableListener 
 
     int target;
 
-    @BindView(R.id.id_tiptext)
-    TextView tipTextView;
-
     @BindView(R.id.container)
     LinearLayout containerLayout;
 
@@ -128,14 +125,6 @@ public class ScheduleFragment extends Fragment implements OnSwitchTableListener 
                 mTimetableView.changeWeekForce(newCurWeek);
                 mWeekView.curWeek(newCurWeek).updateView();
             }
-
-            int isScanImport=ShareTools.getInt(getActivity(),"isScanImport", 0);
-            if(isScanImport==1){
-                int id = ScheduleDao.getApplyScheduleId(context);
-                ScheduleName newName = DataSupport.find(ScheduleName.class, id);
-                showDialogOnApply(newName);
-                ShareTools.put(getActivity(), "isScanImport", 0);
-            }
         }
     };
 
@@ -148,25 +137,23 @@ public class ScheduleFragment extends Fragment implements OnSwitchTableListener 
                 handler.sendEmptyMessage(0x123);
             }
         },300);
-    }
-
-    private void showDialogOnApply(final ScheduleName name) {
-        if(name==null) return;
-        AlertDialog.Builder builder=new AlertDialog.Builder(context);
-        builder.setMessage("你导入的数据已存储在多课表["+name.getName()+"]下!\n是否直接设置为当前课表?")
-                .setTitle("课表导入成功")
-                .setPositiveButton("设为当前课表", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        onSwitchTable (name);
-                        BroadcastUtils.refreshAppWidget(context);
-                        if(dialogInterface!=null){
-                            dialogInterface.dismiss();
-                        }
+        int isUpdate=ShareTools.getInt(getActivity(), "course_is_update", 0);
+        if(isUpdate==1){
+            ScheduleName newName = DataSupport.find(ScheduleName.class, ScheduleDao.getApplyScheduleId(getActivity()));
+            if(newName==null) return;
+            FindMultiExecutor executor=newName.getModelsAsync();
+            executor.listen(new FindMultiCallback() {
+                @Override
+                public <T> void onFinish(List<T> t) {
+                    List<TimetableModel> dataModels = (List<TimetableModel>) t;
+                    if (dataModels != null) {
+                        mTimetableView.data(ScheduleSupport.transform(dataModels)).updateView();
+                        mWeekView.data(ScheduleSupport.transform(dataModels)).showView();
                     }
-                })
-                .setNegativeButton("稍后设置",null);
-        builder.create().show();
+                }
+            });
+            ShareTools.putInt(getActivity(),"course_is_update",0);
+        }
     }
 
     private void inits() {
@@ -231,8 +218,7 @@ public class ScheduleFragment extends Fragment implements OnSwitchTableListener 
                         model.put("timetable", scheduleList);
                         model.setFromClass(getActivity().getClass());
                         ActivityTools.toActivity(getContext(), TimetableDetailActivity.class, model);
-                        getActivity().finish();
-                    }
+                     }
                 })
                 .callback(new ISchedule.OnWeekChangedListener() {
                     @Override
@@ -248,8 +234,7 @@ public class ScheduleFragment extends Fragment implements OnSwitchTableListener 
                                 .put(AddTimetableActivity.KEY_DAY, day)
                                 .put(AddTimetableActivity.KEY_START, start);
                         ActivityTools.toActivity(getContext(), AddTimetableActivity.class, model);
-                        getActivity().finish();
-                    }
+                     }
                 })
                 .callback(new ISchedule.OnFlaglayoutClickListener() {
                     @Override
@@ -260,7 +245,6 @@ public class ScheduleFragment extends Fragment implements OnSwitchTableListener 
                                 .put(AddTimetableActivity.KEY_DAY, day + 1)
                                 .put(AddTimetableActivity.KEY_START, start);
                         ActivityTools.toActivity(getContext(), AddTimetableActivity.class, model);
-                        getActivity().finish();
                     }
                 })
                 .showView();
@@ -323,12 +307,6 @@ public class ScheduleFragment extends Fragment implements OnSwitchTableListener 
                 if (dataModels != null) {
                     mTimetableView.data(ScheduleSupport.transform(dataModels)).updateView();
                     mWeekView.data(ScheduleSupport.transform(dataModels)).showView();
-
-                    if (dataModels.size() == 0) {
-                        tipTextView.setVisibility(View.VISIBLE);
-                    } else {
-                        tipTextView.setVisibility(View.GONE);
-                    }
                 }
             }
         });
@@ -345,22 +323,8 @@ public class ScheduleFragment extends Fragment implements OnSwitchTableListener 
             @Override
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()){
-                    case R.id.id_menu1:
-                        ActivityTools.toActivity(context,MultiScheduleActivity.class);
-                        break;
                     case R.id.id_menu2:
                         ActivityTools.toActivity(context,AddTimetableActivity.class);
-                        break;
-                    case R.id.id_menu3:
-                        ActivityTools.toActivity(context,ScanActivity.class);
-                        break;
-                    case R.id.id_menu4:
-                        Intent intent = new Intent(context, AuthActivity.class);
-                        intent.putExtra(AuthActivity.FLAG_TYPE, AuthActivity.TYPE_IMPORT);
-                        startActivityForResult(intent, REQUEST_IMPORT);
-                        break;
-                    case R.id.id_menu5:
-                        ActivityTools.toActivity(context,MenuActivity.class);
                         break;
                 }
                 return false;
@@ -390,11 +354,6 @@ public class ScheduleFragment extends Fragment implements OnSwitchTableListener 
         if (dataModels != null) {
             mTimetableView.data(ScheduleSupport.transform(dataModels)).updateView();
             mWeekView.data(ScheduleSupport.transform(dataModels)).showView();
-            if (dataModels.size() == 0) {
-                tipTextView.setVisibility(View.VISIBLE);
-            } else {
-                tipTextView.setVisibility(View.GONE);
-            }
         }
         Toasty.success(context, "切换课表成功").show();
     }

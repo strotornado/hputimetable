@@ -20,8 +20,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
-            android:launchMode="singleTop">
+            android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -33,8 +32,7 @@
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity android:name=".TimetableDetailActivity" />
         <activity
-            android:name=".HpuRepertoryActivity"
-            android:launchMode="singleTask" />
+            android:name=".HpuRepertoryActivity"/>
         <activity android:name=".AddTimetableActivity" />
         <activity android:name=".MenuActivity" />
         <activity android:name=".WebViewActivity" />
@@ -75,6 +73,8 @@
         <activity android:name=".SearchSchoolActivity" />
         <activity android:name=".UploadHtmlActivity" />
         <activity android:name=".AdapterTipActivity"></activity>
+        <activity android:name=".AdapterSchoolActivity"></activity>
+        <activity android:name=".AdapterSameTypeActivity"></activity>
     </application>
 
 </manifest>

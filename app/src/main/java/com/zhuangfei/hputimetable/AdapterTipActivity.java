@@ -39,12 +39,17 @@ public class AdapterTipActivity extends AppCompatActivity {
             ActivityTools.toActivity(this, UploadHtmlActivity.class,
                     new BundleModel()
                             .put("url", url)
-                            .put("school",school));
+                            .put("school", school));
         }
     }
 
     @Override
     public void onBackPressed() {
-        ActivityTools.toBackActivityAnim(this,MainActivity.class);
+        goBack();
+    }
+
+    @OnClick(R.id.ib_back)
+    public void goBack() {
+        ActivityTools.toBackActivityAnim(this, MainActivity.class);
     }
 }

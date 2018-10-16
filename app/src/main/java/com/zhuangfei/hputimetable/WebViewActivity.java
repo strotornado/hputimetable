@@ -74,11 +74,6 @@ public class WebViewActivity extends AppCompatActivity {
     @BindView(R.id.id_webview_help)
     TextView helpView;
 
-    String html=null;
-
-    @BindView(R.id.id_display)
-    TextView displayTextView;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,11 +111,6 @@ public class WebViewActivity extends AppCompatActivity {
                         break;
                     case R.id.top2:
                         webView.loadUrl(url);
-                        break;
-                    case R.id.top3:
-                        if(!TextUtils.isEmpty(html)){
-                            displayTextView.setText(html);
-                        }
                         break;
                     default:
                         break;
@@ -187,7 +177,6 @@ public class WebViewActivity extends AppCompatActivity {
         webView.loadUrl(url);
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
-        webView.addJavascriptInterface(new ShowSourceJs(),"source");
         settings.setDefaultTextEncodingName("gb2312");
         settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
 
@@ -206,13 +195,6 @@ public class WebViewActivity extends AppCompatActivity {
         });
 
         webView.setWebViewClient(new WebViewClient(){
-
-            @Override
-            public void onPageFinished(WebView view, String url) {
-                super.onPageFinished(view, url);
-                // 这里可以过滤一下url
-                webView.loadUrl("javascript:source.showHtml(document.documentElement.outerHTML);");
-            }
 
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -264,14 +246,5 @@ public class WebViewActivity extends AppCompatActivity {
             webView= null;
         }
         super.onDestroy();
-    }
-
-    public class ShowSourceJs {
-        private static final String TAG = "ShowSourceJs";
-
-        @JavascriptInterface
-        public void showHtml(String content) {
-            html=content;
-        }
     }
 }

@@ -10,8 +10,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:gravity="center_vertical"
-        android:background="@color/app_white_slight">
+        android:background="@color/app_white_slight"
+        android:gravity="center_vertical">
 
         <LinearLayout
             android:id="@+id/id_back"
@@ -46,16 +46,96 @@
         <TextView
             android:id="@+id/id_search_search"
             android:layout_width="50dp"
-            android:gravity="center"
             android:layout_height="match_parent"
-            android:textSize="16sp"
-            android:text="查找"/>
+            android:gravity="center"
+            android:text="查找"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:visibility="gone"
+        android:id="@+id/id_layout_hpusa"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/app_white"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/id_menu_score"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:background="@drawable/layout_ripple"
+                android:gravity="center"
+                android:text="成绩查询"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/id_menu_search"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:background="@drawable/layout_ripple"
+                android:gravity="center"
+                android:text="课程仓库"
+                android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/id_menu_changeclass"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:background="@drawable/layout_ripple"
+                android:gravity="center"
+                android:text="导入班级"
+                android:textSize="14sp" />
+            <TextView
+                android:id="@+id/id_menu_food"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_weight="1"
+                android:background="@drawable/layout_ripple"
+                android:gravity="center"
+                android:text="这是空位"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            android:background="@color/app_panel_bg" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/id_loadlayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ProgressBar
+            android:layout_width="35dp"
+            android:layout_height="35dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="加载中.."
+            android:layout_marginTop="10dp"
+            android:textSize="16sp" />
     </LinearLayout>
 
     <ListView
+        android:id="@+id/id_search_listview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/app_panel_bg"
-        android:id="@+id/id_search_listview"></ListView>
+        android:backgroundTint="@color/app_white"></ListView>
 </LinearLayout>
 

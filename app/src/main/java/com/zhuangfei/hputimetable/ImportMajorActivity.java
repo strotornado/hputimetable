@@ -24,10 +24,14 @@ import com.zhuangfei.hputimetable.api.model.ScheduleName;
 import com.zhuangfei.hputimetable.api.model.TimetableModel;
 import com.zhuangfei.hputimetable.api.model.TimetableResultModel;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
+import com.zhuangfei.hputimetable.model.ScheduleDao;
+import com.zhuangfei.hputimetable.tools.BroadcastUtils;
 import com.zhuangfei.toolkit.model.BundleModel;
 import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.ShareTools;
 import com.zhuangfei.toolkit.tools.ToastTools;
+
+import org.litepal.crud.DataSupport;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -185,16 +189,11 @@ public class ImportMajorActivity extends AppCompatActivity {
                     scheduleName.save();
                     TimetableResultModel resultModel = result.getData();
                     List<TimetableModel> haveList = resultModel.getHaveList();
-                    for (TimetableModel model : haveList) {
-                        model.setScheduleName(scheduleName);
-                        model.save();
-                    }
+                    DataSupport.saveAll(haveList);
                     if (haveList != null && haveList.size() != 0) {
                         ShareTools.putString(getContext(), ShareConstants.KEY_CUR_TERM, haveList.get(0).getTerm());
                     }
-                    ShareTools.put(ImportMajorActivity.this, "isScanImport", 1);
-                    ShareTools.put(ImportMajorActivity.this, ShareConstants.INT_SCHEDULE_NAME_ID, scheduleName.getId());
-                    ActivityTools.toBackActivityAnim(ImportMajorActivity.this,MainActivity.class);
+                    showDialogOnApply(scheduleName);
                 } else {
                     ToastTools.show(getContext(), result.getMsg());
                 }
@@ -208,8 +207,33 @@ public class ImportMajorActivity extends AppCompatActivity {
         }
     }
 
+    private void showDialogOnApply(final ScheduleName name) {
+        if(name==null) return;
+        AlertDialog.Builder builder=new AlertDialog.Builder(this);
+        builder.setMessage("你导入的数据已存储在多课表["+name.getName()+"]下!\n是否直接设置为当前课表?")
+                .setTitle("课表导入成功")
+                .setPositiveButton("设为当前课表", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        ScheduleDao.applySchedule(ImportMajorActivity.this,name.getId());
+                        BroadcastUtils.refreshAppWidget(ImportMajorActivity.this);
+                        if(dialogInterface!=null){
+                            dialogInterface.dismiss();
+                        }
+                        ActivityTools.toBackActivityAnim(ImportMajorActivity.this,MainActivity.class);
+                    }
+                })
+                .setNegativeButton("稍后设置", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        ActivityTools.toBackActivityAnim(ImportMajorActivity.this,SearchSchoolActivity.class);
+                    }
+                });
+        builder.create().show();
+    }
+
     @Override
     public void onBackPressed() {
-        ActivityTools.toBackActivityAnim(this, MainActivity.class);
+        ActivityTools.toBackActivityAnim(this, SearchSchoolActivity.class);
     }
 }

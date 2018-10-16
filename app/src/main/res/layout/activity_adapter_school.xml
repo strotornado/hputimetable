@@ -17,7 +17,7 @@
     </LinearLayout>
 
     <android.support.v7.widget.CardView
-        android:id="@+id/cv_webview_code"
+        android:id="@+id/cv_webview_parse"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_gravity="right|center_horizontal|bottom"
@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
-            android:text="上传源码"
+            android:text="解析"
             android:textColor="@color/app_white" />
 
     </android.support.v7.widget.CardView>

@@ -3,6 +3,7 @@ package com.zhuangfei.hputimetable;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.zhuangfei.hputimetable.api.model.ScheduleName;
 import com.zhuangfei.hputimetable.api.model.TimetableModel;
 import com.zhuangfei.hputimetable.appwidget.ScheduleAppWidget;
 import com.zhuangfei.hputimetable.constants.ExtrasConstants;
@@ -30,6 +31,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.litepal.crud.DataSupport;
+import org.litepal.crud.async.FindMultiExecutor;
+import org.litepal.crud.callback.FindMultiCallback;
 
 import es.dmoral.toasty.Toasty;
 
@@ -58,7 +61,6 @@ public class TimetableManagerActivity extends Activity implements OnClickListene
 		setContentView(R.layout.activity_timetable_manager);
 		initView();
 		initEvent();
-		addCourseItemView();
 		ShareTools.put(this, "course_update", 1);
 	}
 
@@ -84,14 +86,22 @@ public class TimetableManagerActivity extends Activity implements OnClickListene
 			Toasty.error(this,"页面传值出现异常!",Toast.LENGTH_SHORT).show();
 			ActivityTools.toBackActivityAnim(this,MultiScheduleActivity.class);
 		}else{
-			List<TimetableModel> modelList = ScheduleDao.getAllWithScheduleId(scheduleNameId);
-			if(modelList!=null){
-				courseList.clear();
-				courseList.addAll(modelList);
-			}
-			if(courseList.size()==0){
-				Toasty.info(this,"没有课程！",Toast.LENGTH_SHORT).show();
-			}
+			ScheduleName newName=DataSupport.find(ScheduleName.class,scheduleNameId);
+			FindMultiExecutor executor=newName.getModelsAsync();
+			executor.listen(new FindMultiCallback() {
+				@Override
+				public <T> void onFinish(List<T> t) {
+					List<TimetableModel> modelList= (List<TimetableModel>) t;
+					if(modelList!=null){
+						courseList.clear();
+						courseList.addAll(modelList);
+					}
+					if(courseList.size()==0){
+						Toasty.info(TimetableManagerActivity.this,"没有课程！",Toast.LENGTH_SHORT).show();
+					}
+					addCourseItemView();
+				}
+			});
 		}
 	}
 

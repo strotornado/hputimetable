@@ -8,10 +8,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.google.gson.Gson;
-import com.zhuangfei.classbox.activity.AuthActivity;
-import com.zhuangfei.classbox.model.SuperLesson;
-import com.zhuangfei.classbox.model.SuperResult;
-import com.zhuangfei.classbox.utils.SuperUtils;
 import com.zhuangfei.hputimetable.api.TimetableRequest;
 import com.zhuangfei.hputimetable.api.model.ObjResult;
 import com.zhuangfei.hputimetable.api.model.ScheduleName;
@@ -23,8 +19,8 @@ import com.zhuangfei.hputimetable.adapter.MyFragmentPagerAdapter;
 import com.zhuangfei.hputimetable.fragment.ScheduleFragment;
 import com.zhuangfei.hputimetable.listener.OnSwitchPagerListener;
 import com.zhuangfei.hputimetable.listener.OnSwitchTableListener;
-import com.zhuangfei.hputimetable.model.ScheduleDao;
 import com.zhuangfei.hputimetable.tools.BroadcastUtils;
+import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.BundleTools;
 import com.zhuangfei.toolkit.tools.ToastTools;
 
@@ -105,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements OnSwitchPagerList
         mFragmentList.add(new ScheduleFragment());
         mAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager(), mFragmentList);
         mViewPager.setAdapter(mAdapter);
-        int item= BundleTools.getToItem(this,1);
+        int item= (int) BundleTools.getInt(this,"item",0);
         select(item);
     }
 
@@ -219,38 +215,6 @@ public class MainActivity extends AppCompatActivity implements OnSwitchPagerList
         }
     }
 
-    /**
-     * 接收授权页面获取的课程信息
-     *
-     * @param requestCode
-     * @param resultCode
-     * @param data
-     */
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_IMPORT && resultCode == AuthActivity.RESULT_STATUS) {
-            SuperResult result= SuperUtils.getResult(data);
-            if(result==null){
-                Toasty.error(MainActivity.this, "result is null").show();
-            }else{
-                if(result.isSuccess()){
-                    List<SuperLesson> lessons = result.getLessons();
-                    ScheduleName newName = ScheduleDao.saveSuperShareLessons(lessons);
-                    if (newName != null) {
-                        showDialogOnApply(newName);
-//                        ActivityTools.toActivity(this, MultiScheduleActivity.class);
-//                        finish();
-                    } else {
-                        Toasty.error(MainActivity.this, "ScheduleName is null").show();
-                    }
-                }else{
-                    Toasty.error(MainActivity.this, ""+result.getErrMsg()).show();
-                }
-            }
-        }
-    }
-
     private void showDialogOnApply(final ScheduleName name) {
         if(name==null) return;
         AlertDialog.Builder builder=new AlertDialog.Builder(this);
@@ -313,5 +277,14 @@ public class MainActivity extends AppCompatActivity implements OnSwitchPagerList
     @Override
     public void onPagerSwitch() {
         mViewPager.setCurrentItem(1);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(mViewPager.getCurrentItem()==1){
+            mViewPager.setCurrentItem(0);
+        }else{
+            ActivityTools.toHome(this);
+        }
     }
 }

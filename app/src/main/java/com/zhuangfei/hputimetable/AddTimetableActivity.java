@@ -32,6 +32,7 @@ import com.zhuangfei.hputimetable.constants.ShareConstants;
 import com.zhuangfei.hputimetable.model.AddModel;
 import com.zhuangfei.hputimetable.tools.BroadcastUtils;
 import com.zhuangfei.hputimetable.tools.TimetableTools;
+import com.zhuangfei.toolkit.model.BundleModel;
 import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.BundleTools;
 import com.zhuangfei.toolkit.tools.ShareTools;
@@ -100,7 +101,7 @@ public class AddTimetableActivity extends Activity {
         nameEditText.setText("" + name);
         teacherEditText.setText(teacher);
 
-        for (int i = 1; i <= 12; i++) {
+        for (int i = 1; i <= 15; i++) {
             nodeList.add("第 " + i + " 节");
         }
 
@@ -112,7 +113,7 @@ public class AddTimetableActivity extends Activity {
         curScheduleNameId=ShareTools.getInt(this,ShareConstants.INT_SCHEDULE_NAME_ID,-1);
         if(curScheduleNameId==-1){
             Toasty.error(this,"你还没有课表，请前去创建或应用",Toast.LENGTH_SHORT).show();
-            ActivityTools.toBackActivityAnim(this,returnClass);
+            goBack();
         }else{
             scheduleName=DataSupport.find(ScheduleName.class,curScheduleNameId);
             addItemView();
@@ -219,7 +220,7 @@ public class AddTimetableActivity extends Activity {
         ShareTools.putInt(this, "course_update", 1);
         BroadcastUtils.refreshAppWidget(this);
         Toasty.success(this, "保存成功", Toast.LENGTH_SHORT).show();
-        ActivityTools.toBackActivityAnim(this,MainActivity.class);
+        goBack();
     }
 
     @Override
@@ -229,7 +230,7 @@ public class AddTimetableActivity extends Activity {
 
     @OnClick(R.id.tv_back)
     public void goBack() {
-        ActivityTools.toBackActivityAnim(this, returnClass);
+        ActivityTools.toBackActivityAnim(this, returnClass,new BundleModel().put("item",1));
     }
 
     public void showTimeAlert(final AddModel model, final TextView time) {

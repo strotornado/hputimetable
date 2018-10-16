@@ -57,6 +57,7 @@ public class ActivityTools {
 		Intent intent=new Intent(context,target);
 		context.startActivity(intent);
 		context.overridePendingTransition(R.anim.slide2_in, R.anim.slide2_out);//动画
+		context.finish();
 	}
 
 	public static void toActivity(Activity context,Class<?> target,BundleModel model){
@@ -66,6 +67,7 @@ public class ActivityTools {
 		intent.putExtras(bundle);
 		context.startActivity(intent);
 		context.overridePendingTransition(R.anim.slide2_in, R.anim.slide2_out);//动画
+		context.finish();
 	}
 
 	public static void toBackActivityAnim(Activity context,Class<?> target){
@@ -77,10 +79,10 @@ public class ActivityTools {
 
 	public static void toBackActivityAnim(Activity context,Class<?> target,BundleModel model){
 		Intent intent=new Intent(context,target);
-		context.startActivity(intent);
 		Bundle bundle=new Bundle();
 		bundle.putSerializable("model",model);
 		intent.putExtras(bundle);
+		context.startActivity(intent);
 		context.overridePendingTransition(R.anim.slide_in, R.anim.slide_out);//动画
 		context.finish();
 	}

@@ -101,4 +101,9 @@ public class ScheduleDao {
         }
         return weekList;
     }
+
+    public static void applySchedule(Context context,int id){
+        ShareTools.put(context, "course_update", 1);
+        ShareTools.put(context, ShareConstants.INT_SCHEDULE_NAME_ID, id);
+    }
 }

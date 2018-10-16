@@ -147,7 +147,7 @@
                 android:layout_marginTop="16dp"
                 android:gravity="center_horizontal"
                 android:lineSpacingExtra="8dp"
-                android:text="对App有任何的建议\n可以在群中交流\n想要专区的学生可以直接私聊开发者"
+                android:text="对App有任何的建议\n可以在群中交流"
                 android:textSize="12sp" />
 
         </LinearLayout>

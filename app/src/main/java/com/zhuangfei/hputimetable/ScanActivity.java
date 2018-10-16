@@ -161,18 +161,47 @@ public class ScanActivity extends AppCompatActivity {
     public void displayLessons(SuperResult result) {
         if(result==null){
             Toasty.error(this, "result is null").show();
-        }else{
+        }else if(result.getLessons()==null) {
+            Toasty.error(this, "lessons is null").show();
+        }else
+        {
             if(result.isSuccess()){
                 ScheduleName newName = ScheduleDao.saveSuperLessons(result.getLessons());
                 if (newName != null) {
-                    ShareTools.put(ScanActivity.this, "isScanImport", 1);
-                    ShareTools.put(ScanActivity.this, ShareConstants.INT_SCHEDULE_NAME_ID, newName.getId());
+                    showDialogOnApply(newName);
                 }
-                goBack();
             }else{
                 Toasty.error(this, ""+result.getErrMsg()).show();
             }
         }
+    }
+
+    private void showDialogOnApply(final ScheduleName name) {
+        if(name==null) return;
+        AlertDialog.Builder builder=new AlertDialog.Builder(this);
+        builder.setMessage("你导入的数据已存储在多课表["+name.getName()+"]下!\n是否直接设置为当前课表?")
+                .setTitle("课表导入成功")
+                .setPositiveButton("设为当前课表", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        ScheduleDao.applySchedule(ScanActivity.this,name.getId());
+                        BroadcastUtils.refreshAppWidget(ScanActivity.this);
+                        if(dialogInterface!=null){
+                            dialogInterface.dismiss();
+                        }
+                        goBack();
+                    }
+                })
+                .setNegativeButton("稍后设置", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if(dialogInterface!=null){
+                            dialogInterface.dismiss();
+                        }
+                        goBack();
+                    }
+                });
+        builder.create().show();
     }
 
     public void goBack() {

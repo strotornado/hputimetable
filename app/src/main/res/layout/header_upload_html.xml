@@ -31,15 +31,10 @@
         android:ellipsize="end"
         android:text="WebView"
         android:textSize="18sp" />
-
-    <TextView
-        android:id="@+id/id_webview_code"
-        android:layout_width="60dp"
-        android:layout_height="30dp"
-        android:gravity="center"
-        android:textSize="15sp"
-        android:textColor="@color/app_white"
-        android:background="@color/app_gold"
-        android:layout_marginRight="15dp"
-        android:text="源码"/>
+    <ImageView
+        android:id="@+id/id_adapter_popmenu"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginRight="10dp"
+        android:src="@drawable/ic_menu"/>
 </LinearLayout>

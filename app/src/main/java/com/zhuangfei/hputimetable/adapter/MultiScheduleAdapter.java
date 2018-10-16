@@ -31,15 +31,13 @@ public class MultiScheduleAdapter extends BaseAdapter {
     private LayoutInflater mInflater = null;
 
     List<ScheduleName> list;
-    List<Integer> countList;
     Context context;
     SimpleDateFormat sdf;
 
-    public MultiScheduleAdapter(Context context, List<ScheduleName> list, List<Integer> countList) {
+    public MultiScheduleAdapter(Context context, List<ScheduleName> list) {
         this.mInflater = LayoutInflater.from(context);
         this.list = list;
         this.context = context;
-        this.countList = countList;
         sdf=new SimpleDateFormat("MM/dd HH:mm");
     }
 
@@ -73,21 +71,18 @@ public class MultiScheduleAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
         final ScheduleName scheduleName = list.get(position);
-        Integer count = countList.get(position);
 
         if(position==0){
             holder.lightView.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.border_multi_timeline_light));
             holder.timeTextView.setText("当前课表");
+            holder.timeTextView.setTextColor(context.getResources().getColor(R.color.app_gold));
         }else{
             holder.lightView.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.border_multi_timeline_gray));
             holder.timeTextView.setText(sdf.format(new Date(scheduleName.getTime())));
+            holder.timeTextView.setTextColor(context.getResources().getColor(R.color.dark));
         }
 
-        if(count==0){
-            holder.nameTextView.setText(scheduleName.getName());
-        }else{
-            holder.nameTextView.setText(scheduleName.getName() + "(" + count+")");
-        }
+        holder.nameTextView.setText(scheduleName.getName());
 
         int cur = ShareTools.getInt(context, ShareConstants.INT_SCHEDULE_NAME_ID, -1);
 //        if(cur!=-1&&cur==scheduleName.getId()){

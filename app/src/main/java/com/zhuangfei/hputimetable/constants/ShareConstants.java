@@ -15,6 +15,8 @@ public class ShareConstants {
 
     public static final String INT_SCHEDULE_NAME_ID="key_schedule_name_now";
 
+    public static final String INT_MAYBE_SCHEDULE_NAME_ID="key_schedule_name_MAYBE";
+
     //开学时间
     public static final String STRING_START_TIME="string_start_time";
 

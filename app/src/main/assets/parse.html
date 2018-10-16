@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+<head>
+    <title>parse school</title>
+    <meta charset="UTF-8">
+<script type="text/javascript">
+${jscontent}
+function test(){
+	return "test";
+}
+
+function _getResult(totalArray){
+		if(totalArray==null) return null;
+		var ret="";
+		for(var i=0;i<totalArray.length;i++){
+			if(totalArray[i]==null) return null;
+			for(var j=0;j<totalArray[i].length;j++){
+				ret+=totalArray[i][j];
+				if(j!=totalArray[i].length-1) ret+="$";
+			}
+			if(i!=totalArray.length-1) ret+="#";
+		}
+		return ret;
+	}
+
+	/*
+	生成一个课程项
+	*/
+	function _build(name,teacher,weeks,day,start,step,room){
+		var real=new Array();
+		real.push(name);
+		real.push(teacher);
+		real.push(weeks);
+		real.push(day);
+		real.push(start);
+		real.push(step);
+		real.push(room);
+		return real;
+	}
+</script>
+</head>
+<body>
+<h3>你好，欢迎来到课程解析页面！</h3>
+<p>正在努力的递归获取源码以及解析过程中，请耐心等待...</p>
+<p>新功能暂时不稳定，如果出现问题：请联系怪兽课表开发者QQ：1193600556</p>
+
+</body>
+</html>
