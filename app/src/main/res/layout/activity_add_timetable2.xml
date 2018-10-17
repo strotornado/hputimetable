@@ -25,6 +25,7 @@
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/id_tv_title"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:layout_weight="1"
@@ -113,7 +114,7 @@
                     android:layout_height="64dp"
                     android:background="@null"
                     android:gravity="center_vertical"
-                    android:hint="授课老师（可不填）"
+                    android:hint="授课老师"
                     android:lines="1"
                     android:singleLine="true"
                     android:textSize="14sp" />
@@ -136,20 +137,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_marginBottom="32dp"
-                android:layout_marginLeft="64dp"
-                android:layout_marginRight="64dp"
+                android:layout_marginLeft="32dp"
+                android:layout_marginRight="32dp"
                 android:layout_marginTop="32dp"
-                app:cardBackgroundColor="@color/app_white"
+                app:cardBackgroundColor="@color/app_blue1"
                 app:cardCornerRadius="24dp"
                 app:cardElevation="1dp">
 
                 <TextView
+                    android:id="@+id/id_tv_btn"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:text="添加时间段"
-                    android:textColor="@color/app_gold" />
+                    android:textColor="@color/app_white" />
 
             </android.support.v7.widget.CardView>
         </LinearLayout>

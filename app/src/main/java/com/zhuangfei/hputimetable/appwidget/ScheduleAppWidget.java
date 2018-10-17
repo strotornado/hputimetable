@@ -30,15 +30,12 @@ public class ScheduleAppWidget extends AppWidgetProvider {
     public static final String UPDATE_ACTION = "com.zhuangfei.action.APPWIDGET_UPDATE";
     public static final String UPDATE_APPWIDGET="android.appwidget.action.APPWIDGET_UPDATE";
 
-    public static final String INT_EXTRA_SIZE = "int_extra_size";
     public static final String INT_EXTRA_START = "int_extra_start22";
-    public static final String INT_EXTRA_INDEX = "int_extra_index22";
-    public static final String BOOLEAN_EXTRA_FIRST = "boolean_extra_first";
 
     @Override
     public void onReceive(final Context context, Intent intent) {
         super.onReceive(context, intent);
-        if (intent.getAction().equals(UPDATE_ACTION) || intent.getAction().equals(Intent.ACTION_TIME_CHANGED)) {
+        if (intent.getAction().equals(UPDATE_APPWIDGET)||intent.getAction().equals(UPDATE_ACTION) || intent.getAction().equals(Intent.ACTION_TIME_CHANGED)) {
             AppWidgetManager mgr = AppWidgetManager.getInstance(context);
             ComponentName cn = new ComponentName(context, ScheduleAppWidget.class);
             mgr.notifyAppWidgetViewDataChanged(mgr.getAppWidgetIds(cn), R.id.id_widget_listview);

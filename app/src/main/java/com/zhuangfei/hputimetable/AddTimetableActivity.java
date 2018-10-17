@@ -59,6 +59,15 @@ public class AddTimetableActivity extends Activity {
     @BindView(R.id.cv_add)
     public CardView addDuringCardView;
 
+    @BindView(R.id.tv_save)
+    TextView saveBtn;
+
+    @BindView(R.id.id_tv_title)
+    TextView titleText;
+
+    @BindView(R.id.id_tv_btn)
+    TextView cvText;
+
     private Class returnClass = MainActivity.class;
     private LayoutInflater inflate;
 
@@ -69,6 +78,10 @@ public class AddTimetableActivity extends Activity {
     public static final String KEY_STEP = "step";
     public static final String KEY_DAY = "day";
     public static final String KEY_WEEKS = "weeks";
+    public static final String KEY_TYPE = "type";
+    public static final String KEY_ID = "id";
+    public static final int TYPE_ADD=1;
+    public static final int TYPE_MODIFY=2;
 
     private List<String> dayList = Arrays.asList("周一", "周二", "周三", "周四", "周五", "周六", "周日");
     private List<String> nodeList = new ArrayList<>();
@@ -77,6 +90,9 @@ public class AddTimetableActivity extends Activity {
 
     private int curScheduleNameId=-1;
     private ScheduleName scheduleName=null;
+
+    int type=TYPE_ADD;
+    int id=-1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,10 +109,22 @@ public class AddTimetableActivity extends Activity {
         String room = BundleTools.getString(this, KEY_ROOM, "");
         String teacher = BundleTools.getString(this, KEY_TEACHER, "");
         String weeks=BundleTools.getString(this,KEY_WEEKS,"");
+        type= (int) BundleTools.getInt(this,KEY_TYPE,TYPE_ADD);
+        id= (int) BundleTools.getInt(this,KEY_ID,-1);
 
         int day= (int) BundleTools.getInt(this,KEY_DAY,1);
         int start= (int) BundleTools.getInt(this,KEY_START,1);
         int step= (int) BundleTools.getInt(this,KEY_STEP,1);
+
+        if(type==TYPE_MODIFY){
+            saveBtn.setVisibility(View.INVISIBLE);
+            titleText.setText("修改课程");
+            cvText.setText("保存修改");
+            if(id==-1) {
+                Toasty.error(this,"参数传递错误id=-1").show();
+                goBack();
+            }
+        }
 
         nameEditText.setText("" + name);
         teacherEditText.setText(teacher);
@@ -116,7 +144,7 @@ public class AddTimetableActivity extends Activity {
             goBack();
         }else{
             scheduleName=DataSupport.find(ScheduleName.class,curScheduleNameId);
-            addItemView();
+            addOneItem();
             View itemView = containerLayout.getChildAt(0);
             if(itemView!=null){
                 TextView time = itemView.findViewById(R.id.et_time);
@@ -145,8 +173,50 @@ public class AddTimetableActivity extends Activity {
         }
     }
 
+    public void addOneItem() {
+        final View itemView = inflate.inflate(R.layout.item_add, null, false);
+        ImageView iv = itemView.findViewById(R.id.iv_delete);
+        iv.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (containerLayout.indexOfChild(itemView) != -1) {
+                    if (containerLayout.getChildCount() <= 1) {
+                        Toasty.warning(AddTimetableActivity.this, "至少保留一个时间段", Toast.LENGTH_SHORT).show();
+                    } else {
+                        containerLayout.removeView(itemView);
+                    }
+                }
+            }
+        });
+
+        final AddModel model = new AddModel();
+        final LinearLayout timelayout = itemView.findViewById(R.id.ll_time);
+        final LinearLayout weeksLayout = itemView.findViewById(R.id.ll_weeks);
+        final TextView weeks=itemView.findViewById(R.id.et_weeks);
+        final TextView time = itemView.findViewById(R.id.et_time);
+        timelayout.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showTimeAlert(model, time);
+            }
+        });
+
+        weeksLayout.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showWeekAlert(model,weeks);
+            }
+        });
+        itemView.setTag(model);
+        containerLayout.addView(itemView);
+    }
+
     @OnClick(R.id.cv_add)
     public void addItemView() {
+        if(cvText.getText().toString().equals("保存修改")){
+            modify();
+            return;
+        }
         final View itemView = inflate.inflate(R.layout.item_add, null, false);
         ImageView iv = itemView.findViewById(R.id.iv_delete);
         iv.setOnClickListener(new OnClickListener() {
@@ -220,6 +290,44 @@ public class AddTimetableActivity extends Activity {
         ShareTools.putInt(this, "course_update", 1);
         BroadcastUtils.refreshAppWidget(this);
         Toasty.success(this, "保存成功", Toast.LENGTH_SHORT).show();
+        goBack();
+    }
+
+    public void modify() {
+        String name = nameEditText.getText().toString().trim();
+        String teacher = teacherEditText.getText().toString().trim();
+        if (TextUtils.isEmpty(name) || TextUtils.isEmpty(teacher)) {
+            Toasty.warning(this, "请填写课程以及教师名称!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        View v = containerLayout.getChildAt(0);
+        AddModel model = (AddModel) v.getTag();
+        EditText roomEdit = v.findViewById(R.id.et_room);
+        String room = roomEdit.getText().toString();
+        List<Integer> weekList=new ArrayList<>();
+        for(int m=0;m<model.getStatus().size();m++){
+            if(model.getStatus().get(m)){
+                weekList.add(m+1);
+            }
+        }
+        if (TextUtils.isEmpty(room) || weekList.size() == 0) {
+            Toasty.warning(this, "请填写完整!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        TimetableModel thisModel=DataSupport.find(TimetableModel.class,id);
+        thisModel.setName(name);
+        thisModel.setTeacher(teacher);
+        thisModel.setWeekList(weekList);
+        thisModel.setDay(model.getDay());
+        thisModel.setStart(model.getStart());
+        thisModel.setStep(model.getEnd() - model.getStart() + 1);
+        thisModel.update(id);
+
+        ShareTools.putInt(this, "course_update", 1);
+        BroadcastUtils.refreshAppWidget(this);
+        Toasty.success(this, "修改成功", Toast.LENGTH_SHORT).show();
         goBack();
     }
 

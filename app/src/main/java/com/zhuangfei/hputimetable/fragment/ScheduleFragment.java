@@ -125,6 +125,23 @@ public class ScheduleFragment extends Fragment implements OnSwitchTableListener 
                 mTimetableView.changeWeekForce(newCurWeek);
                 mWeekView.curWeek(newCurWeek).updateView();
             }
+            int isUpdate=ShareTools.getInt(getActivity(), "course_is_update", 0);
+            if(isUpdate==1){
+                ScheduleName newName = DataSupport.find(ScheduleName.class, ScheduleDao.getApplyScheduleId(getActivity()));
+                if(newName==null) return;
+                FindMultiExecutor executor=newName.getModelsAsync();
+                executor.listen(new FindMultiCallback() {
+                    @Override
+                    public <T> void onFinish(List<T> t) {
+                        List<TimetableModel> dataModels = (List<TimetableModel>) t;
+                        if (dataModels != null) {
+                            mTimetableView.data(ScheduleSupport.transform(dataModels)).updateView();
+                            mWeekView.data(ScheduleSupport.transform(dataModels)).showView();
+                        }
+                    }
+                });
+                ShareTools.putInt(getActivity(),"course_is_update",0);
+            }
         }
     };
 
@@ -137,23 +154,7 @@ public class ScheduleFragment extends Fragment implements OnSwitchTableListener 
                 handler.sendEmptyMessage(0x123);
             }
         },300);
-        int isUpdate=ShareTools.getInt(getActivity(), "course_is_update", 0);
-        if(isUpdate==1){
-            ScheduleName newName = DataSupport.find(ScheduleName.class, ScheduleDao.getApplyScheduleId(getActivity()));
-            if(newName==null) return;
-            FindMultiExecutor executor=newName.getModelsAsync();
-            executor.listen(new FindMultiCallback() {
-                @Override
-                public <T> void onFinish(List<T> t) {
-                    List<TimetableModel> dataModels = (List<TimetableModel>) t;
-                    if (dataModels != null) {
-                        mTimetableView.data(ScheduleSupport.transform(dataModels)).updateView();
-                        mWeekView.data(ScheduleSupport.transform(dataModels)).showView();
-                    }
-                }
-            });
-            ShareTools.putInt(getActivity(),"course_is_update",0);
-        }
+
     }
 
     private void inits() {

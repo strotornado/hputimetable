@@ -63,6 +63,9 @@ public class TimetableDetailActivity extends AppCompatActivity {
         BundleModel model = BundleTools.getModel(this);
         if (model != null && model.get("timetable") != null) {
             schedules = (List<Schedule>) model.get("timetable");
+        }else{
+            Toasty.error(this,"参数传递错误!").show();
+            goBack();
         }
         if (model != null && model.getFromClass() != null) {
             returnClass = model.getFromClass();
@@ -96,7 +99,7 @@ public class TimetableDetailActivity extends AppCompatActivity {
         deleteTextView = (TextView) view.findViewById(R.id.id_detail_delete);
         editorTextView = (TextView) view.findViewById(R.id.id_detail_editor);
 
-        if(schedule==null) return view;
+        if (schedule == null) return view;
 
         nameTextView.setText(schedule.getName());
         roomTextView.setText(schedule.getRoom());
@@ -105,14 +108,14 @@ public class TimetableDetailActivity extends AppCompatActivity {
             nameTextView.setText(schedule.getName() + "(本周)");
         }
 
-        String weeks="";
-        if(schedule.getWeekList()!=null) weeks=schedule.getWeekList().toString();
+        String weeks = "";
+        if (schedule.getWeekList() != null) weeks = schedule.getWeekList().toString();
 
-        String day="";
-        if(getDay(schedule.getDay())!=null) day=getDay(schedule.getDay());
+        String day = "";
+        if (getDay(schedule.getDay()) != null) day = getDay(schedule.getDay());
 
-        String teacher="";
-        if(schedule.getTeacher()!=null) teacher=schedule.getTeacher();
+        String teacher = "";
+        if (schedule.getTeacher() != null) teacher = schedule.getTeacher();
 
         weeksTextView.setText(weeks);
         dayTextView.setText("周" + day + "    第" + schedule.getStart() + "-" + (schedule.getStart() + schedule.getStep() - 1) + "节");
@@ -127,7 +130,7 @@ public class TimetableDetailActivity extends AppCompatActivity {
         editorTextView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                modify();
+                modify(schedule);
             }
         });
         return view;
@@ -140,7 +143,7 @@ public class TimetableDetailActivity extends AppCompatActivity {
 
     @OnClick(R.id.id_back)
     public void goBack() {
-        ActivityTools.toBackActivityAnim(this, returnClass,new BundleModel().put("item",1));
+        ActivityTools.toBackActivityAnim(this, returnClass, new BundleModel().put("item", 1));
     }
 
     @Override
@@ -148,21 +151,40 @@ public class TimetableDetailActivity extends AppCompatActivity {
         goBack();
     }
 
-    public void delete(Schedule schedule){
-        if(schedule!=null){
-            int id= (int) schedule.getExtras().get(TimetableModel.EXTRA_ID);
-            TimetableModel model= DataSupport.find(TimetableModel.class,id);
-            if(model!=null){
+    public void delete(Schedule schedule) {
+        if (schedule != null) {
+            int id = (int) schedule.getExtras().get(TimetableModel.EXTRA_ID);
+            TimetableModel model = DataSupport.find(TimetableModel.class, id);
+            if (model != null) {
                 model.delete();
                 ShareTools.put(this, "course_update", 1);
-                Toasty.success(this,"删除成功！").show();
+                Toasty.success(this, "删除成功！").show();
                 BroadcastUtils.refreshAppWidget(this);
                 goBack();
             }
         }
     }
 
-    public void modify(){
-        Toasty.warning(this,"暂未开放!").show();
+    public void modify(Schedule schedule) {
+        if (schedule == null) return;
+        String weeks="";
+        if(schedule.getWeekList()!=null){
+            for(int i=0;i<schedule.getWeekList().size();i++){
+                weeks+=schedule.getWeekList().get(i);
+                if(i!=schedule.getWeekList().size()-1) weeks+=",";
+            }
+        }
+
+        ActivityTools.toActivity(this, AddTimetableActivity.class,
+                new BundleModel().setFromClass(MainActivity.class)
+                        .put(AddTimetableActivity.KEY_ID, schedule.getExtras().get(TimetableModel.EXTRA_ID))
+                        .put(AddTimetableActivity.KEY_TYPE, AddTimetableActivity.TYPE_MODIFY)
+                        .put(AddTimetableActivity.KEY_NAME, schedule.getName())
+                        .put(AddTimetableActivity.KEY_ROOM, schedule.getRoom())
+                        .put(AddTimetableActivity.KEY_TEACHER, schedule.getTeacher())
+                        .put(AddTimetableActivity.KEY_START, schedule.getStart())
+                        .put(AddTimetableActivity.KEY_DAY, schedule.getDay())
+                        .put(AddTimetableActivity.KEY_STEP, schedule.getStep())
+                        .put(AddTimetableActivity.KEY_WEEKS,weeks));
     }
 }

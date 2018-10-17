@@ -20,6 +20,7 @@ import com.zhuangfei.classbox.activity.AuthActivity;
 import com.zhuangfei.classbox.model.SuperLesson;
 import com.zhuangfei.classbox.model.SuperResult;
 import com.zhuangfei.classbox.utils.SuperUtils;
+import com.zhuangfei.hputimetable.AdapterSchoolActivity;
 import com.zhuangfei.hputimetable.AdapterTipActivity;
 import com.zhuangfei.hputimetable.HpuRepertoryActivity;
 import com.zhuangfei.hputimetable.ImportMajorActivity;
@@ -57,6 +58,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -107,7 +110,35 @@ public class FuncFragment extends Fragment{
 		findData();
 	}
 
-	public void createCardView(List<Schedule> models,ScheduleName newName){
+	@Override
+	public void onResume() {
+		super.onResume();
+		new Timer().schedule(new TimerTask() {
+			@Override
+			public void run() {
+				handler.sendEmptyMessage(0x123);
+			}
+		},300);
+	}
+
+	/**
+	 * 检测课表切换
+	 */
+	Handler handler=new Handler(){
+		@Override
+		public void handleMessage(Message msg) {
+			super.handleMessage(msg);
+			SimpleDateFormat sdf2=new SimpleDateFormat("EEEE");
+			int curWeek = TimetableTools.getCurWeek(getActivity());
+			String text="第"+curWeek+"周  "+sdf2.format(new Date());
+			if(todayInfo.getText().toString()!=null&&!todayInfo.getText().toString().equals(text)){
+				findData();
+			}
+            getValue("1f088b55140a49e101e79c420b19bce6");
+		}
+	};
+
+	public void createCardView(List<Schedule> models, ScheduleName newName){
 		cardLayout.removeAllViews();
 		SimpleDateFormat sdf2=new SimpleDateFormat("EEEE");
 		int curWeek = TimetableTools.getCurWeek(getActivity());
@@ -277,7 +308,8 @@ public class FuncFragment extends Fragment{
 						ScheduleDao.applySchedule(getActivity(),name.getId());
 						BroadcastUtils.refreshAppWidget(getActivity());
 						findData();
-						ShareTools.putInt(getActivity(),"course_is_update",0);
+						ScheduleDao.applySchedule(getActivity(),name.getId());
+						ShareTools.putInt(getActivity(),"course_is_update",1);
 						if(onSwitchPagerListener!=null){
 							onSwitchPagerListener.onPagerSwitch();
 						}
