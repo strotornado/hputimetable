@@ -189,7 +189,8 @@ public class ScanActivity extends AppCompatActivity {
                         if(dialogInterface!=null){
                             dialogInterface.dismiss();
                         }
-                        goBack();
+                        ActivityTools.toBackActivityAnim(ScanActivity.this,
+                                MainActivity.class,new BundleModel().put("item",1));
                     }
                 })
                 .setNegativeButton("稍后设置", new DialogInterface.OnClickListener() {

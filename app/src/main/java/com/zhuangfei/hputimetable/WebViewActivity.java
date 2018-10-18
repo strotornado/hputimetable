@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Bundle;
+import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.text.TextUtils;
@@ -73,6 +74,9 @@ public class WebViewActivity extends AppCompatActivity {
 
     @BindView(R.id.id_webview_help)
     TextView helpView;
+
+    @BindView(R.id.id_loadingbar)
+    ContentLoadingProgressBar loadingProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -217,6 +221,13 @@ public class WebViewActivity extends AppCompatActivity {
         });
 
         webView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public void onProgressChanged(WebView view, int newProgress) {
+                super.onProgressChanged(view, newProgress);
+                loadingProgressBar.setProgress(newProgress);
+                if(newProgress==100) loadingProgressBar.hide();
+                else loadingProgressBar.show();
+            }
 
             @Override
             public void onReceivedTitle(WebView view, String title) {

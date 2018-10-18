@@ -168,7 +168,7 @@
 
                 <TextView
                     android:id="@+id/id_cardview_today"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="15dp"
                     android:layout_marginRight="15dp"
@@ -176,15 +176,20 @@
                     android:text="第2周 周四"
                     android:textSize="16sp"
                     android:textStyle="bold" />
-
                 <TextView
-                    android:id="@+id/id_func_schedulename"
+                    android:id="@+id/id_week_view"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="15dp"
-                    android:ellipsize="end"
-                    android:singleLine="true"
-                    android:textSize="16sp"/>
+                    android:layout_height="40dp"
+                    android:gravity="center_vertical"
+                    android:text="周视图"
+                    android:textColor="@color/app_gray" />
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginRight="10dp"
+                    android:src="@drawable/ic_point_right" />
+
             </LinearLayout>
 
             <include layout="@layout/view_line" />
@@ -195,17 +200,29 @@
                 android:layout_height="wrap_content"
                 android:background="@color/app_white"
                 android:orientation="vertical"
-                android:paddingBottom="10dp"></LinearLayout>
-
+                ></LinearLayout>
+            <include layout="@layout/view_line"/>
+            <TextView
+                android:id="@+id/id_func_schedulename"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:paddingLeft="15dp"
+                android:textColor="@color/app_gray"
+                android:background="@color/app_white"
+                android:gravity="center_vertical"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textSize="14sp"/>
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/app_tipcolor"
                 android:padding="15dp"
                 android:textSize="16sp"
                 android:layout_marginTop="10dp"
                 android:lineSpacingExtra="5dp"
                 android:text="适配公告加载中..."
+                android:background="@color/app_white"
+                android:textColor="@color/app_gray"
                 android:id="@+id/id_display"/>
         </LinearLayout>
     </ScrollView>

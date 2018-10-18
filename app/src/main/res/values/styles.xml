@@ -9,7 +9,11 @@
 
         <item name="windowNoTitle">true</item>
         <item name="android:textColor">@android:color/black</item>
-        <!--<item name="android:windowBackground">@drawable/layer_launcher_style</item>-->
+
+    </style>
+
+    <style name="splash" parent="AppTheme">
+        <item name="android:background">@drawable/main_bg</item>
     </style>
 
     <style name="TimeDataPicker">

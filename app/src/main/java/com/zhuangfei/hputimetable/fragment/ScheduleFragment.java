@@ -1,8 +1,8 @@
 package com.zhuangfei.hputimetable.fragment;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -21,18 +21,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.zhuangfei.classbox.activity.AuthActivity;
 import com.zhuangfei.hputimetable.AddTimetableActivity;
 import com.zhuangfei.hputimetable.CustomWeekView;
-import com.zhuangfei.hputimetable.MenuActivity;
-import com.zhuangfei.hputimetable.MultiScheduleActivity;
 import com.zhuangfei.hputimetable.R;
-import com.zhuangfei.hputimetable.ScanActivity;
 import com.zhuangfei.hputimetable.TimetableDetailActivity;
 import com.zhuangfei.hputimetable.api.model.ScheduleName;
 import com.zhuangfei.hputimetable.api.model.TimetableModel;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
+import com.zhuangfei.hputimetable.listener.OnNoticeUpdateListener;
 import com.zhuangfei.hputimetable.listener.OnSwitchTableListener;
+import com.zhuangfei.hputimetable.listener.OnUpdateCourseListener;
 import com.zhuangfei.hputimetable.model.ScheduleDao;
 import com.zhuangfei.hputimetable.tools.BroadcastUtils;
 import com.zhuangfei.hputimetable.tools.TimetableTools;
@@ -60,7 +58,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import es.dmoral.toasty.Toasty;
 
-public class ScheduleFragment extends Fragment implements OnSwitchTableListener {
+public class ScheduleFragment extends Fragment implements OnSwitchTableListener,OnUpdateCourseListener {
 
     private static final String TAG = "MainActivity";
 
@@ -96,6 +94,8 @@ public class ScheduleFragment extends Fragment implements OnSwitchTableListener 
 
     public static final int REQUEST_IMPORT = 1;
 
+    OnNoticeUpdateListener onNoticeUpdateListener;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -111,6 +111,14 @@ public class ScheduleFragment extends Fragment implements OnSwitchTableListener 
         adjustAndGetData();
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if(context instanceof OnNoticeUpdateListener){
+            onNoticeUpdateListener= (OnNoticeUpdateListener) context;
+        }
+    }
+
     /**
      * 检测课表切换
      */
@@ -124,23 +132,6 @@ public class ScheduleFragment extends Fragment implements OnSwitchTableListener 
                 mTimetableView.onDateBuildListener().onUpdateDate(mTimetableView.curWeek(), newCurWeek);
                 mTimetableView.changeWeekForce(newCurWeek);
                 mWeekView.curWeek(newCurWeek).updateView();
-            }
-            int isUpdate=ShareTools.getInt(getActivity(), "course_is_update", 0);
-            if(isUpdate==1){
-                ScheduleName newName = DataSupport.find(ScheduleName.class, ScheduleDao.getApplyScheduleId(getActivity()));
-                if(newName==null) return;
-                FindMultiExecutor executor=newName.getModelsAsync();
-                executor.listen(new FindMultiCallback() {
-                    @Override
-                    public <T> void onFinish(List<T> t) {
-                        List<TimetableModel> dataModels = (List<TimetableModel>) t;
-                        if (dataModels != null) {
-                            mTimetableView.data(ScheduleSupport.transform(dataModels)).updateView();
-                            mWeekView.data(ScheduleSupport.transform(dataModels)).showView();
-                        }
-                    }
-                });
-                ShareTools.putInt(getActivity(),"course_is_update",0);
             }
         }
     };
@@ -278,6 +269,9 @@ public class ScheduleFragment extends Fragment implements OnSwitchTableListener 
                     mTimetableView.changeWeekForce(target + 1);
                     ShareTools.putString(getContext(), ShareConstants.STRING_START_TIME, TimetableTools.getStartSchoolTime(target + 1));
                     BroadcastUtils.refreshAppWidget(context);
+                    if(onNoticeUpdateListener!=null){
+                        onNoticeUpdateListener.onUpdateNotice();
+                    }
                 }
             }
         });
@@ -357,5 +351,23 @@ public class ScheduleFragment extends Fragment implements OnSwitchTableListener 
             mWeekView.data(ScheduleSupport.transform(dataModels)).showView();
         }
         Toasty.success(context, "切换课表成功").show();
+    }
+
+    @Override
+    public void onUpdateData() {
+        ScheduleName newName = DataSupport.find(ScheduleName.class, ScheduleDao.getApplyScheduleId(getActivity()));
+        if(newName==null) return;
+        mCurScheduleTextView.setText(newName.getName());
+        FindMultiExecutor executor=newName.getModelsAsync();
+        executor.listen(new FindMultiCallback() {
+            @Override
+            public <T> void onFinish(List<T> t) {
+                List<TimetableModel> dataModels = (List<TimetableModel>) t;
+                if (dataModels != null) {
+                    mTimetableView.data(ScheduleSupport.transform(dataModels)).updateView();
+                    mWeekView.data(ScheduleSupport.transform(dataModels)).showView();
+                }
+            }
+        });
     }
 }

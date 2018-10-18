@@ -189,6 +189,9 @@ public class ImportMajorActivity extends AppCompatActivity {
                     scheduleName.save();
                     TimetableResultModel resultModel = result.getData();
                     List<TimetableModel> haveList = resultModel.getHaveList();
+                    for (TimetableModel model : haveList) {
+                        model.setScheduleName(scheduleName);
+                    }
                     DataSupport.saveAll(haveList);
                     if (haveList != null && haveList.size() != 0) {
                         ShareTools.putString(getContext(), ShareConstants.KEY_CUR_TERM, haveList.get(0).getTerm());
@@ -220,7 +223,7 @@ public class ImportMajorActivity extends AppCompatActivity {
                         if(dialogInterface!=null){
                             dialogInterface.dismiss();
                         }
-                        ActivityTools.toBackActivityAnim(ImportMajorActivity.this,MainActivity.class);
+                        ActivityTools.toBackActivityAnim(ImportMajorActivity.this,MainActivity.class,new BundleModel().put("item",1));
                     }
                 })
                 .setNegativeButton("稍后设置", new DialogInterface.OnClickListener() {

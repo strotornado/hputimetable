@@ -1,10 +1,12 @@
 package com.zhuangfei.hputimetable;
 
 import android.annotation.SuppressLint;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.text.TextUtils;
@@ -241,9 +243,19 @@ public class UploadHtmlActivity extends AppCompatActivity {
     @OnClick(R.id.cv_webview_code)
     @SuppressLint("SetJavaScriptEnabled")
     public void onBtnClicked() {
-        frameList.clear();
-        isNeedLoad = true;
-        sb.setLength(0);
-        webView.loadUrl("javascript:window.source.showHtml('<head>'+" + "document.getElementsByTagName('html')[0].innerHTML+'</head>');");
+        AlertDialog.Builder builder=new AlertDialog.Builder(this)
+                .setTitle("重要内容!")
+                .setMessage("请在你看到课表后再点击此按钮!!!")
+                .setPositiveButton("我看到课表了", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        frameList.clear();
+                        isNeedLoad = true;
+                        sb.setLength(0);
+                        webView.loadUrl("javascript:window.source.showHtml('<head>'+" + "document.getElementsByTagName('html')[0].innerHTML+'</head>');");
+                    }
+                })
+                .setNegativeButton("没有看到课表", null);
+        builder.create().show();
     }
 }

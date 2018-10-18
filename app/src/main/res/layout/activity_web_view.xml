@@ -5,7 +5,13 @@
     android:orientation="vertical" >
 
     <include layout="@layout/header_web_view"/>
-
+    <android.support.v4.widget.ContentLoadingProgressBar
+        android:id="@+id/id_loadingbar"
+        style="?android:attr/android:progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:max="100"
+        android:progress="0"
+        android:layout_height="4dp" />
     <LinearLayout
         android:visibility="gone"
         android:id="@+id/id_webview_layout"

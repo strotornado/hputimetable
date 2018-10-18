@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,8 +39,10 @@ import com.zhuangfei.hputimetable.api.model.ScheduleName;
 import com.zhuangfei.hputimetable.api.model.TimetableModel;
 import com.zhuangfei.hputimetable.api.model.ValuePair;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
+import com.zhuangfei.hputimetable.listener.OnNoticeUpdateListener;
 import com.zhuangfei.hputimetable.listener.OnSwitchPagerListener;
 import com.zhuangfei.hputimetable.listener.OnSwitchTableListener;
+import com.zhuangfei.hputimetable.listener.OnUpdateCourseListener;
 import com.zhuangfei.hputimetable.model.ScheduleDao;
 import com.zhuangfei.hputimetable.tools.BroadcastUtils;
 import com.zhuangfei.hputimetable.tools.TimetableTools;
@@ -74,7 +77,7 @@ import retrofit2.Response;
  * 
  */
 @SuppressLint({ "NewApi", "ValidFragment" })
-public class FuncFragment extends Fragment{
+public class FuncFragment extends Fragment implements OnNoticeUpdateListener{
 
 	private View mView;
 
@@ -85,6 +88,7 @@ public class FuncFragment extends Fragment{
 	TextView todayInfo;
 
 	OnSwitchPagerListener onSwitchPagerListener;
+	OnUpdateCourseListener onUpdateCourseListener;
 
 	@BindView(R.id.id_display)
 	TextView display;
@@ -110,33 +114,6 @@ public class FuncFragment extends Fragment{
 		findData();
 	}
 
-	@Override
-	public void onResume() {
-		super.onResume();
-		new Timer().schedule(new TimerTask() {
-			@Override
-			public void run() {
-				handler.sendEmptyMessage(0x123);
-			}
-		},300);
-	}
-
-	/**
-	 * 检测课表切换
-	 */
-	Handler handler=new Handler(){
-		@Override
-		public void handleMessage(Message msg) {
-			super.handleMessage(msg);
-			SimpleDateFormat sdf2=new SimpleDateFormat("EEEE");
-			int curWeek = TimetableTools.getCurWeek(getActivity());
-			String text="第"+curWeek+"周  "+sdf2.format(new Date());
-			if(todayInfo.getText().toString()!=null&&!todayInfo.getText().toString().equals(text)){
-				findData();
-			}
-            getValue("1f088b55140a49e101e79c420b19bce6");
-		}
-	};
 
 	public void createCardView(List<Schedule> models, ScheduleName newName){
 		cardLayout.removeAllViews();
@@ -181,8 +158,13 @@ public class FuncFragment extends Fragment{
 				TextView startText=view.findViewById(R.id.id_item_start);
 				TextView nameText=view.findViewById(R.id.id_item_name);
 				TextView roomText=view.findViewById(R.id.id_item_room);
-				nameText.setText(schedule.getName());
-				roomText.setText(schedule.getRoom());
+				String name=schedule.getName();
+				String room=schedule.getRoom();
+				if(TextUtils.isEmpty(name)) name="课程名未知";
+				if(TextUtils.isEmpty(room)) room="上课地点未知";
+
+				nameText.setText(name);
+				roomText.setText(room);
 				startText.setText(schedule.getStart() + " - " + (schedule.getStart() + schedule.getStep() - 1));
 				view.findViewById(R.id.id_item_clicklayout).setOnClickListener(new View.OnClickListener() {
 					@Override
@@ -237,6 +219,9 @@ public class FuncFragment extends Fragment{
 		super.onAttach(context);
 		if(context instanceof OnSwitchPagerListener){
 			onSwitchPagerListener= (OnSwitchPagerListener) context;
+		}
+		if(context instanceof OnUpdateCourseListener){
+			onUpdateCourseListener= (OnUpdateCourseListener) context;
 		}
 	}
 
@@ -307,12 +292,13 @@ public class FuncFragment extends Fragment{
 					public void onClick(DialogInterface dialogInterface, int i) {
 						ScheduleDao.applySchedule(getActivity(),name.getId());
 						BroadcastUtils.refreshAppWidget(getActivity());
-						findData();
-						ScheduleDao.applySchedule(getActivity(),name.getId());
-						ShareTools.putInt(getActivity(),"course_is_update",1);
 						if(onSwitchPagerListener!=null){
 							onSwitchPagerListener.onPagerSwitch();
 						}
+						if(onUpdateCourseListener!=null){
+							onUpdateCourseListener.onUpdateData();
+						}
+						findData();
 						if(dialogInterface!=null){
 							dialogInterface.dismiss();
 						}
@@ -350,5 +336,21 @@ public class FuncFragment extends Fragment{
 		});
 	}
 
+	@Override
+	public void onUpdateNotice() {
+		SimpleDateFormat sdf2=new SimpleDateFormat("EEEE");
+		int curWeek = TimetableTools.getCurWeek(getActivity());
+		String text="第"+curWeek+"周  "+sdf2.format(new Date());
+		if(todayInfo.getText().toString()!=null&&!todayInfo.getText().toString().equals(text)){
+			findData();
+		}
+		getValue("1f088b55140a49e101e79c420b19bce6");
+	}
 
+	@OnClick(R.id.id_week_view)
+	public void toScheduleFragment(){
+		if(onSwitchPagerListener!=null){
+			onSwitchPagerListener.onPagerSwitch();
+		}
+	}
 }

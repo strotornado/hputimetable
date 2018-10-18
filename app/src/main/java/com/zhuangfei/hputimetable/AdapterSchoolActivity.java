@@ -4,10 +4,12 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
@@ -87,6 +89,9 @@ public class AdapterSchoolActivity extends AppCompatActivity {
     @BindView(R.id.id_adapter_popmenu)
     ImageView popmenuImageView;
 
+    @BindView(R.id.id_loadingbar)
+    ContentLoadingProgressBar loadingProgressBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -127,6 +132,7 @@ public class AdapterSchoolActivity extends AppCompatActivity {
         webView.addJavascriptInterface(new SpecialArea(), "sa");
 //        settings.setDefaultTextEncodingName("utf-8");
         settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
+        webView.clearFormData();
 
         settings.setSupportZoom(true);
 //        settings.setBuiltInZoomControls(true);
@@ -166,12 +172,16 @@ public class AdapterSchoolActivity extends AppCompatActivity {
         webView.setWebChromeClient(new WebChromeClient() {
 
             @Override
-            public void onProgressChanged(WebView view, int newProgress) {
+            public void onProgressChanged(WebView view, final int newProgress) {
                 super.onProgressChanged(view, newProgress);
                 final int finalProgress = newProgress;
                 AdapterSchoolActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        loadingProgressBar.setProgress(newProgress);
+                        if(newProgress==100) loadingProgressBar.hide();
+                        else loadingProgressBar.show();
+
                         if (webView.getUrl().startsWith("https://vpn.hpu.edu.cn/web/1/http/1/218.196.240.97/loginAction.do")) {
                             webView.loadUrl("https://vpn.hpu.edu.cn/web/1/http/2/218.196.240.97/xkAction.do?actionType=6");
                         }
@@ -437,10 +447,21 @@ public class AdapterSchoolActivity extends AppCompatActivity {
     @SuppressLint("SetJavaScriptEnabled")
     public void onBtnClicked() {
         if (!isNeedLoad) {
-            frameList.clear();
-            isNeedLoad = true;
-            sb.setLength(0);
-            webView.loadUrl("javascript:window.sa.showHtml('<head>'+" + "document.getElementsByTagName('html')[0].innerHTML+'</head>');");
+            AlertDialog.Builder builder=new AlertDialog.Builder(this)
+                    .setTitle("重要内容!")
+                    .setMessage("请在你看到课表后再点击此按钮!!!")
+                    .setPositiveButton("我看到课表了", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            frameList.clear();
+                            isNeedLoad = true;
+                            sb.setLength(0);
+                            webView.loadUrl("javascript:window.sa.showHtml('<head>'+" + "document.getElementsByTagName('html')[0].innerHTML+'</head>');");
+                        }
+                    })
+                    .setNegativeButton("没有看到课表", null);
+            builder.create().show();
+
         } else {
             Toasty.warning(this, "解析状态无效，请重新进入！").show();
             ActivityTools.toBackActivityAnim(this, returnClass);
