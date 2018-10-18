@@ -55,7 +55,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity implements OnSwitchPagerListener, OnUpdateCourseListener {
+public class MainActivity extends AppCompatActivity implements OnNoticeUpdateListener,OnSwitchPagerListener, OnUpdateCourseListener {
 
     private static final String TAG = "MainActivity";
 
@@ -258,12 +258,13 @@ public class MainActivity extends AppCompatActivity implements OnSwitchPagerList
 //                        if(onUpdateCourseListener!=null){
 //                            onUpdateCourseListener.onUpdateData();
 //                        }
-                        if(onNoticeUpdateListener!=null){
-                            onNoticeUpdateListener.onUpdateNotice();
-                        }
+
                         if (onSwitchTableListener != null) {
                             onSwitchTableListener.onSwitchTable(name);
                             mViewPager.setCurrentItem(1);
+                        }
+                        if(onNoticeUpdateListener!=null){
+                            onNoticeUpdateListener.onUpdateNotice();
                         }
                         BroadcastUtils.refreshAppWidget(MainActivity.this);
                         if (dialogInterface != null) {
@@ -336,6 +337,13 @@ public class MainActivity extends AppCompatActivity implements OnSwitchPagerList
     public void onUpdateData() {
         if (onUpdateCourseListener != null) {
             onUpdateCourseListener.onUpdateData();
+        }
+    }
+
+    @Override
+    public void onUpdateNotice() {
+        if(onNoticeUpdateListener!=null){
+            onNoticeUpdateListener.onUpdateNotice();
         }
     }
 }

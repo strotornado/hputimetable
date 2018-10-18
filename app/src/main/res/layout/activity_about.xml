@@ -62,7 +62,7 @@
                 android:paddingLeft="48dp"
                 android:paddingRight="48dp"
                 android:paddingTop="16dp"
-                android:text="版本号：1.0.6"
+                android:text="版本号：1.0.8"
                 android:textSize="12sp" />
 
             <TextView
@@ -102,6 +102,19 @@
                 android:paddingLeft="48dp"
                 android:paddingRight="48dp"
                 android:text="超表授权库\nhttps://github.com/zfman/SuperBox"
+                android:textSize="12sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:autoLink="web"
+                android:gravity="center_horizontal"
+                android:lineSpacingExtra="8dp"
+                android:paddingBottom="16dp"
+                android:paddingLeft="48dp"
+                android:paddingRight="48dp"
+                android:text="全国大学生课程适配平台-已授权\nhttps://github.com/zfman/CourseAdapter\n如需使用该功能请务必先向开发者申请授权\n违者必究!"
                 android:textSize="12sp" />
 
             <TextView
@@ -147,7 +160,7 @@
                 android:layout_marginTop="16dp"
                 android:gravity="center_horizontal"
                 android:lineSpacingExtra="8dp"
-                android:text="对App有任何的建议\n可以在群中交流"
+                android:text="对App有任何的建议\n可以在群中交流\n\n感谢WakeUp课程表的开发者，本软件的[关于软件]界面、[添加课程]界面的UI风格借鉴了WakeUp课程表"
                 android:textSize="12sp" />
 
         </LinearLayout>

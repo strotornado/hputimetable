@@ -341,7 +341,7 @@ public class FuncFragment extends Fragment implements OnNoticeUpdateListener{
 		SimpleDateFormat sdf2=new SimpleDateFormat("EEEE");
 		int curWeek = TimetableTools.getCurWeek(getActivity());
 		String text="第"+curWeek+"周  "+sdf2.format(new Date());
-		if(todayInfo.getText().toString()!=null&&!todayInfo.getText().toString().equals(text)){
+		if(todayInfo.getText().toString()!=null){
 			findData();
 		}
 		getValue("1f088b55140a49e101e79c420b19bce6");
