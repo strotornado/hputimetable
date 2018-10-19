@@ -177,10 +177,6 @@ public class FuncFragment extends Fragment implements OnNoticeUpdateListener{
 						model.setFromClass(getActivity().getClass());
 						model.put("item",0);
 						ActivityTools.toActivity(getActivity(), TimetableDetailActivity.class, model);
-
-						if(onSwitchPagerListener!=null){
-							onSwitchPagerListener.onPagerSwitch();
-						}
 					}
 				});
 				cardLayout.addView(view);

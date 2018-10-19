@@ -186,7 +186,7 @@ public class SearchSchoolActivity extends AppCompatActivity {
                 String type = school.getType();
                 if (type == null) {
                     map.put("name", school.getSchoolName());
-                }else map.put("name", school.getSchoolName() + "-" + type + "");
+                }else map.put("name", school.getSchoolName() + "-" + type );
                 data.add(map);
             }
         }

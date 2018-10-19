@@ -1,23 +1,41 @@
 package com.zhuangfei.hputimetable;
 
 import android.annotation.TargetApi;
+import android.app.AlertDialog;
 import android.app.Application;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Message;
 import android.support.multidex.MultiDex;
 import android.widget.Toast;
 
 import com.tencent.bugly.Bugly;
 import com.tencent.bugly.beta.Beta;
+import com.tencent.bugly.beta.UpgradeInfo;
 import com.tencent.bugly.beta.interfaces.BetaPatchListener;
 import com.tencent.tinker.loader.app.DefaultApplicationLike;
 import com.uuzuche.lib_zxing.activity.ZXingLibrary;
+import com.zhuangfei.hputimetable.api.TimetableRequest;
+import com.zhuangfei.hputimetable.api.model.ObjResult;
+import com.zhuangfei.hputimetable.api.model.ValuePair;
+import com.zhuangfei.hputimetable.tools.VersionTools;
+import com.zhuangfei.toolkit.tools.ShareTools;
 import com.zhuangfei.toolkit.tools.ToastTools;
 
 import org.litepal.LitePal;
 
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import es.dmoral.toasty.Toasty;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static com.tencent.bugly.beta.tinker.TinkerManager.getApplication;
 
@@ -28,8 +46,8 @@ import static com.tencent.bugly.beta.tinker.TinkerManager.getApplication;
 public class MyApplicationLike extends DefaultApplicationLike {
 
     public MyApplicationLike(Application application, int tinkerFlags,
-                                 boolean tinkerLoadVerifyFlag, long applicationStartElapsedTime,
-                                 long applicationStartMillisTime, Intent tinkerResultIntent) {
+                             boolean tinkerLoadVerifyFlag, long applicationStartElapsedTime,
+                             long applicationStartMillisTime, Intent tinkerResultIntent) {
         super(application, tinkerFlags, tinkerLoadVerifyFlag, applicationStartElapsedTime, applicationStartMillisTime, tinkerResultIntent);
     }
 
@@ -52,7 +70,8 @@ public class MyApplicationLike extends DefaultApplicationLike {
         MultiDex.install(base);
 
         Beta.autoDownloadOnWifi = true;
-        Beta.enableNotification=false;
+        Beta.enableNotification = false;
+        Beta.autoCheckUpgrade = true;
 
         // 安装tinker
         // TinkerManager.installTinker(this); 替换成下面Bugly提供的方法

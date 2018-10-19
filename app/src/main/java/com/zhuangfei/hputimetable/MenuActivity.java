@@ -60,6 +60,9 @@ public class MenuActivity extends AppCompatActivity {
     @BindView(R.id.id_switch_hideweekends)
     SwitchCompat hideWeekendsSwitch;
 
+    @BindView(R.id.id_checkauto)
+    SwitchCompat checkedAutoSwitch;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,6 +93,13 @@ public class MenuActivity extends AppCompatActivity {
             hideWeekendsSwitch.setChecked(false);
         } else {
             hideWeekendsSwitch.setChecked(true);
+        }
+
+        int isIgnoreUpdate = ShareTools.getInt(this, "isIgnoreUpdate", 0);
+        if (isIgnoreUpdate == 0) {
+            checkedAutoSwitch.setChecked(true);
+        } else {
+            checkedAutoSwitch.setChecked(false);
         }
     }
 
@@ -175,6 +185,15 @@ public class MenuActivity extends AppCompatActivity {
             ShareTools.putInt(this, "hideweekends", 1);
         } else {
             ShareTools.putInt(this, "hideweekends", 0);
+        }
+    }
+
+    @OnCheckedChanged(R.id.id_checkauto)
+    public void onCheckedAutoSwitchClicked(boolean b) {
+        if (b) {
+            ShareTools.putInt(this, "isIgnoreUpdate", 0);
+        } else {
+            ShareTools.putInt(this, "isIgnoreUpdate", 1);
         }
     }
 }

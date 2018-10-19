@@ -23,6 +23,7 @@ import com.zhuangfei.hputimetable.listener.OnSwitchPagerListener;
 import com.zhuangfei.hputimetable.listener.OnSwitchTableListener;
 import com.zhuangfei.hputimetable.listener.OnUpdateCourseListener;
 import com.zhuangfei.hputimetable.tools.BroadcastUtils;
+import com.zhuangfei.hputimetable.tools.VersionTools;
 import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.BundleTools;
 import com.zhuangfei.toolkit.tools.ShareTools;
@@ -34,6 +35,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -42,6 +44,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.widget.SimpleAdapter;
 
 import org.litepal.crud.DataSupport;
 
@@ -89,6 +92,13 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
                 handler.sendEmptyMessage(0x123);
             }
         }, 300);
+
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                handler2.sendEmptyMessage(0x123);
+            }
+        }, 1000);
     }
 
     Handler handler = new Handler() {
@@ -99,6 +109,17 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
             if(onNoticeUpdateListener!=null){
                 onNoticeUpdateListener.onUpdateNotice();
             }
+        }
+    };
+
+    Handler handler2 = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            try{
+                getValue2("e98b58875e902084a93a1daeae1ccbf7");
+            }catch (Exception e){}
+
         }
     };
 
@@ -344,6 +365,60 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
     public void onUpdateNotice() {
         if(onNoticeUpdateListener!=null){
             onNoticeUpdateListener.onUpdateNotice();
+        }
+    }
+
+    public void getValue2(String id) {
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
+        final String s=sdf.format(new Date())+VersionTools.getVersionName();
+        String store=ShareTools.getString(this,"app_update_info",null);
+        int isIgnoreUpdate=ShareTools.getInt(this,"isIgnoreUpdate",0);
+        if(isIgnoreUpdate==0&&(store==null||!store.equals(s))){
+            TimetableRequest.getValue(this, id, new Callback<ObjResult<ValuePair>>() {
+                @Override
+                public void onResponse(Call<ObjResult<ValuePair>> call, Response<ObjResult<ValuePair>> response) {
+                    ObjResult<ValuePair> result = response.body();
+                    if (result != null) {
+                        if (result.getCode() == 200) {
+                            ValuePair pair = result.getData();
+                            if (pair != null) {
+                                try {
+                                    String value = pair.getValue();
+                                    String[] vals = value.split("#");
+                                    if (vals.length >= 3) {
+                                        int v = Integer.parseInt(vals[0]);
+                                        int isIgnoreUpdate = ShareTools.getInt(MainActivity.this, "isIgnoreUpdate", 0);
+                                        if (isIgnoreUpdate == 0 && v > VersionTools.getVersionNumber()) {
+                                            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this)
+                                                    .setTitle("发现新版本-v"+vals[1])
+                                                    .setMessage("你可以在 设置->检查更新 中关闭提醒!\n\n更新日志:\n" + vals[2])
+                                                    .setPositiveButton("去看看", new DialogInterface.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                                            Intent intent = new Intent();
+                                                            intent.setAction("android.intent.action.VIEW");
+                                                            intent.setData(Uri.parse("https://www.coolapk.com/apk/com.zhuangfei.hputimetable"));
+                                                            startActivity(intent);
+                                                            if (dialogInterface != null) {
+                                                                dialogInterface.dismiss();
+                                                            }
+                                                        }
+                                                    })
+                                                    .setNegativeButton("明天提醒", null);
+                                            builder.create().show();
+                                        }
+                                    }
+                                } catch (Exception e) {
+                                }
+                            }
+                        }
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<ObjResult<ValuePair>> call, Throwable t) {
+                }
+            });
         }
     }
 }
