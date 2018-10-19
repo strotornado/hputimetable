@@ -18,7 +18,7 @@
 
 Bugly提供崩溃日志上报、热修复、全量更新等功能，如果你基于此项目进行二次开发，务必要修改Bugly的配置。
 
-- 在Bugly官网申请appid、appkey
+- 在[Bugly官网](https://bugly.qq.com/v2/index)申请appid、appkey
 - 找到`MyApplicationLike.java`,修改appid,如下：
 ```java
     @Override
@@ -43,6 +43,7 @@ bugly {
 - [Images](#Images)
 - [ChangeLog](#ChangeLog)
 - [Images](#Images)
+- [Resource](#Resource)
 - [About-Me](#About-Me)
 
 ## Images
