@@ -156,7 +156,7 @@ public class UploadHtmlActivity extends AppCompatActivity {
                 UploadHtmlActivity.this.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        if (webView.getUrl().startsWith("https://vpn.hpu.edu.cn/web/1/http/1/218.196.240.97/loginAction.do")) {
+                        if (webView.getUrl()!=null&&webView.getUrl().startsWith("https://vpn.hpu.edu.cn/web/1/http/1/218.196.240.97/loginAction.do")) {
                             webView.loadUrl("https://vpn.hpu.edu.cn/web/1/http/2/218.196.240.97/xkAction.do?actionType=6");
                         }
                         if (finalProgress == 100 && isNeedLoad) {
