@@ -42,7 +42,6 @@ bugly {
 
 - [Images](#Images)
 - [ChangeLog](#ChangeLog)
-- [Images](#Images)
 - [Resource](#Resource)
 - [About-Me](#About-Me)
 
