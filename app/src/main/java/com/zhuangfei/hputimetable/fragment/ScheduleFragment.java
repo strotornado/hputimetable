@@ -209,6 +209,7 @@ public class ScheduleFragment extends Fragment implements OnSwitchTableListener,
                         BundleModel model = new BundleModel();
                         model.put("timetable", scheduleList);
                         model.setFromClass(getActivity().getClass());
+                        model.put("item",1);
                         ActivityTools.toActivity(getContext(), TimetableDetailActivity.class, model);
                      }
                 })

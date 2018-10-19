@@ -143,7 +143,8 @@ public class TimetableDetailActivity extends AppCompatActivity {
 
     @OnClick(R.id.id_back)
     public void goBack() {
-        ActivityTools.toBackActivityAnim(this, returnClass, new BundleModel().put("item", 1));
+        int item= (int) BundleTools.getInt(this,"item",1);
+        ActivityTools.toBackActivityAnim(this, returnClass, new BundleModel().put("item", item));
     }
 
     @Override

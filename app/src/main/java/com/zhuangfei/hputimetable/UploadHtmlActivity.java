@@ -68,8 +68,6 @@ public class UploadHtmlActivity extends AppCompatActivity {
     String url, school;
 
     boolean isNeedLoad = false;
-    List<String> frameList = new ArrayList<>();
-    Queue<String> taskQueue = new LinkedList<>();
 
     StringBuffer sb = new StringBuffer();
 
@@ -159,9 +157,6 @@ public class UploadHtmlActivity extends AppCompatActivity {
                         if (webView.getUrl()!=null&&webView.getUrl().startsWith("https://vpn.hpu.edu.cn/web/1/http/1/218.196.240.97/loginAction.do")) {
                             webView.loadUrl("https://vpn.hpu.edu.cn/web/1/http/2/218.196.240.97/xkAction.do?actionType=6");
                         }
-                        if (finalProgress == 100 && isNeedLoad) {
-                            webView.loadUrl("javascript:window.source.showHtml('<head>'+" + "document.getElementsByTagName('html')[0].innerHTML+'</head>');");
-                        }
                     }
                 });
             }
@@ -183,35 +178,8 @@ public class UploadHtmlActivity extends AppCompatActivity {
 
         @JavascriptInterface
         public void showHtml(final String content) {
-            final String finalContent = content;
             if (TextUtils.isEmpty(content)) return;
-            UploadHtmlActivity.this.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    sb.append("====Page====\n");
-                    sb.append(finalContent);
-                    sb.append("\n\n\n");
-
-                    if (content.indexOf("<frame") != -1) {
-                        Pattern pattern = Pattern.compile("<frame.*?src=\"(.*?)\".*?>");
-                        final Matcher matcher = pattern.matcher(content);
-                        while (matcher.find()) {
-                            String src = matcher.group(1);
-                            if (!frameList.contains(src)) {
-                                frameList.add(src);
-                                taskQueue.add(url + src);
-                            }
-                        }
-                    }
-                    //任务队列不空，开始执行第一个任务
-                    if (!taskQueue.isEmpty()) webView.loadUrl(taskQueue.poll());
-                    else {
-                        putHtml(sb.toString());
-                    }
-                }
-            });
-
-
+            putHtml(content);
         }
     }
 
@@ -246,16 +214,20 @@ public class UploadHtmlActivity extends AppCompatActivity {
         AlertDialog.Builder builder=new AlertDialog.Builder(this)
                 .setTitle("重要内容!")
                 .setMessage("请在你看到课表后再点击此按钮!!!")
-                .setPositiveButton("我看到课表了", new DialogInterface.OnClickListener() {
+                .setPositiveButton("看到了", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        frameList.clear();
                         isNeedLoad = true;
                         sb.setLength(0);
-                        webView.loadUrl("javascript:window.source.showHtml('<head>'+" + "document.getElementsByTagName('html')[0].innerHTML+'</head>');");
+                        webView.loadUrl("javascript:var ifrs=document.getElementsByTagName(\"iframe\");" +
+                                "var iframeContent=\"\";" +
+                                "for(var i=0;i<ifrs.length;i++){" +
+                                "iframeContent=iframeContent+ifrs[i].contentDocument.body.parentElement.outerHTML;" +
+                                "}" +
+                                "window.source.showHtml(document.getElementsByTagName('html')[0].innerHTML + iframeContent);");
                     }
                 })
-                .setNegativeButton("没有看到课表", null);
+                .setNegativeButton("没有看到", null);
         builder.create().show();
     }
 }

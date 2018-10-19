@@ -78,11 +78,8 @@ public class AdapterSchoolActivity extends AppCompatActivity {
     TextView titleTextView;
     String url, school, js,type;
 
-    boolean isNeedLoad = false;
     boolean isParse = false;
-    List<String> frameList = new ArrayList<>();
-    Queue<String> taskQueue = new LinkedList<>();
-
+    boolean isLoad=false;
     StringBuffer sb = new StringBuffer();
     String html = "";
 
@@ -174,26 +171,18 @@ public class AdapterSchoolActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(WebView view, final int newProgress) {
                 super.onProgressChanged(view, newProgress);
-                final int finalProgress = newProgress;
-                AdapterSchoolActivity.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        loadingProgressBar.setProgress(newProgress);
-                        if(newProgress==100) loadingProgressBar.hide();
-                        else loadingProgressBar.show();
+                loadingProgressBar.setProgress(newProgress);
+                if(newProgress==100) loadingProgressBar.hide();
+                else loadingProgressBar.show();
 
-                        if (webView.getUrl().startsWith("https://vpn.hpu.edu.cn/web/1/http/1/218.196.240.97/loginAction.do")) {
-                            webView.loadUrl("https://vpn.hpu.edu.cn/web/1/http/2/218.196.240.97/xkAction.do?actionType=6");
-                        }
-                        if (finalProgress > 60 && isNeedLoad) {
-                            webView.loadUrl("javascript:window.sa.showHtml('<head>'+" + "document.getElementsByTagName('html')[0].innerHTML+'</head>');");
-                        }
-                        if (finalProgress > 60 && isParse) {
-                            callJs("getTagList()");
-                            isParse = false;
-                        }
-                    }
-                });
+                if (webView.getUrl().startsWith("https://vpn.hpu.edu.cn/web/1/http/1/218.196.240.97/loginAction.do")) {
+                    webView.loadUrl("https://vpn.hpu.edu.cn/web/1/http/2/218.196.240.97/xkAction.do?actionType=6");
+                }
+                if (newProgress > 60 && isParse) {
+                    callJs("getTagList()");
+                    isLoad=true;
+                    isParse=false;
+                }
             }
         });
 
@@ -228,7 +217,7 @@ public class AdapterSchoolActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        if (webView.canGoBack() && !isNeedLoad) {
+        if (webView.canGoBack() && !isLoad) {
             webView.goBack();
         } else {
             ActivityTools.toBackActivityAnim(this, returnClass);
@@ -262,7 +251,6 @@ public class AdapterSchoolActivity extends AppCompatActivity {
                     }
                 }
             });
-
         }
 
         @JavascriptInterface
@@ -276,7 +264,6 @@ public class AdapterSchoolActivity extends AppCompatActivity {
                         Toasty.error(AdapterSchoolActivity.this, "未发现匹配").show();
                         ActivityTools.toBackActivityAnim(AdapterSchoolActivity.this, returnClass);
                     } else saveSchedule(finalResult);
-
                 }
             });
         }
@@ -322,33 +309,13 @@ public class AdapterSchoolActivity extends AppCompatActivity {
 
         @JavascriptInterface
         @SuppressLint("SetJavaScriptEnabled")
-        public void showHtml(final String content) {
-            final String finalContent = content;
+        public void showHtml(String content) {
             if (TextUtils.isEmpty(content)) return;
+            html = content;
             AdapterSchoolActivity.this.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    sb.append("====Page====\n");
-                    sb.append(finalContent);
-                    sb.append("\n\n\n");
-
-                    if (content.indexOf("<frame") != -1) {
-                        Pattern pattern = Pattern.compile("<frame.*?src=\"(.*?)\".*?>");
-                        final Matcher matcher = pattern.matcher(content);
-                        while (matcher.find()) {
-                            String src = matcher.group(1);
-                            if (!frameList.contains(src)) {
-                                frameList.add(src);
-                                taskQueue.add(url + src);
-                            }
-                        }
-                    }
-                    //任务队列不空，开始执行第一个任务
-                    if (!taskQueue.isEmpty()) webView.loadUrl(taskQueue.poll());
-                    else {
-                        html = sb.toString();
-                        parseHtml();
-                    }
+                    parseHtml();
                 }
             });
         }
@@ -434,8 +401,6 @@ public class AdapterSchoolActivity extends AppCompatActivity {
 
     @SuppressLint("SetJavaScriptEnabled")
     private void parseHtml() {
-        isNeedLoad = false;
-        isParse = true;
         if (js != null) {
             String parseHtml = AssetTools.readAssetFile(this, "parse.html");
             parseHtml = parseHtml.replace("${jscontent}", js);
@@ -446,26 +411,24 @@ public class AdapterSchoolActivity extends AppCompatActivity {
     @OnClick(R.id.cv_webview_parse)
     @SuppressLint("SetJavaScriptEnabled")
     public void onBtnClicked() {
-        if (!isNeedLoad) {
-            AlertDialog.Builder builder=new AlertDialog.Builder(this)
-                    .setTitle("重要内容!")
-                    .setMessage("请在你看到课表后再点击此按钮!!!")
-                    .setPositiveButton("我看到课表了", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            frameList.clear();
-                            isNeedLoad = true;
-                            sb.setLength(0);
-                            webView.loadUrl("javascript:window.sa.showHtml('<head>'+" + "document.getElementsByTagName('html')[0].innerHTML+'</head>');");
-                        }
-                    })
-                    .setNegativeButton("没有看到课表", null);
-            builder.create().show();
-
-        } else {
-            Toasty.warning(this, "解析状态无效，请重新进入！").show();
-            ActivityTools.toBackActivityAnim(this, returnClass);
-        }
+        AlertDialog.Builder builder=new AlertDialog.Builder(this)
+                .setTitle("重要内容!")
+                .setMessage("请在你看到课表后再点击此按钮!!!")
+                .setPositiveButton("看到了", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        isParse=true;
+                        sb.setLength(0);
+                        webView.loadUrl("javascript:var ifrs=document.getElementsByTagName(\"iframe\");" +
+                                "var iframeContent=\"\";" +
+                                "for(var i=0;i<ifrs.length;i++){" +
+                                "iframeContent=iframeContent+ifrs[i].contentDocument.body.parentElement.outerHTML;" +
+                                "}" +
+                                "window.sa.showHtml(document.getElementsByTagName('html')[0].innerHTML + iframeContent);");
+                    }
+                })
+                .setNegativeButton("没看到", null);
+        builder.create().show();
     }
 
     @OnClick(R.id.id_adapter_popmenu)

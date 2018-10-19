@@ -31,6 +31,7 @@ import com.zhuangfei.hputimetable.MultiScheduleActivity;
 import com.zhuangfei.hputimetable.R;
 import com.zhuangfei.hputimetable.ScanActivity;
 import com.zhuangfei.hputimetable.SearchSchoolActivity;
+import com.zhuangfei.hputimetable.TimetableDetailActivity;
 import com.zhuangfei.hputimetable.UploadHtmlActivity;
 import com.zhuangfei.hputimetable.WebViewActivity;
 import com.zhuangfei.hputimetable.api.TimetableRequest;
@@ -153,7 +154,7 @@ public class FuncFragment extends Fragment implements OnNoticeUpdateListener{
 			cardLayout.addView(view);
 
 		}else{
-			for(Schedule schedule:models){
+			for(final Schedule schedule:models){
 				View view=inflater.inflate(R.layout.item_cardview,null ,false);
 				TextView startText=view.findViewById(R.id.id_item_start);
 				TextView nameText=view.findViewById(R.id.id_item_name);
@@ -169,6 +170,14 @@ public class FuncFragment extends Fragment implements OnNoticeUpdateListener{
 				view.findViewById(R.id.id_item_clicklayout).setOnClickListener(new View.OnClickListener() {
 					@Override
 					public void onClick(View view) {
+						List<Schedule> list=new ArrayList<>();
+						list.add(schedule);
+						BundleModel model = new BundleModel();
+						model.put("timetable", list);
+						model.setFromClass(getActivity().getClass());
+						model.put("item",0);
+						ActivityTools.toActivity(getActivity(), TimetableDetailActivity.class, model);
+
 						if(onSwitchPagerListener!=null){
 							onSwitchPagerListener.onPagerSwitch();
 						}

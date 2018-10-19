@@ -29,6 +29,7 @@
         </LinearLayout>
 
         <EditText
+            android:text="河南理工"
             android:id="@+id/id_search_edittext"
             android:layout_width="0dp"
             android:layout_height="30dp"
