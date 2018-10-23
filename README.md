@@ -7,12 +7,34 @@
 **本项目开源，你可以基于此项目进行二次开发，但是必须遵循以下规则：**
 
 - 1.不能使用我的签名
-- 2.务必修改bugly的配置，否则你的崩溃日志会记录在我的后台
-- 3.在你没有获得我的许可时请移除全国大学课程适配平台相关代码，其他模块代码你可以自由使用，参见[全国大学课程适配平台-授权须知](https://github.com/zfman/CourseAdapter)
-- 4.基于此项目进行的二次开发的软件尽量注明原项目的出处，示例如下：
+- 2.如果你要发布的话，请务必修改包名
+- 3.务必修改bugly的配置，否则你的崩溃日志会记录在我的后台
+- 4.在你没有获得我的许可时请移除全国大学课程适配平台相关代码，其他模块代码你可以自由使用，参见[全国大学课程适配平台-授权须知](https://github.com/zfman/CourseAdapter)
+- 5.基于此项目进行的二次开发的软件尽量注明原项目的出处，示例如下：
 > 此项目基于[zfman](https://github.com/zfman)的[怪兽课表](https://github.com/zfman/hputimetable)进行二次开发
 
 特别要注意的是：未授权时请务必移除"适配平台"相关页面以及代码，违者必究!
+
+## 编译失败
+
+下载项目后直接编译会失败,请打开`build.gradle(Module:app)`删除如下代码片段
+```gradle
+// 签名配置
+    signingConfigs {
+        release {
+            storeFile file("./keystore/my.kestore")
+            storePassword "5271314"
+            keyAlias "liu"
+            keyPassword "5271314"
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+        }
+    }
+```
 
 ## 如何修改Bugly配置
 
