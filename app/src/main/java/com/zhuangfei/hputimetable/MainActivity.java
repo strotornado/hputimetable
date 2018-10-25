@@ -149,15 +149,19 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
         ClipboardManager cm = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         ClipData data = cm.getPrimaryClip();
         if (data != null) {
-            ClipData.Item item = data.getItemAt(0);
-            String content = item.getText().toString();
-            if (!TextUtils.isEmpty(content)) {
-                int index = content.indexOf("#");
-                if (index != -1 && content.indexOf("怪兽课表") != -1) {
-                    if (content.length() > index + 1) {
-                        String id = content.substring(index + 1);
-                        showDialogOnImport(id);
-                        clearClip();
+            if(data.getItemCount()>0){
+                ClipData.Item item = data.getItemAt(0);
+                if(item.getText()!=null){
+                    String content = item.getText().toString();
+                    if (!TextUtils.isEmpty(content)) {
+                        int index = content.indexOf("#");
+                        if (index != -1 && content.indexOf("怪兽课表") != -1) {
+                            if (content.length() > index + 1) {
+                                String id = content.substring(index + 1);
+                                showDialogOnImport(id);
+                                clearClip();
+                            }
+                        }
                     }
                 }
             }
