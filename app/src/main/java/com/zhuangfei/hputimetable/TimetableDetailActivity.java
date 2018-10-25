@@ -71,6 +71,10 @@ public class TimetableDetailActivity extends AppCompatActivity {
             returnClass = model.getFromClass();
         }
 
+        if(schedules==null){
+            Toasty.error(this,"参数传递错误:schedule==null").show();
+            goBack();
+        }
         List<Schedule> list = new ArrayList<>();
         for (int i = 0; i < schedules.size(); i++) {
             Schedule schedule = schedules.get(i);

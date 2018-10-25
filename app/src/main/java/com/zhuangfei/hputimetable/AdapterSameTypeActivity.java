@@ -27,9 +27,6 @@ public class AdapterSameTypeActivity extends AppCompatActivity {
     @BindView(R.id.id_school_edittext)
     EditText nameEdit;
 
-    @BindView(R.id.id_url_edittext)
-    EditText urlEdit;
-
     @BindView(R.id.id_title)
     TextView titleTextView;
 
@@ -58,14 +55,13 @@ public class AdapterSameTypeActivity extends AppCompatActivity {
     @OnClick(R.id.cv_other)
     public void save() {
         String name = nameEdit.getText().toString();
-        String url = urlEdit.getText().toString();
-        if (TextUtils.isEmpty(name)||TextUtils.isEmpty(url)) {
+        if (TextUtils.isEmpty(name)) {
             Toasty.warning(this, "不可为空", Toast.LENGTH_SHORT).show();
         } else {
             ActivityTools.toActivity(this,AdapterSchoolActivity.class,
                     new BundleModel().setFromClass(MainActivity.class)
                             .put("school",name)
-                            .put("url",url)
+                            .put("url","https://www.baidu.com/s?ie=UTF-8&wd="+name)
                             .put("parsejs",js));
         }
     }

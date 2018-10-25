@@ -224,7 +224,12 @@ public class UploadHtmlActivity extends AppCompatActivity {
                                 "for(var i=0;i<ifrs.length;i++){" +
                                 "iframeContent=iframeContent+ifrs[i].contentDocument.body.parentElement.outerHTML;" +
                                 "}" +
-                                "window.source.showHtml(document.getElementsByTagName('html')[0].innerHTML + iframeContent);");
+                                "var frs=document.getElementsByTagName(\"frame\");" +
+                                "var frameContent=\"\";" +
+                                "for(var i=0;i<frs.length;i++){" +
+                                "iframeContent=frameContent+frs[i].contentDocument.body.parentElement.outerHTML;" +
+                                "}" +
+                                "window.source.showHtml(document.getElementsByTagName('html')[0].innerHTML + iframeContent+frameContent);");
                     }
                 })
                 .setNegativeButton("没有看到", null);

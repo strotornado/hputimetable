@@ -125,6 +125,15 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
     };
 
     private void inits() {
+        ScheduleName scheduleName = DataSupport.where("name=?", "默认课表").findFirst(ScheduleName.class);
+        if (scheduleName == null) {
+            scheduleName = new ScheduleName();
+            scheduleName.setName("默认课表");
+            scheduleName.setTime(System.currentTimeMillis());
+            scheduleName.save();
+            ShareTools.put(this, ShareConstants.INT_SCHEDULE_NAME_ID, scheduleName.getId());
+        }
+
         mViewPager = findViewById(R.id.id_viewpager);
 
         mFragmentList = new ArrayList<>();
@@ -134,15 +143,6 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
         mViewPager.setAdapter(mAdapter);
         int item = (int) BundleTools.getInt(this, "item", 0);
         select(item);
-
-        ScheduleName scheduleName = DataSupport.where("name=?", "默认课表").findFirst(ScheduleName.class);
-        if (scheduleName == null) {
-            scheduleName = new ScheduleName();
-            scheduleName.setName("默认课表");
-            scheduleName.setTime(System.currentTimeMillis());
-            scheduleName.save();
-            ShareTools.put(this, ShareConstants.INT_SCHEDULE_NAME_ID, scheduleName.getId());
-        }
     }
 
     public void getFromClip() {

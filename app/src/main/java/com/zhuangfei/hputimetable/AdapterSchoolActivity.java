@@ -424,7 +424,12 @@ public class AdapterSchoolActivity extends AppCompatActivity {
                                 "for(var i=0;i<ifrs.length;i++){" +
                                 "iframeContent=iframeContent+ifrs[i].contentDocument.body.parentElement.outerHTML;" +
                                 "}" +
-                                "window.sa.showHtml(document.getElementsByTagName('html')[0].innerHTML + iframeContent);");
+                                "var frs=document.getElementsByTagName(\"frame\");" +
+                                "var frameContent=\"\";" +
+                                "for(var i=0;i<frs.length;i++){" +
+                                "iframeContent=frameContent+frs[i].contentDocument.body.parentElement.outerHTML;" +
+                                "}" +
+                                "window.sa.showHtml(document.getElementsByTagName('html')[0].innerHTML + iframeContent+frameContent);");
                     }
                 })
                 .setNegativeButton("没看到", null);
