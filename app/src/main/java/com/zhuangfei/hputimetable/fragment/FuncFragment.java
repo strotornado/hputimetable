@@ -1,6 +1,7 @@
 package com.zhuangfei.hputimetable.fragment;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -97,6 +98,8 @@ public class FuncFragment extends Fragment implements OnNoticeUpdateListener{
 	@BindView(R.id.id_func_schedulename)
 	TextView scheduleNameText;
 
+	Context thisContext;
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		mView=inflater.inflate(R.layout.fragment_func, container, false);
@@ -116,6 +119,10 @@ public class FuncFragment extends Fragment implements OnNoticeUpdateListener{
 	}
 
 
+	public Context getThisContext() {
+		return thisContext;
+	}
+
 	public void createCardView(List<Schedule> models, ScheduleName newName){
 		cardLayout.removeAllViews();
 		SimpleDateFormat sdf2=new SimpleDateFormat("EEEE");
@@ -126,7 +133,7 @@ public class FuncFragment extends Fragment implements OnNoticeUpdateListener{
 			scheduleNameText.setText(newName.getName());
 		}
 
-		LayoutInflater inflater=LayoutInflater.from(getContext());
+		LayoutInflater inflater=LayoutInflater.from(getThisContext());
 		if(models==null){
 			View view=inflater.inflate(R.layout.item_empty,null ,false);
 			TextView infoText=view.findViewById(R.id.item_empty);
@@ -190,10 +197,20 @@ public class FuncFragment extends Fragment implements OnNoticeUpdateListener{
 	 * @return
 	 */
 	public void findData() {
+		ScheduleName scheduleName = DataSupport.where("name=?", "默认课表").findFirst(ScheduleName.class);
+		if(scheduleName==null){
+			scheduleName = new ScheduleName();
+			scheduleName.setName("默认课表");
+			scheduleName.setTime(System.currentTimeMillis());
+			scheduleName.save();
+			ShareTools.put(getActivity(), ShareConstants.INT_SCHEDULE_NAME_ID, scheduleName.getId());
+		}
+
 		int id = ScheduleDao.getApplyScheduleId(getActivity());
 		final ScheduleName newName = DataSupport.find(ScheduleName.class, id);
-		FindMultiExecutor executor=newName.getModelsAsync();
+		if (scheduleName == null) return;
 
+		FindMultiExecutor executor=newName.getModelsAsync();
 		executor.listen(new FindMultiCallback() {
             @Override
             public <T> void onFinish(List<T> t) {
@@ -222,6 +239,7 @@ public class FuncFragment extends Fragment implements OnNoticeUpdateListener{
 	@Override
 	public void onAttach(Context context) {
 		super.onAttach(context);
+		this.thisContext=context;
 		if(context instanceof OnSwitchPagerListener){
 			onSwitchPagerListener= (OnSwitchPagerListener) context;
 		}
@@ -357,5 +375,11 @@ public class FuncFragment extends Fragment implements OnNoticeUpdateListener{
 		if(onSwitchPagerListener!=null){
 			onSwitchPagerListener.onPagerSwitch();
 		}
+	}
+
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+		thisContext=null;
 	}
 }

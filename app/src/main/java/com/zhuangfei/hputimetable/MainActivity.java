@@ -39,6 +39,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.PersistableBundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
@@ -350,7 +351,7 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
         if (mViewPager.getCurrentItem() == 1) {
             mViewPager.setCurrentItem(0);
         } else {
-            ActivityTools.toHome(this);
+            super.onBackPressed();
         }
     }
 
