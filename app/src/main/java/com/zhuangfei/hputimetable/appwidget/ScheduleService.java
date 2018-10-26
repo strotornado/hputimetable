@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 import android.widget.ScrollView;
@@ -28,6 +29,8 @@ import com.zhuangfei.timetable.listener.OnDateBuildAapter;
 import com.zhuangfei.timetable.listener.OnSlideBuildAdapter;
 import com.zhuangfei.timetable.model.Schedule;
 import com.zhuangfei.timetable.model.ScheduleSupport;
+import com.zhuangfei.timetable.operater.SimpleOperater;
+import com.zhuangfei.timetable.utils.ColorUtils;
 import com.zhuangfei.timetable.utils.ScreenUtils;
 import com.zhuangfei.toolkit.model.BundleModel;
 import com.zhuangfei.toolkit.tools.ActivityTools;
@@ -95,16 +98,13 @@ public class ScheduleService extends RemoteViewsService {
 
             timetableView.data(data)
                     .curWeek(curWeek)
-                    .maxSlideItem(10)
-                    .alpha(0f,0f,1f)
+                    .maxSlideItem(12)
+                    .alpha(1f,0f,1f)
                     .marLeft(ScreenUtils.dip2px(context,3))
                     .marTop(ScreenUtils.dip2px(context,3))
                     .itemHeight(ScreenUtils.dip2px(context,50))
                     .showView();
 //            timetableView.hideDateView();
-            OnSlideBuildAdapter onSlideBuildAdapter= (OnSlideBuildAdapter) timetableView.onSlideBuildListener();
-            onSlideBuildAdapter.setBackground(Color.TRANSPARENT);
-
             layoutView(timetableView, ScreenUtils.dip2px(context, 375f),timetableView.itemHeight()*timetableView.maxSlideItem());
             views.setBitmap(R.id.iv_imgview, "setImageBitmap", getViewBitmap(timetableView));
 //            Schedule schedule = data.get(i);
@@ -112,9 +112,9 @@ public class ScheduleService extends RemoteViewsService {
 //            views.setTextViewText(R.id.id_widget_item_room, schedule.getRoom());
 //            views.setTextViewText(R.id.id_widget_item_start, schedule.getStart() + "-" + (schedule.getStart() + schedule.getStep() - 1));
 //
-//            Intent clickIntent = new Intent(context, MainActivity.class);
-//            PendingIntent clickPi = PendingIntent.getActivity(context, i, clickIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-//            views.setOnClickPendingIntent(R.id.id_widget_item_clicklayout, clickPi);
+            Intent clickIntent = new Intent(context, MainActivity.class);
+            PendingIntent clickPi = PendingIntent.getActivity(context, i, clickIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            views.setOnClickPendingIntent(R.id.iv_imgview, clickPi);
 
             return views;
         }

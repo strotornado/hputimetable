@@ -70,6 +70,21 @@ public class ActivityTools {
 		context.finish();
 	}
 
+	public static void toActivityWithout(Activity context,Class<?> target,BundleModel model){
+		Intent intent=new Intent(context,target);
+		Bundle bundle=new Bundle();
+		bundle.putSerializable("model",model);
+		intent.putExtras(bundle);
+		context.startActivity(intent);
+		context.overridePendingTransition(R.anim.slide2_in, R.anim.slide2_out);//动画
+	}
+
+	public static void toActivityWithout(Activity context,Class<?> target){
+		Intent intent=new Intent(context,target);
+		context.startActivity(intent);
+		context.overridePendingTransition(R.anim.slide2_in, R.anim.slide2_out);//动画
+	}
+
 	public static void toBackActivityAnim(Activity context,Class<?> target){
 		Intent intent=new Intent(context,target);
 		context.startActivity(intent);

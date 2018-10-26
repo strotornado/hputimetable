@@ -36,6 +36,7 @@
 
     <ImageView
         android:id="@+id/id_main_menu"
+        android:visibility="gone"
         android:layout_width="45dp"
         android:layout_height="45dp"
         android:layout_marginLeft="10dp"

@@ -29,6 +29,17 @@ import es.dmoral.toasty.Toasty;
 public class ScheduleDao {
     private static final String TAG = "ScheduleDao";
 
+    public static void changeStatus(Context context,boolean isNeedUpdate){
+        int v=isNeedUpdate==true?1:0;
+        ShareTools.putInt(context,"schedule_is_need_update",1);
+    }
+
+    public static boolean isNeedUpdate(Context context){
+        int v= ShareTools.getInt(context,"schedule_is_need_update",0);
+        if(v==1) return true;
+        return false;
+    }
+
     public static List<TimetableModel> getAllWithScheduleId(int id) {
         Log.d(TAG, "getAllWithScheduleId: "+id);
         ScheduleName scheduleName = DataSupport.find(ScheduleName.class, id);

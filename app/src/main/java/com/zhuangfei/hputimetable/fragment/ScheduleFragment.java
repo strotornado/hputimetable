@@ -99,6 +99,8 @@ public class ScheduleFragment extends LazyLoadFragment implements OnSwitchTableL
     @BindView(R.id.id_loadlayout)
     LinearLayout loadLayout;
 
+    int tmp=1;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -140,6 +142,11 @@ public class ScheduleFragment extends LazyLoadFragment implements OnSwitchTableL
                 mTimetableView.changeWeekForce(newCurWeek);
                 mWeekView.curWeek(newCurWeek).updateView();
             }
+            if(ScheduleDao.isNeedUpdate(getActivity())){
+                mTimetableView.changeWeekForce(newCurWeek);
+                mWeekView.curWeek(newCurWeek).updateView();
+            }
+
         }
     };
 
@@ -157,6 +164,7 @@ public class ScheduleFragment extends LazyLoadFragment implements OnSwitchTableL
 
     private void inits() {
         menuImageView.setColorFilter(Color.WHITE);
+        menuImageView.setVisibility(View.VISIBLE);
         context = getActivity();
         schedules = new ArrayList<>();
 
@@ -169,6 +177,7 @@ public class ScheduleFragment extends LazyLoadFragment implements OnSwitchTableL
         }
 
         int curWeek = TimetableTools.getCurWeek(context);
+        tmp=curWeek;
 
         //设置周次选择属性
         mWeekView.data(schedules)
@@ -178,6 +187,7 @@ public class ScheduleFragment extends LazyLoadFragment implements OnSwitchTableL
                     @Override
                     public void onWeekClicked(int week) {
                         int cur = mTimetableView.curWeek();
+                        tmp=week;
                         //更新切换后的日期，从当前周cur->切换的周week
                         mTimetableView.onDateBuildListener()
                                 .onUpdateDate(cur, week);
@@ -217,13 +227,14 @@ public class ScheduleFragment extends LazyLoadFragment implements OnSwitchTableL
                         model.put("timetable", scheduleList);
                         model.setFromClass(getActivity().getClass());
                         model.put("item",1);
-                        ActivityTools.toActivity(getContext(), TimetableDetailActivity.class, model);
+                        ActivityTools.toActivityWithout(getContext(), TimetableDetailActivity.class, model);
                      }
                 })
                 .callback(new ISchedule.OnWeekChangedListener() {
                     @Override
                     public void onWeekChanged(int curWeek) {
                         mTitleTextView.setText("第"+curWeek+"周");
+                        tmp=curWeek;
                     }
                 })
                 .callback(new ISchedule.OnItemLongClickListener() {
@@ -233,7 +244,7 @@ public class ScheduleFragment extends LazyLoadFragment implements OnSwitchTableL
                         model.setFromClass(getActivity().getClass())
                                 .put(AddTimetableActivity.KEY_DAY, day)
                                 .put(AddTimetableActivity.KEY_START, start);
-                        ActivityTools.toActivity(getContext(), AddTimetableActivity.class, model);
+                        ActivityTools.toActivityWithout(getContext(), AddTimetableActivity.class, model);
                      }
                 })
                 .callback(new ISchedule.OnFlaglayoutClickListener() {
@@ -244,7 +255,7 @@ public class ScheduleFragment extends LazyLoadFragment implements OnSwitchTableL
                         model.setFromClass(getActivity().getClass())
                                 .put(AddTimetableActivity.KEY_DAY, day + 1)
                                 .put(AddTimetableActivity.KEY_START, start);
-                        ActivityTools.toActivity(getContext(), AddTimetableActivity.class, model);
+                        ActivityTools.toActivityWithout(getContext(), AddTimetableActivity.class, model);
                     }
                 })
                 .showView();
@@ -328,7 +339,7 @@ public class ScheduleFragment extends LazyLoadFragment implements OnSwitchTableL
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()){
                     case R.id.id_menu2:
-                        ActivityTools.toActivity(context,AddTimetableActivity.class);
+                        ActivityTools.toActivityWithout(context,AddTimetableActivity.class);
                         break;
                 }
                 return false;
@@ -345,6 +356,7 @@ public class ScheduleFragment extends LazyLoadFragment implements OnSwitchTableL
         } else {
             mWeekView.isShow(true);
             mWeekView.scrollToIndex(mTimetableView.curWeek() - 1);
+            mTimetableView.onDateBuildListener().onUpdateDate(tmp,mTimetableView.curWeek());
         }
     }
 

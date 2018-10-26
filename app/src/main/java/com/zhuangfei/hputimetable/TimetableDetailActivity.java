@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.zhuangfei.hputimetable.api.model.TimetableModel;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
+import com.zhuangfei.hputimetable.model.ScheduleDao;
 import com.zhuangfei.hputimetable.tools.BroadcastUtils;
 import com.zhuangfei.hputimetable.tools.TimetableTools;
 import com.zhuangfei.timetable.model.Schedule;
@@ -58,7 +59,6 @@ public class TimetableDetailActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         inflater = LayoutInflater.from(this);
         item= (int) BundleTools.getInt(this,"item",1);
-
         loadData();
     }
 
@@ -167,6 +167,7 @@ public class TimetableDetailActivity extends AppCompatActivity {
                 model.delete();
                 ShareTools.put(this, "course_update", 1);
                 Toasty.success(this, "删除成功！").show();
+                ScheduleDao.changeStatus(this,true);
                 BroadcastUtils.refreshAppWidget(this);
                 goBack();
             }
@@ -182,7 +183,6 @@ public class TimetableDetailActivity extends AppCompatActivity {
                 if(i!=schedule.getWeekList().size()-1) weeks+=",";
             }
         }
-
         ActivityTools.toActivity(this, AddTimetableActivity.class,
                 new BundleModel().setFromClass(MainActivity.class)
                         .put(AddTimetableActivity.KEY_ID, schedule.getExtras().get(TimetableModel.EXTRA_ID))

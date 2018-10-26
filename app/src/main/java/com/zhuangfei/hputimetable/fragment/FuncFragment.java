@@ -159,7 +159,15 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
 		cardLayout.removeAllViews();
 		SimpleDateFormat sdf2=new SimpleDateFormat("EEEE");
 		int curWeek = TimetableTools.getCurWeek(getActivity());
-		todayInfo.setText("第"+curWeek+"周  "+sdf2.format(new Date()));
+		String html="第<b>"+curWeek+"</b>周  "+sdf2.format(new Date());
+		CharSequence charSequence;
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+			charSequence = Html.fromHtml(html,Html.FROM_HTML_MODE_LEGACY);
+		} else {
+			charSequence = Html.fromHtml(html);
+		}
+
+		todayInfo.setText(charSequence);
 
 		if(newName!=null){
 			scheduleNameText.setText(newName.getName());
@@ -286,7 +294,7 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
                 .setPositiveButton("去适配", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        ActivityTools.toActivity(getActivity(), AdapterTipActivity.class);
+                        ActivityTools.toActivityWithout(getActivity(), AdapterTipActivity.class);
                         if(dialogInterface!=null) dialogInterface.dismiss();
                     }
                 })
@@ -307,17 +315,17 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
 
 	@OnClick(R.id.id_search_school)
 	public void toSearchSchool(){
-		ActivityTools.toActivity(getActivity(), SearchSchoolActivity.class);
+		ActivityTools.toActivityWithout(getActivity(), SearchSchoolActivity.class);
 	}
 
 	@OnClick(R.id.id_func_scan)
 	public void toScanActivity(){
-		ActivityTools.toActivity(getActivity(),ScanActivity.class);
+		ActivityTools.toActivityWithout(getActivity(),ScanActivity.class);
 	}
 
 	@OnClick(R.id.id_func_multi)
 	public void toMultiActivity(){
-		ActivityTools.toActivity(getActivity(),MultiScheduleActivity.class);
+		ActivityTools.toActivityWithout(getActivity(),MultiScheduleActivity.class);
 	}
 
 	@OnClick(R.id.id_func_simport)
@@ -329,7 +337,7 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
 
 	@OnClick(R.id.id_func_setting)
 	public void toSettingActivity(){
-		ActivityTools.toActivity(getActivity(),MenuActivity.class);
+		ActivityTools.toActivityWithout(getActivity(),MenuActivity.class);
 	}
 
 	/**
@@ -344,7 +352,6 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
 		super.onActivityResult(requestCode, resultCode, data);
 		if (requestCode == MainActivity.REQUEST_IMPORT && resultCode == AuthActivity.RESULT_STATUS) {
 			SuperResult result= SuperUtils.getResult(data);
-			Toasty.info(getActivity(), "info:"+result).show();
 			if(result==null){
 				Toasty.error(getActivity(), "result is null").show();
 			}else{
@@ -398,7 +405,14 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
 					if(result.getCode()==200){
 						ValuePair pair=result.getData();
 						if(pair!=null){
-							display.setText(Html.fromHtml(pair.getValue()));
+							CharSequence charSequence;
+							if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+								charSequence = Html.fromHtml(pair.getValue(),Html.FROM_HTML_MODE_LEGACY);
+							} else {
+								charSequence = Html.fromHtml(pair.getValue());
+							}
+
+							display.setText(charSequence);
 						}else{
 							display.setText("适配公告加载异常!");
 						}
@@ -419,10 +433,7 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
 
 	@Override
 	public void onUpdateNotice() {
-		SimpleDateFormat sdf2=new SimpleDateFormat("EEEE");
-		int curWeek = TimetableTools.getCurWeek(getActivity());
-		String text="第"+curWeek+"周  "+sdf2.format(new Date());
-		if(todayInfo.getText().toString()!=null){
+		if(todayInfo.getText()!=null){
 			findData();
 		}
 		getValue("1f088b55140a49e101e79c420b19bce6");

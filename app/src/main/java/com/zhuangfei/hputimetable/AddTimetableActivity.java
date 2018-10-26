@@ -30,6 +30,7 @@ import com.zhuangfei.hputimetable.api.model.TimetableModel;
 import com.zhuangfei.hputimetable.appwidget.ScheduleAppWidget;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
 import com.zhuangfei.hputimetable.model.AddModel;
+import com.zhuangfei.hputimetable.model.ScheduleDao;
 import com.zhuangfei.hputimetable.tools.BroadcastUtils;
 import com.zhuangfei.hputimetable.tools.TimetableTools;
 import com.zhuangfei.toolkit.model.BundleModel;
@@ -287,8 +288,8 @@ public class AddTimetableActivity extends Activity {
             models.add(timetableModel);
         }
         DataSupport.saveAll(models);
-        ShareTools.putInt(this, "course_update", 1);
         BroadcastUtils.refreshAppWidget(this);
+        ScheduleDao.changeStatus(this,true);
         Toasty.success(this, "保存成功", Toast.LENGTH_SHORT).show();
         goBack();
     }
@@ -323,10 +324,12 @@ public class AddTimetableActivity extends Activity {
         thisModel.setDay(model.getDay());
         thisModel.setStart(model.getStart());
         thisModel.setStep(model.getEnd() - model.getStart() + 1);
+        thisModel.setRoom(room);
         thisModel.update(id);
 
         ShareTools.putInt(this, "course_update", 1);
         BroadcastUtils.refreshAppWidget(this);
+        ScheduleDao.changeStatus(this,true);
         Toasty.success(this, "修改成功", Toast.LENGTH_SHORT).show();
         goBack();
     }

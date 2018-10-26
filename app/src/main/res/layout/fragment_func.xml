@@ -29,12 +29,12 @@
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="5dp"
                 app:cardElevation="1dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="15dp"
                 app:cardPreventCornerOverlap="false">
                 <LinearLayout
                     android:id="@+id/id_search_school"
                     android:layout_width="match_parent"
-                    android:layout_height="40dp"
+                    android:layout_height="35dp"
                     android:gravity="center"
                     android:orientation="horizontal">
                     <ImageView
@@ -200,7 +200,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="5dp"
-                                android:text="设置" />
+                                android:text="工具箱" />
                         </LinearLayout>
                     </LinearLayout>
                 </LinearLayout>
@@ -236,8 +236,7 @@
                             android:layout_marginRight="15dp"
                             android:layout_weight="1"
                             android:text="第2周 周四"
-                            android:textSize="16sp"
-                            android:textStyle="bold" />
+                            android:textSize="16sp" />
 
                     </LinearLayout>
 
@@ -284,7 +283,7 @@
                         android:lineSpacingExtra="4dp"
                         android:padding="15dp"
                         android:text="适配公告加载中..."
-                        android:textSize="15sp" />
+                        android:textSize="16sp" />
                 </LinearLayout>
             </android.support.v7.widget.CardView>
 
