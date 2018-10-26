@@ -20,19 +20,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            android:name=".MainActivity"
+            android:theme="@style/mainTheme">
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".ImportMajorActivity"
             android:windowSoftInputMode="stateAlwaysHidden" />
         <activity android:name=".TimetableDetailActivity" />
-        <activity
-            android:name=".HpuRepertoryActivity"/>
+        <activity android:name=".HpuRepertoryActivity" />
         <activity android:name=".AddTimetableActivity" />
         <activity android:name=".MenuActivity" />
         <activity android:name=".WebViewActivity" />
@@ -70,11 +66,18 @@
         <activity android:name=".CreateScheduleNameActivity" />
         <activity android:name=".ModifyScheduleNameActivity" />
         <activity android:name=".specialarea.SpecialAreaActivity" />
-        <activity android:name=".SearchSchoolActivity" />
+        <activity android:name=".SearchSchoolActivity" android:theme="@style/mainTheme"/>
         <activity android:name=".UploadHtmlActivity" />
-        <activity android:name=".AdapterTipActivity"></activity>
-        <activity android:name=".AdapterSchoolActivity"></activity>
-        <activity android:name=".AdapterSameTypeActivity"></activity>
+        <activity android:name=".AdapterTipActivity" />
+        <activity android:name=".AdapterSchoolActivity" />
+        <activity android:name=".AdapterSameTypeActivity" />
+        <activity android:name=".SplashActivity" android:theme="@style/splash">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

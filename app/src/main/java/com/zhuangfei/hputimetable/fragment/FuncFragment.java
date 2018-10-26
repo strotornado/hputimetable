@@ -6,15 +6,20 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.CardView;
+import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -79,7 +84,7 @@ import retrofit2.Response;
  * 
  */
 @SuppressLint({ "NewApi", "ValidFragment" })
-public class FuncFragment extends Fragment implements OnNoticeUpdateListener{
+public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateListener{
 
 	private View mView;
 
@@ -98,7 +103,29 @@ public class FuncFragment extends Fragment implements OnNoticeUpdateListener{
 	@BindView(R.id.id_func_schedulename)
 	TextView scheduleNameText;
 
-	Context thisContext;
+	@BindView(R.id.id_img1)
+	ImageView imageView1;
+
+	@BindView(R.id.id_img2)
+	ImageView imageView2;
+
+	@BindView(R.id.id_img3)
+	ImageView imageView3;
+
+	@BindView(R.id.id_img4)
+	ImageView imageView4;
+
+	@BindView(R.id.tv_count)
+	TextView countTextView;
+
+	@BindView(R.id.tv_counttip)
+	TextView countTipTextView;
+
+	@BindView(R.id.cv_dayview)
+	CardView dayView;
+
+	@BindView(R.id.iv_search)
+	ImageView searchImageView;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -108,19 +135,24 @@ public class FuncFragment extends Fragment implements OnNoticeUpdateListener{
 
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
-		super.onViewCreated(view, savedInstanceState);
 		ButterKnife.bind(this,view);
+		super.onViewCreated(view, savedInstanceState);
+	}
+
+	@Override
+	protected void lazyLoad() {
 		inits();
 		getValue("1f088b55140a49e101e79c420b19bce6");
 	}
 
 	private void inits() {
+		int color=getResources().getColor(R.color.colorPrimary);
+		searchImageView.setColorFilter(Color.BLACK);
+		imageView1.setColorFilter(color);
+		imageView2.setColorFilter(color);
+		imageView3.setColorFilter(color);
+		imageView4.setColorFilter(color);
 		findData();
-	}
-
-
-	public Context getThisContext() {
-		return thisContext;
 	}
 
 	public void createCardView(List<Schedule> models, ScheduleName newName){
@@ -133,8 +165,12 @@ public class FuncFragment extends Fragment implements OnNoticeUpdateListener{
 			scheduleNameText.setText(newName.getName());
 		}
 
-		LayoutInflater inflater=LayoutInflater.from(getThisContext());
+		LayoutInflater inflater=LayoutInflater.from(getActivity());
 		if(models==null){
+			countTextView.setText("0");
+			countTipTextView.setText("你还没有添加数据呀!");
+			dayView.setVisibility(View.GONE);
+
 			View view=inflater.inflate(R.layout.item_empty,null ,false);
 			TextView infoText=view.findViewById(R.id.item_empty);
 			view.findViewById(R.id.item_empty).setOnClickListener(new View.OnClickListener() {
@@ -148,20 +184,31 @@ public class FuncFragment extends Fragment implements OnNoticeUpdateListener{
 			infoText.setText("本地没有数据,去添加!");
 			cardLayout.addView(view);
 		}else if(models.size()==0){
-			View view=inflater.inflate(R.layout.item_empty,null ,false);
-			TextView infoText=view.findViewById(R.id.item_empty);
-			view.findViewById(R.id.item_empty).setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View view) {
-					if(onSwitchPagerListener!=null){
-						onSwitchPagerListener.onPagerSwitch();
-					}
-				}
-			});
-			cardLayout.addView(view);
+			countTextView.setText("0");
+			countTipTextView.setText("今天没有课，好闲呀~");
+			dayView.setVisibility(View.GONE);
+//			View view=inflater.inflate(R.layout.item_empty,null ,false);
+//			TextView infoText=view.findViewById(R.id.item_empty);
+//			view.findViewById(R.id.item_empty).setOnClickListener(new View.OnClickListener() {
+//				@Override
+//				public void onClick(View view) {
+//					if(onSwitchPagerListener!=null){
+//						onSwitchPagerListener.onPagerSwitch();
+//					}
+//				}
+//			});
+//			cardLayout.addView(view);
 
 		}else{
-			for(final Schedule schedule:models){
+			countTextView.setText(""+models.size());
+			if(models.size()<3) countTipTextView.setText("今天课程较少，非常轻松~");
+			else if(models.size()<5) countTipTextView.setText("今天课程适中，加油~");
+			else countTipTextView.setText("好多的课呀，有点慌~");
+			dayView.setVisibility(View.VISIBLE);
+
+			for(int i=0;i<models.size();i++){
+				final Schedule schedule=models.get(i);
+				if(schedule==null)continue;
 				View view=inflater.inflate(R.layout.item_cardview,null ,false);
 				TextView startText=view.findViewById(R.id.id_item_start);
 				TextView nameText=view.findViewById(R.id.id_item_name);
@@ -250,7 +297,6 @@ public class FuncFragment extends Fragment implements OnNoticeUpdateListener{
 	@Override
 	public void onAttach(Context context) {
 		super.onAttach(context);
-		this.thisContext=context;
 		if(context instanceof OnSwitchPagerListener){
 			onSwitchPagerListener= (OnSwitchPagerListener) context;
 		}
@@ -298,6 +344,7 @@ public class FuncFragment extends Fragment implements OnNoticeUpdateListener{
 		super.onActivityResult(requestCode, resultCode, data);
 		if (requestCode == MainActivity.REQUEST_IMPORT && resultCode == AuthActivity.RESULT_STATUS) {
 			SuperResult result= SuperUtils.getResult(data);
+			Toasty.info(getActivity(), "info:"+result).show();
 			if(result==null){
 				Toasty.error(getActivity(), "result is null").show();
 			}else{
@@ -351,7 +398,7 @@ public class FuncFragment extends Fragment implements OnNoticeUpdateListener{
 					if(result.getCode()==200){
 						ValuePair pair=result.getData();
 						if(pair!=null){
-							display.setText(pair.getValue());
+							display.setText(Html.fromHtml(pair.getValue()));
 						}else{
 							display.setText("适配公告加载异常!");
 						}
@@ -386,11 +433,5 @@ public class FuncFragment extends Fragment implements OnNoticeUpdateListener{
 		if(onSwitchPagerListener!=null){
 			onSwitchPagerListener.onPagerSwitch();
 		}
-	}
-
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		thisContext=null;
 	}
 }

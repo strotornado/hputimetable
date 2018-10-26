@@ -32,7 +32,7 @@
         android:text="WebView"
         android:textSize="18sp" />
     <ImageView
-        android:id="@+id/id_adapter_popmenu"
+        android:id="@+id/id_webview_help"
         android:layout_width="35dp"
         android:layout_height="35dp"
         android:layout_marginRight="10dp"

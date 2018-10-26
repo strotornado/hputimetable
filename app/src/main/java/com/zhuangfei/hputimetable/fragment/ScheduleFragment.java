@@ -58,7 +58,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import es.dmoral.toasty.Toasty;
 
-public class ScheduleFragment extends Fragment implements OnSwitchTableListener,OnUpdateCourseListener {
+public class ScheduleFragment extends LazyLoadFragment implements OnSwitchTableListener,OnUpdateCourseListener {
 
     private static final String TAG = "MainActivity";
 
@@ -96,6 +96,9 @@ public class ScheduleFragment extends Fragment implements OnSwitchTableListener,
 
     OnNoticeUpdateListener onNoticeUpdateListener;
 
+    @BindView(R.id.id_loadlayout)
+    LinearLayout loadLayout;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -105,8 +108,12 @@ public class ScheduleFragment extends Fragment implements OnSwitchTableListener,
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this,view);
+        super.onViewCreated(view, savedInstanceState);
+    }
+
+    @Override
+    protected void lazyLoad() {
         inits();
         adjustAndGetData();
     }
@@ -149,7 +156,7 @@ public class ScheduleFragment extends Fragment implements OnSwitchTableListener,
     }
 
     private void inits() {
-        menuImageView.setColorFilter(Color.GRAY);
+        menuImageView.setColorFilter(Color.WHITE);
         context = getActivity();
         schedules = new ArrayList<>();
 
@@ -241,6 +248,7 @@ public class ScheduleFragment extends Fragment implements OnSwitchTableListener,
                     }
                 })
                 .showView();
+        loadLayout.setVisibility(View.GONE);
     }
 
     /**

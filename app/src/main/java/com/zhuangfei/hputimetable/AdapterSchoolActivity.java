@@ -83,7 +83,7 @@ public class AdapterSchoolActivity extends AppCompatActivity {
     StringBuffer sb = new StringBuffer();
     String html = "";
 
-    @BindView(R.id.id_adapter_popmenu)
+    @BindView(R.id.id_webview_help)
     ImageView popmenuImageView;
 
     @BindView(R.id.id_loadingbar)
@@ -436,7 +436,7 @@ public class AdapterSchoolActivity extends AppCompatActivity {
         builder.create().show();
     }
 
-    @OnClick(R.id.id_adapter_popmenu)
+    @OnClick(R.id.id_webview_help)
     public void showPopMenu() {
         //创建弹出式菜单对象（最低版本11）
         PopupMenu popup = new PopupMenu(this, popmenuImageView);//第二个参数是绑定的那个view

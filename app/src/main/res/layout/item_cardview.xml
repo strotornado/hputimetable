@@ -5,6 +5,12 @@
     android:layout_height="wrap_content"
     android:gravity="center"
     android:orientation="vertical">
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="60dp"
+        android:layout_marginRight="10dp"
+        android:background="@color/app_line"/>
 
     <LinearLayout
         android:id="@+id/id_item_clicklayout"
@@ -42,7 +48,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ellipsize="middle"
-                android:textSize="14sp"
+                android:textSize="15sp"
                 android:singleLine="true"
                 android:textColor="@color/app_course_textcolor_blue" />
         </LinearLayout>

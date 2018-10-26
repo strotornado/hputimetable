@@ -9,6 +9,5 @@
         android:layout_height="60dp"
         android:gravity="center"
         android:textSize="17sp"
-        android:textStyle="bold"
-        android:text="今天没有课哟~~"/>
+        android:text="今天没有课，好闲呀~"/>
 </LinearLayout>

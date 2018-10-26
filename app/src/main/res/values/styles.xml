@@ -13,7 +13,14 @@
     </style>
 
     <style name="splash" parent="AppTheme">
-        <item name="android:background">@drawable/main_bg</item>
+        <item name="android:background">@drawable/list_start</item>
+        <item name="android:windowFullscreen">true</item>
+    </style>
+
+    <style name="mainTheme" parent="AppTheme">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
     </style>
 
     <style name="TimeDataPicker">

@@ -49,12 +49,16 @@ public class TimetableDetailActivity extends AppCompatActivity {
 
     Class returnClass = MainActivity.class;
 
+    int item=1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timetable_detail);
         ButterKnife.bind(this);
         inflater = LayoutInflater.from(this);
+        item= (int) BundleTools.getInt(this,"item",1);
+
         loadData();
     }
 
@@ -147,7 +151,6 @@ public class TimetableDetailActivity extends AppCompatActivity {
 
     @OnClick(R.id.id_back)
     public void goBack() {
-        int item= (int) BundleTools.getInt(this,"item",1);
         ActivityTools.toBackActivityAnim(this, returnClass, new BundleModel().put("item", item));
     }
 

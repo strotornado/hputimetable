@@ -124,6 +124,16 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
         }
     };
 
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+//        super.onRestoreInstanceState(savedInstanceState);
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+//        super.onSaveInstanceState(outState);
+    }
+
     private void inits() {
         ScheduleName scheduleName = DataSupport.where("name=?", "默认课表").findFirst(ScheduleName.class);
         if (scheduleName == null) {

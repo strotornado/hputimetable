@@ -52,7 +52,7 @@ public class ScheduleAppWidget extends AppWidgetProvider {
         Intent serviceIntent = new Intent(context, ScheduleService.class);
         views.setRemoteAdapter(R.id.id_widget_listview, serviceIntent);
 
-        SimpleDateFormat sdf=new SimpleDateFormat("yyyy/MM/dd");
+        SimpleDateFormat sdf=new SimpleDateFormat("MM月dd日");
         views.setTextViewText(R.id.id_appwidget_date,sdf.format(new Date()));
 
         SimpleDateFormat sdf2=new SimpleDateFormat("EEEE");

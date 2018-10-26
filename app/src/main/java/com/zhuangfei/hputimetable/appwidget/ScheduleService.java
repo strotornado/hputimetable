@@ -96,12 +96,12 @@ public class ScheduleService extends RemoteViewsService {
             timetableView.data(data)
                     .curWeek(curWeek)
                     .maxSlideItem(10)
-                    .alpha(0f,0f,0.5f)
+                    .alpha(0f,0f,1f)
                     .marLeft(ScreenUtils.dip2px(context,3))
                     .marTop(ScreenUtils.dip2px(context,3))
                     .itemHeight(ScreenUtils.dip2px(context,50))
                     .showView();
-            timetableView.hideDateView();
+//            timetableView.hideDateView();
             OnSlideBuildAdapter onSlideBuildAdapter= (OnSlideBuildAdapter) timetableView.onSlideBuildListener();
             onSlideBuildAdapter.setBackground(Color.TRANSPARENT);
 

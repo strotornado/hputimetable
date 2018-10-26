@@ -9,6 +9,52 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
         <include layout="@layout/header_upload_html"/>
+        <LinearLayout
+            android:visibility="gone"
+            android:id="@+id/id_webview_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/id_webview_btn2"
+                android:text="期末成绩"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/id_webview_btn1"
+                android:text="历年成绩"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/id_webview_btn3"
+                android:text="空教室查询"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/id_webview_btn6"
+                android:text="选课结果"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/id_webview_btn4"
+                android:text="网上选课"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/id_webview_btn5"
+                android:text="退课"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
         <WebView
             android:id="@+id/id_webview"
             android:background="@color/app_white"
