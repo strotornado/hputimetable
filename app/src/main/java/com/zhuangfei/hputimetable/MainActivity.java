@@ -175,7 +175,6 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
         mAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager(), mFragmentList);
         mViewPager.setAdapter(mAdapter);
         int item = (int) BundleTools.getInt(this, "item", 0);
-        Toasty.info(this,item+":Main OnCreate").show();
         select(item);
     }
 
