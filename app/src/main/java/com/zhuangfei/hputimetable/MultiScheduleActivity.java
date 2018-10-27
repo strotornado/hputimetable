@@ -90,6 +90,7 @@ public class MultiScheduleActivity extends Activity {
         ShareTools.put(context, "course_update", 1);
         ShareTools.put(context, ShareConstants.INT_SCHEDULE_NAME_ID, id);
         BroadcastUtils.refreshAppWidget(MultiScheduleActivity.this);
+        ScheduleDao.changeStatus(MultiScheduleActivity.this,true);
         Toasty.success(context, "切换课表成功").show();
         adapter.notifyDataSetChanged();
     }
@@ -121,6 +122,7 @@ public class MultiScheduleActivity extends Activity {
                             }
                             getData();
                             Toasty.success(context, "删除成功").show();
+                            ScheduleDao.changeStatus(MultiScheduleActivity.this,true);
                             dialog.dismiss();
                         }
                     }).setNegativeButton("取消", null);

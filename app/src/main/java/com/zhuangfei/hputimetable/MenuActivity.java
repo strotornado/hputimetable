@@ -29,7 +29,9 @@ import com.zhuangfei.hputimetable.constants.ShareConstants;
 import com.zhuangfei.hputimetable.fragment.ScheduleFragment;
 import com.zhuangfei.hputimetable.model.ScheduleDao;
 import com.zhuangfei.hputimetable.specialarea.SpecialAreaActivity;
+import com.zhuangfei.hputimetable.tools.BroadcastUtils;
 import com.zhuangfei.hputimetable.tools.TimetableTools;
+import com.zhuangfei.hputimetable.tools.WidgetConfig;
 import com.zhuangfei.toolkit.model.BundleModel;
 import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.ShareTools;
@@ -62,6 +64,18 @@ public class MenuActivity extends AppCompatActivity {
 
     @BindView(R.id.id_checkauto)
     SwitchCompat checkedAutoSwitch;
+
+    @BindView(R.id.id_widget_blackcolor)
+    SwitchCompat blackThemeSwitch;
+
+    @BindView(R.id.id_widget_max15)
+    SwitchCompat max15Switch;
+
+    @BindView(R.id.id_widget_hideweeks)
+    SwitchCompat hideWeeksSwitch;
+
+    @BindView(R.id.id_widget_hidedate)
+    SwitchCompat hideDateSwitch;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -101,6 +115,18 @@ public class MenuActivity extends AppCompatActivity {
         } else {
             checkedAutoSwitch.setChecked(false);
         }
+
+        boolean themeBlack= WidgetConfig.get(this,WidgetConfig.CONFIG_THEME_WHITE);
+        blackThemeSwitch.setChecked(themeBlack);
+
+        boolean maxItem= WidgetConfig.get(this,WidgetConfig.CONFIG_MAX_ITEM);
+        max15Switch.setChecked(maxItem);
+
+        boolean hideWeeks= WidgetConfig.get(this,WidgetConfig.CONFIG_HIDE_WEEKS);
+        hideWeeksSwitch.setChecked(hideWeeks);
+
+        boolean hideDate= WidgetConfig.get(this,WidgetConfig.CONFIG_HIDE_DATE);
+        hideDateSwitch.setChecked(hideDate);
     }
 
     public Activity getContext() {
@@ -195,5 +221,29 @@ public class MenuActivity extends AppCompatActivity {
         } else {
             ShareTools.putInt(this, "isIgnoreUpdate", 1);
         }
+    }
+
+    @OnCheckedChanged(R.id.id_widget_blackcolor)
+    public void onCheckedBlackThemeSwitchClicked(boolean b) {
+        WidgetConfig.apply(this,WidgetConfig.CONFIG_THEME_WHITE,!b);
+        BroadcastUtils.refreshAppWidget(this);
+    }
+
+    @OnCheckedChanged(R.id.id_widget_hideweeks)
+    public void onCheckedHideWeeksSwitchClicked(boolean b) {
+        WidgetConfig.apply(this,WidgetConfig.CONFIG_HIDE_WEEKS,b);
+        BroadcastUtils.refreshAppWidget(this);
+    }
+
+    @OnCheckedChanged(R.id.id_widget_max15)
+    public void onCheckedMax15SwitchClicked(boolean b) {
+        WidgetConfig.apply(this,WidgetConfig.CONFIG_MAX_ITEM,b);
+        BroadcastUtils.refreshAppWidget(this);
+    }
+
+    @OnCheckedChanged(R.id.id_widget_hidedate)
+    public void onCheckedHideDateSwitchClicked(boolean b) {
+        WidgetConfig.apply(this,WidgetConfig.CONFIG_HIDE_DATE,b);
+        BroadcastUtils.refreshAppWidget(this);
     }
 }

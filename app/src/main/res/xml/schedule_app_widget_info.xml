@@ -3,9 +3,8 @@
     android:initialKeyguardLayout="@layout/schedule_app_widget"
     android:initialLayout="@layout/schedule_app_widget"
     android:minHeight="180dp"
+    android:minWidth="250dp"
     android:resizeMode="horizontal|vertical"
-    android:minResizeWidth="250dp"
-    android:minResizeHeight="110dp"
-    android:previewImage="@drawable/ic_appwidget"
+    android:previewImage="@drawable/ic_launch"
     android:updatePeriodMillis="10800000"
     android:widgetCategory="home_screen"></appwidget-provider>

@@ -6,6 +6,7 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 import android.widget.RemoteViews;
@@ -14,6 +15,7 @@ import com.zhuangfei.hputimetable.MainActivity;
 import com.zhuangfei.hputimetable.R;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
 import com.zhuangfei.hputimetable.tools.TimetableTools;
+import com.zhuangfei.hputimetable.tools.WidgetConfig;
 import com.zhuangfei.toolkit.tools.ShareTools;
 
 import java.text.SimpleDateFormat;
@@ -60,6 +62,14 @@ public class ScheduleAppWidget extends AppWidgetProvider {
         views.setTextViewText(R.id.id_appwidget_week,"第"+curWeek+"周  "+sdf2.format(new Date()));
 
 
+        boolean blackTheme = WidgetConfig.get(context, WidgetConfig.CONFIG_THEME_WHITE);
+        if(blackTheme){
+            views.setTextColor(R.id.id_appwidget_date, Color.BLACK);
+            views.setTextColor(R.id.id_appwidget_week, Color.BLACK);
+        }else{
+            views.setTextColor(R.id.id_appwidget_date, Color.WHITE);
+            views.setTextColor(R.id.id_appwidget_week, Color.WHITE);
+        }
         // template to handle the click listener for each item
 //        Intent pointIntent = new Intent(context,MainActivity.class);
 //        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, pointIntent, PendingIntent.FLAG_UPDATE_CURRENT);

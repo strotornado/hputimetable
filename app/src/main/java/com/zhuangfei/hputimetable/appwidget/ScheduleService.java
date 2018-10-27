@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.net.Uri;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -23,6 +24,7 @@ import com.zhuangfei.hputimetable.api.model.TimetableModel;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
 import com.zhuangfei.hputimetable.model.ScheduleDao;
 import com.zhuangfei.hputimetable.tools.TimetableTools;
+import com.zhuangfei.hputimetable.tools.WidgetConfig;
 import com.zhuangfei.timetable.TimetableView;
 import com.zhuangfei.timetable.listener.ISchedule;
 import com.zhuangfei.timetable.listener.OnDateBuildAapter;
@@ -90,22 +92,48 @@ public class ScheduleService extends RemoteViewsService {
         public RemoteViews getViewAt(int i) {
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.schedule_app_widget_item);
 
-            TimetableView timetableView=new TimetableView(context,null);
+            TimetableView timetableView = new TimetableView(context, null);
             int curWeek = TimetableTools.getCurWeek(context);
-            if(data==null) data=new ArrayList<>();
+            if (data == null) data = new ArrayList<>();
             data.clear();
             data.addAll(findData(context));
 
+            boolean max15 = WidgetConfig.get(context, WidgetConfig.CONFIG_MAX_ITEM);
+            int maxItem = 10;
+            if (max15) maxItem = 15;
+
+            boolean blackTheme = WidgetConfig.get(context, WidgetConfig.CONFIG_THEME_WHITE);
+            CustomDateBuildAdapter dateAdapter = new CustomDateBuildAdapter();
+            OnSlideBuildAdapter slideAdapter = (OnSlideBuildAdapter) timetableView.onSlideBuildListener();
+            slideAdapter.setTextSize(15);
+            dateAdapter.setTextSize(15);
+
+            if (blackTheme) {
+                slideAdapter.setTextColor(Color.BLACK);
+                dateAdapter.setColor(Color.BLACK);
+            }else{
+                slideAdapter.setTextColor(Color.WHITE);
+                dateAdapter.setColor(Color.WHITE);
+
+            }
+
+            boolean hideWeeks = WidgetConfig.get(context, WidgetConfig.CONFIG_HIDE_WEEKS);
+            boolean hideDate = WidgetConfig.get(context, WidgetConfig.CONFIG_HIDE_DATE);
+            if(hideDate) timetableView.hideDateView();
+            if(hideWeeks) timetableView.isShowWeekends(false);
+
             timetableView.data(data)
                     .curWeek(curWeek)
-                    .maxSlideItem(12)
-                    .alpha(1f,0f,1f)
-                    .marLeft(ScreenUtils.dip2px(context,3))
-                    .marTop(ScreenUtils.dip2px(context,3))
-                    .itemHeight(ScreenUtils.dip2px(context,50))
+                    .maxSlideItem(maxItem)
+                    .isShowNotCurWeek(false)
+                    .alpha(0f, 0f, 0.6f)
+//                    .marLeft(ScreenUtils.dip2px(context, 3))
+//                    .marTop(ScreenUtils.dip2px(context, 3))
+                    .itemHeight(ScreenUtils.dip2px(context, 45))
+                    .callback(dateAdapter)
                     .showView();
-//            timetableView.hideDateView();
-            layoutView(timetableView, ScreenUtils.dip2px(context, 375f),timetableView.itemHeight()*timetableView.maxSlideItem());
+
+            layoutView(timetableView, ScreenUtils.dip2px(context, 375f), ScreenUtils.dip2px(context, 50) + timetableView.itemHeight() * timetableView.maxSlideItem()+timetableView.marTop()*(timetableView.maxSlideItem()));
             views.setBitmap(R.id.iv_imgview, "setImageBitmap", getViewBitmap(timetableView));
 //            Schedule schedule = data.get(i);
 //            views.setTextViewText(R.id.id_widget_item_name, schedule.getName());
@@ -119,7 +147,7 @@ public class ScheduleService extends RemoteViewsService {
             return views;
         }
 
-        public void layoutView(View v, int width,int height) {
+        public void layoutView(View v, int width, int height) {
             // validate view.width and view.height
             v.layout(0, 0, width, height);
             int measuredWidth = View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY);
@@ -131,7 +159,8 @@ public class ScheduleService extends RemoteViewsService {
         }
 
         public Bitmap getViewBitmap(ViewGroup viewGroup) {
-            int h =viewGroup.getHeight();;
+            int h = viewGroup.getHeight();
+            ;
             Bitmap bitmap;
 
             // 创建对应大小的bitmap
@@ -172,7 +201,7 @@ public class ScheduleService extends RemoteViewsService {
         if (context == null) return new ArrayList<>();
         int id = ScheduleDao.getApplyScheduleId(this);
         List<TimetableModel> dataModels = ScheduleDao.getAllWithScheduleId(id);
-        if(dataModels==null) return new ArrayList<>();
+        if (dataModels == null) return new ArrayList<>();
         return ScheduleSupport.transform(dataModels);
     }
 }

@@ -15,6 +15,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
 import android.text.Html;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -148,6 +149,7 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
 	private void inits() {
 		int color=getResources().getColor(R.color.colorPrimary);
 		searchImageView.setColorFilter(Color.BLACK);
+        display.setMovementMethod(LinkMovementMethod.getInstance());
 		imageView1.setColorFilter(color);
 		imageView2.setColorFilter(color);
 		imageView3.setColorFilter(color);
@@ -406,10 +408,12 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
 						ValuePair pair=result.getData();
 						if(pair!=null){
 							CharSequence charSequence;
+							String value=pair.getValue();
+							value="1.已经适配过的无需再申请适配了<br/>2.出现问题的话请联系各个学校的负责人<br/>3.紧急情况请联系管理员<br/><a href='http://www.liuzhuangfei.com'>学校负责人列表</a>";
 							if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-								charSequence = Html.fromHtml(pair.getValue(),Html.FROM_HTML_MODE_LEGACY);
+								charSequence = Html.fromHtml(value,Html.FROM_HTML_MODE_LEGACY);
 							} else {
-								charSequence = Html.fromHtml(pair.getValue());
+								charSequence = Html.fromHtml(value);
 							}
 
 							display.setText(charSequence);

@@ -143,8 +143,8 @@ public class ScheduleFragment extends LazyLoadFragment implements OnSwitchTableL
                 mWeekView.curWeek(newCurWeek).updateView();
             }
             if(ScheduleDao.isNeedUpdate(getActivity())){
-                mTimetableView.changeWeekForce(newCurWeek);
-                mWeekView.curWeek(newCurWeek).updateView();
+                onUpdateData();
+                ScheduleDao.changeStatus(getActivity(),false);
             }
 
         }

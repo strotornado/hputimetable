@@ -58,7 +58,6 @@ public class TimetableDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_timetable_detail);
         ButterKnife.bind(this);
         inflater = LayoutInflater.from(this);
-        item= (int) BundleTools.getInt(this,"item",1);
         loadData();
     }
 
@@ -74,6 +73,7 @@ public class TimetableDetailActivity extends AppCompatActivity {
         if (model != null && model.getFromClass() != null) {
             returnClass = model.getFromClass();
         }
+        item= (int) model.get("item",1);
 
         if(schedules==null){
             Toasty.error(this,"参数传递错误:schedule==null").show();

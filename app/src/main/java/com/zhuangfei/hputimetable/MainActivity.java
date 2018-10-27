@@ -85,6 +85,13 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
     }
 
     @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        int item = (int) BundleTools.getInt(this, "item", 0);
+        select(item);
+    }
+
+    @Override
     protected void onStart() {
         super.onStart();
         new Timer().schedule(new TimerTask() {

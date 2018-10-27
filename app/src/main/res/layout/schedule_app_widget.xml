@@ -30,6 +30,5 @@
     <ListView
         android:id="@+id/id_widget_listview"
         android:layout_width="match_parent"
-        android:layout_margin="5dp"
         android:layout_height="match_parent"/>
 </LinearLayout>

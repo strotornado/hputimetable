@@ -423,7 +423,7 @@ public class AdapterSchoolActivity extends AppCompatActivity {
                                 "var iframeContent=\"\";" +
                                 "for(var i=0;i<ifrs.length;i++){" +
                                 "iframeContent=iframeContent+ifrs[i].contentDocument.body.parentElement.outerHTML;" +
-                                "}" +
+                                "}\n" +
                                 "var frs=document.getElementsByTagName(\"frame\");" +
                                 "var frameContent=\"\";" +
                                 "for(var i=0;i<frs.length;i++){" +
