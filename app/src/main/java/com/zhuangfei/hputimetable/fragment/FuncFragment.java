@@ -288,22 +288,6 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
         });
 	}
 
-	@OnClick(R.id.id_toadapter)
-	public void toAdapter(){
-	    AlertDialog.Builder builder=new AlertDialog.Builder(getActivity())
-                .setTitle("温馨提示")
-                .setMessage("不要盲目申请哟~!\n请先搜索框里查找一下你的学校或者同类型教务系统,如果查找不到或导入数据有误才需要去适配!")
-                .setPositiveButton("去适配", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        ActivityTools.toActivityWithout(getActivity(), AdapterTipActivity.class);
-                        if(dialogInterface!=null) dialogInterface.dismiss();
-                    }
-                })
-                .setNegativeButton("取消", null);
-	    builder.create().show();
-	}
-
 	@Override
 	public void onAttach(Context context) {
 		super.onAttach(context);

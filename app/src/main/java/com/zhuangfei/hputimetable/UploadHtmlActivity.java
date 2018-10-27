@@ -29,6 +29,9 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.zhuangfei.hputimetable.adapter_apis.IArea;
+import com.zhuangfei.hputimetable.adapter_apis.JsSupport;
+import com.zhuangfei.hputimetable.adapter_apis.SpecialArea;
 import com.zhuangfei.hputimetable.api.TimetableRequest;
 import com.zhuangfei.hputimetable.api.model.BaseResult;
 import com.zhuangfei.toolkit.tools.ActivityTools;
@@ -49,10 +52,11 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+/**
+ * 源码上传页面
+ * 内部增加了对河南理工大学的兼容，不需要的话可以忽略
+ */
 public class UploadHtmlActivity extends AppCompatActivity {
-
-    public static final int MODE_GET_URL = 1;
-    public static final int MODE_GET_HTML = 2;
 
     private static final String TAG = "WebViewActivity";
     // wenview与加载条
@@ -97,13 +101,14 @@ public class UploadHtmlActivity extends AppCompatActivity {
     public static final String URL_COURSE_RESULT="https://vpn.hpu.edu.cn/web/1/http/2/218.196.240.97/xkAction.do?actionType=6";
 
 
+    JsSupport jsSupport;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_upload_html);
         ButterKnife.bind(this);
         initUrl();
-        initView();
         loadWebView();
     }
 
@@ -111,19 +116,13 @@ public class UploadHtmlActivity extends AppCompatActivity {
         returnClass = BundleTools.getFromClass(this, MainActivity.class);
         url = BundleTools.getString(this, "url", "http://www.liuzhuangfei.com");
         school = BundleTools.getString(this, "school", "WebView");
+        titleTextView.setText("适配-"+school);
     }
 
-    private void initView() {
-        titleTextView.setText("适配-"+school);
-        closeLayout = (LinearLayout) findViewById(R.id.id_close);
-        closeLayout.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View arg0) {
-                ActivityTools.toBackActivityAnim(UploadHtmlActivity.this,
-                        returnClass);
-            }
-        });
+    @OnClick(R.id.id_close)
+    public void goBack() {
+        ActivityTools.toBackActivityAnim(UploadHtmlActivity.this,
+                returnClass);
     }
 
     /**
@@ -191,80 +190,25 @@ public class UploadHtmlActivity extends AppCompatActivity {
 
     @SuppressLint("SetJavaScriptEnabled")
     private void loadWebView() {
-        webView.loadUrl(url);
-        WebSettings settings = webView.getSettings();
-        settings.setJavaScriptEnabled(true);
+        jsSupport=new JsSupport(webView);
+        jsSupport.applyConfig(this,new MyWebViewCallback());
         webView.addJavascriptInterface(new ShowSourceJs(), "source");
-        settings.setDefaultTextEncodingName("gb2312");
-        settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
 
-        settings.setSupportZoom(true);
-//        settings.setBuiltInZoomControls(true);
-
-        webView.setDownloadListener(new DownloadListener() {
-            @Override
-            public void onDownloadStart(String url, String userAgent,
-                                        String contentDisposition, String mimetype,
-                                        long contentLength) {
-                Uri uri = Uri.parse(url);
-                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                startActivity(intent);
-            }
-        });
-
-        webView.setWebViewClient(new WebViewClient() {
-
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                Log.d(TAG, "shouldOverrideUrlLoading: " + url);
-                boolean isUseBrower = false;
-                if (isUseBrower) {
-                    Intent i = new Intent(Intent.ACTION_VIEW);
-                    i.setData(Uri.parse(url));
-                    startActivity(i);
-                } else {
-                    webView.loadUrl(url);
-                }
-                return true;
-            }
-
-            @Override
-            public void onReceivedSslError(WebView view, SslErrorHandler handler, SslError error) {
-                handler.proceed();
-            }
-        });
-
-        webView.setWebChromeClient(new WebChromeClient() {
-
-            @Override
-            public void onProgressChanged(WebView view, int newProgress) {
-                super.onProgressChanged(view, newProgress);
-                final int finalProgress = newProgress;
-                UploadHtmlActivity.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-//                        if (webView.getUrl()!=null&&webView.getUrl().startsWith("https://vpn.hpu.edu.cn/web/1/http/1/218.196.240.97/loginAction.do")) {
-//                            webView.loadUrl("https://vpn.hpu.edu.cn/web/1/http/2/218.196.240.97/xkAction.do?actionType=6");
-//                        }
-                    }
-                });
-            }
-        });
-
+        webView.loadUrl(url);
     }
 
-    @Override
-    public void onBackPressed() {
-        if (webView.canGoBack()&&!isNeedLoad) {
-            webView.goBack();
-        } else {
-            ActivityTools.toBackActivityAnim(this, returnClass);
+    class MyWebViewCallback implements IArea.WebViewCallback {
+
+        @Override
+        public void onProgressChanged(int newProgress) {
+            //河南理工大学教务兼容性处理
+            if (webView.getUrl()!=null&&webView.getUrl().startsWith("https://vpn.hpu.edu.cn/web/1/http/1/218.196.240.97/loginAction.do")) {
+                webView.loadUrl("https://vpn.hpu.edu.cn/web/1/http/2/218.196.240.97/xkAction.do?actionType=6");
+            }
         }
     }
 
     public class ShowSourceJs {
-        private static final String TAG = "ShowSourceJs";
-
         @JavascriptInterface
         public void showHtml(final String content) {
             if (TextUtils.isEmpty(content)) return;
@@ -298,7 +242,6 @@ public class UploadHtmlActivity extends AppCompatActivity {
     }
 
     @OnClick(R.id.cv_webview_code)
-    @SuppressLint("SetJavaScriptEnabled")
     public void onBtnClicked() {
         AlertDialog.Builder builder=new AlertDialog.Builder(this)
                 .setTitle("重要内容!")
@@ -308,20 +251,17 @@ public class UploadHtmlActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         isNeedLoad = true;
                         sb.setLength(0);
-                        webView.loadUrl("javascript:var ifrs=document.getElementsByTagName(\"iframe\");" +
-                                "var iframeContent=\"\";" +
-                                "for(var i=0;i<ifrs.length;i++){" +
-                                "iframeContent=iframeContent+ifrs[i].contentDocument.body.parentElement.outerHTML;" +
-                                "}\n" +
-                                "var frs=document.getElementsByTagName(\"frame\");" +
-                                "var frameContent=\"\";" +
-                                "for(var i=0;i<frs.length;i++){" +
-                                "iframeContent=frameContent+frs[i].contentDocument.body.parentElement.outerHTML;" +
-                                "}" +
-                                "window.source.showHtml(document.getElementsByTagName('html')[0].innerHTML + iframeContent+frameContent);");
+                        jsSupport.getPageHtml("source");
                     }
                 })
                 .setNegativeButton("没有看到", null);
         builder.create().show();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (webView.canGoBack()&&!isNeedLoad)
+            webView.goBack();
+        goBack();
     }
 }

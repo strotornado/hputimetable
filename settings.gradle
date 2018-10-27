@@ -1,1 +1,1 @@
-include ':app', ':toolkit', ':smartalert','superbox','lib-zxing'
+include ':app', ':toolkit', ':smartalert', ':timetable-adapter','superbox','lib-zxing'

@@ -62,6 +62,9 @@ public class SearchSchoolActivity extends AppCompatActivity {
     @BindView(R.id.id_loadlayout)
     LinearLayout loadLayout;
 
+    @BindView(R.id.id_tip)
+    LinearLayout tipLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,6 +79,11 @@ public class SearchSchoolActivity extends AppCompatActivity {
         } else {
             loadLayout.setVisibility(View.GONE);
         }
+    }
+
+    @OnClick(R.id.id_goto_adapter)
+    public void toAdapter(){
+        ActivityTools.toActivity(this, AdapterTipActivity.class);
     }
 
     private void inits() {
@@ -125,7 +133,9 @@ public class SearchSchoolActivity extends AppCompatActivity {
                 schools.clear();
                 adapter.notifyDataSetChanged();
                 hpuAreaLayout.setVisibility(View.GONE);
+                tipLayout.setVisibility(View.VISIBLE);
             } else {
+                tipLayout.setVisibility(View.GONE);
                 search(charSequence.toString());
             }
         }
@@ -176,7 +186,12 @@ public class SearchSchoolActivity extends AppCompatActivity {
     }
 
     private void showResult(List<School> list) {
-        if (list == null) return;
+        if (list == null||list.size()==0) {
+            tipLayout.setVisibility(View.VISIBLE);
+            return;
+        }
+        tipLayout.setVisibility(View.GONE);
+
         data.clear();
         schools.clear();
         schools.addAll(list);
@@ -184,9 +199,11 @@ public class SearchSchoolActivity extends AppCompatActivity {
             if (school != null) {
                 Map<String, String> map = new HashMap<>();
                 String type = school.getType();
-                if (type == null) {
+                if (TextUtils.isEmpty(type)) {
                     map.put("name", school.getSchoolName());
-                }else map.put("name", school.getSchoolName() + "-" + type );
+                }else{
+                    map.put("name", school.getSchoolName() + "-" + type );
+                }
                 data.add(map);
             }
         }

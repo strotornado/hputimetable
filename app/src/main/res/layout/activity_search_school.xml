@@ -112,6 +112,33 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/id_tip"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:lineSpacingExtra="5dp"
+            android:text="支持导入同类型教务系统\n如果搜索不到，请申请适配"
+            android:textSize="16sp" />
+        <TextView
+            android:id="@+id/id_goto_adapter"
+            android:layout_width="120dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="20dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="15dp"
+            android:background="@drawable/button_goto_weekview"
+            android:gravity="center"
+            android:text="去申请适配"
+            android:textColor="@color/app_white" />
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/id_loadlayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
