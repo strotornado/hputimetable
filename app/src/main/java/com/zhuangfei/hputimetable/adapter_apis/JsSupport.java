@@ -16,6 +16,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 /**
+ * js 工具类
  * Created by Liu ZhuangFei on 2018/10/27.
  */
 public class JsSupport {
@@ -34,6 +35,11 @@ public class JsSupport {
         isParse=false;
     }
 
+    /**
+     * 对WebView简单配置
+     * @param context
+     * @param callback 进度回调,可以为空
+     */
     public void applyConfig(final Context context, final IArea.WebViewCallback callback){
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
@@ -73,7 +79,9 @@ public class JsSupport {
             public void onProgressChanged(WebView view, final int newProgress) {
                 super.onProgressChanged(view, newProgress);
 
-                callback.onProgressChanged(newProgress);
+                if(callback!=null){
+                    callback.onProgressChanged(newProgress);
+                }
 
                 //调用解析函数
                 if (newProgress > 60 && isParse) {
@@ -84,6 +92,11 @@ public class JsSupport {
         });
     }
 
+    /**
+     * 加载库文件 parse.html
+     * @param context
+     * @param js 解析用的js
+     */
     public void parseHtml(Context context,String js) {
         if(context==null||js==null) return;
         startParse();
@@ -92,6 +105,10 @@ public class JsSupport {
         webView.loadData(parseHtml, "text/html; charset=UTF-8", null);//这种写法可以正确解码
     }
 
+    /**
+     * 获取页面源码
+     * @param objName webView addJavaScriptInterface()绑定的对象
+     */
     public void getPageHtml(String objName){
         if(webView!=null){
             webView.loadUrl("javascript:var ifrs=document.getElementsByTagName(\"iframe\");" +

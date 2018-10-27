@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 /**
+ * 加载Asset下的文件工具
  * Created by Liu ZhuangFei on 2018/10/6.
  */
 public class AssetTools {
