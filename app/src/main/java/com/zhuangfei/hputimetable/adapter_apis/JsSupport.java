@@ -86,6 +86,7 @@ public class JsSupport {
 
     public void parseHtml(Context context,String js) {
         if(context==null||js==null) return;
+        startParse();
         String parseHtml = AssetTools.readAssetFile(context, "parse.html");
         parseHtml = parseHtml.replace("${jscontent}", js);
         webView.loadData(parseHtml, "text/html; charset=UTF-8", null);//这种写法可以正确解码
@@ -93,7 +94,6 @@ public class JsSupport {
 
     public void getPageHtml(String objName){
         if(webView!=null){
-            startParse();
             webView.loadUrl("javascript:var ifrs=document.getElementsByTagName(\"iframe\");" +
                     "var iframeContent=\"\";" +
                     "for(var i=0;i<ifrs.length;i++){" +

@@ -73,6 +73,10 @@ public class AdapterSchoolActivity extends AppCompatActivity {
     StringBuffer sb = new StringBuffer();
     String url, school, js, type;
 
+    //标记按钮是否已经被点击过
+    //解析按钮如果点击一次，就不需要再去获取html了，直接解析
+    boolean isButtonClicked=false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -263,19 +267,21 @@ public class AdapterSchoolActivity extends AppCompatActivity {
 
     @OnClick(R.id.cv_webview_parse)
     public void onBtnClicked() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this)
-                .setTitle("重要内容!")
-                .setMessage("请在你看到课表后再点击此按钮!!!")
-                .setPositiveButton("看到了", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        sb.setLength(0);
-                        jsSupport.startParse();
-                        jsSupport.getPageHtml("sa");
-                    }
-                })
-                .setNegativeButton("没看到", null);
-        builder.create().show();
+        if(!isButtonClicked){
+            AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                    .setTitle("重要内容!")
+                    .setMessage("请在你看到课表后再点击此按钮!!!")
+                    .setPositiveButton("看到了", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            sb.setLength(0);
+                            isButtonClicked=true;
+                            jsSupport.getPageHtml("sa");
+                        }
+                    })
+                    .setNegativeButton("没看到", null);
+            builder.create().show();
+        }else jsSupport.parseHtml(context(),js);
     }
 
     @OnClick(R.id.id_webview_help)

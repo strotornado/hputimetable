@@ -65,9 +65,6 @@ public class MenuActivity extends AppCompatActivity {
     @BindView(R.id.id_checkauto)
     SwitchCompat checkedAutoSwitch;
 
-    @BindView(R.id.id_widget_blackcolor)
-    SwitchCompat blackThemeSwitch;
-
     @BindView(R.id.id_widget_max15)
     SwitchCompat max15Switch;
 
@@ -115,9 +112,6 @@ public class MenuActivity extends AppCompatActivity {
         } else {
             checkedAutoSwitch.setChecked(false);
         }
-
-        boolean themeBlack= WidgetConfig.get(this,WidgetConfig.CONFIG_THEME_WHITE);
-        blackThemeSwitch.setChecked(themeBlack);
 
         boolean maxItem= WidgetConfig.get(this,WidgetConfig.CONFIG_MAX_ITEM);
         max15Switch.setChecked(maxItem);
@@ -221,12 +215,6 @@ public class MenuActivity extends AppCompatActivity {
         } else {
             ShareTools.putInt(this, "isIgnoreUpdate", 1);
         }
-    }
-
-    @OnCheckedChanged(R.id.id_widget_blackcolor)
-    public void onCheckedBlackThemeSwitchClicked(boolean b) {
-        WidgetConfig.apply(this,WidgetConfig.CONFIG_THEME_WHITE,!b);
-        BroadcastUtils.refreshAppWidget(this);
     }
 
     @OnCheckedChanged(R.id.id_widget_hideweeks)

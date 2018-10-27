@@ -1,5 +1,6 @@
 package com.zhuangfei.hputimetable;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -24,6 +25,7 @@ import com.zhuangfei.hputimetable.listener.OnSwitchTableListener;
 import com.zhuangfei.hputimetable.listener.OnUpdateCourseListener;
 import com.zhuangfei.hputimetable.tools.BroadcastUtils;
 import com.zhuangfei.hputimetable.tools.VersionTools;
+import com.zhuangfei.toolkit.model.BundleModel;
 import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.BundleTools;
 import com.zhuangfei.toolkit.tools.ShareTools;
@@ -75,6 +77,7 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
 
     public static final int REQUEST_IMPORT = 1;
 
+    int toItem=0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,8 +90,21 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        int item = (int) BundleTools.getInt(this, "item", 0);
-        select(item);
+        Serializable serializable=intent.getSerializableExtra("model");
+        if(serializable!=null){
+            BundleModel model= (BundleModel) serializable;
+            if(model!=null){
+                toItem = (int) model.get("item",0);
+                if(mViewPager.getCurrentItem()!=toItem) {
+                    new Timer().schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            handler.sendEmptyMessage(0x125);
+                        }
+                    }, 300);
+                }
+            }
+        }
     }
 
     @Override
@@ -104,7 +120,7 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                handler2.sendEmptyMessage(0x123);
+                handler.sendEmptyMessage(0x124);
             }
         }, 1000);
     }
@@ -113,20 +129,20 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            getFromClip();
-            if(onNoticeUpdateListener!=null){
-                onNoticeUpdateListener.onUpdateNotice();
+            if(msg.what==0x123){
+                getFromClip();
+                if(onNoticeUpdateListener!=null){
+                    onNoticeUpdateListener.onUpdateNotice();
+                }
             }
-        }
-    };
-
-    Handler handler2 = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            try{
-                getValue2("e98b58875e902084a93a1daeae1ccbf7");
-            }catch (Exception e){}
+            if(msg.what==0x124){
+                try{
+                    getValue2("e98b58875e902084a93a1daeae1ccbf7");
+                }catch (Exception e){}
+            }
+            if(msg.what==0x125){
+                select(toItem);
+            }
 
         }
     };
@@ -159,6 +175,7 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
         mAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager(), mFragmentList);
         mViewPager.setAdapter(mAdapter);
         int item = (int) BundleTools.getInt(this, "item", 0);
+        Toasty.info(this,item+":Main OnCreate").show();
         select(item);
     }
 

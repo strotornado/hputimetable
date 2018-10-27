@@ -102,20 +102,13 @@ public class ScheduleService extends RemoteViewsService {
             int maxItem = 10;
             if (max15) maxItem = 15;
 
-            boolean blackTheme = WidgetConfig.get(context, WidgetConfig.CONFIG_THEME_WHITE);
             CustomDateBuildAdapter dateAdapter = new CustomDateBuildAdapter();
             OnSlideBuildAdapter slideAdapter = (OnSlideBuildAdapter) timetableView.onSlideBuildListener();
             slideAdapter.setTextSize(15);
             dateAdapter.setTextSize(15);
 
-            if (blackTheme) {
-                slideAdapter.setTextColor(Color.BLACK);
-                dateAdapter.setColor(Color.BLACK);
-            }else{
-                slideAdapter.setTextColor(Color.WHITE);
-                dateAdapter.setColor(Color.WHITE);
-
-            }
+            slideAdapter.setTextColor(Color.BLACK);
+            dateAdapter.setColor(Color.BLACK);
 
             boolean hideWeeks = WidgetConfig.get(context, WidgetConfig.CONFIG_HIDE_WEEKS);
             boolean hideDate = WidgetConfig.get(context, WidgetConfig.CONFIG_HIDE_DATE);
@@ -127,8 +120,8 @@ public class ScheduleService extends RemoteViewsService {
                     .maxSlideItem(maxItem)
                     .isShowNotCurWeek(false)
                     .alpha(0f, 0f, 0.6f)
-//                    .marLeft(ScreenUtils.dip2px(context, 3))
-//                    .marTop(ScreenUtils.dip2px(context, 3))
+                    .marLeft(ScreenUtils.dip2px(context, 3))
+                    .marTop(ScreenUtils.dip2px(context, 3))
                     .itemHeight(ScreenUtils.dip2px(context, 45))
                     .callback(dateAdapter)
                     .showView();

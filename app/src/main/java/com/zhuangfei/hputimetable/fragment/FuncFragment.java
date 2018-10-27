@@ -240,7 +240,7 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
 						model.put("timetable", list);
 						model.setFromClass(getActivity().getClass());
 						model.put("item",0);
-						ActivityTools.toActivity(getActivity(), TimetableDetailActivity.class, model);
+						ActivityTools.toActivityWithout(getActivity(), TimetableDetailActivity.class, model);
 					}
 				});
 				cardLayout.addView(view);
@@ -393,7 +393,6 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
 						if(pair!=null){
 							CharSequence charSequence;
 							String value=pair.getValue();
-							value="1.已经适配过的无需再申请适配了<br/>2.出现问题的话请联系各个学校的负责人<br/>3.紧急情况请联系管理员<br/><a href='http://www.liuzhuangfei.com'>学校负责人列表</a>";
 							if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
 								charSequence = Html.fromHtml(value,Html.FROM_HTML_MODE_LEGACY);
 							} else {

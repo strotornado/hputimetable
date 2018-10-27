@@ -9,8 +9,9 @@
 - 1.不能使用我的签名
 - 2.如果你要发布的话，请务必修改包名
 - 3.务必修改bugly的配置，否则你的崩溃日志会记录在我的后台
-- 4.在你没有获得我的许可时请移除全国大学课程适配平台相关代码，其他模块代码你可以自由使用，参见[全国大学课程适配平台-授权须知](https://github.com/zfman/CourseAdapter)
-- 5.基于此项目进行的二次开发的软件尽量注明原项目的出处，示例如下：
+- 4.升级时，请修改`tools/VersionTools.java`中的版本号
+- 5.在你没有获得我的许可时请移除全国大学课程适配平台相关代码，其他模块代码你可以自由使用，参见[全国大学课程适配平台-授权须知](https://github.com/zfman/CourseAdapter)
+- 6.基于此项目进行的二次开发的软件尽量注明原项目的出处，示例如下：
 > 此项目基于[zfman](https://github.com/zfman)的[怪兽课表](https://github.com/zfman/hputimetable)进行二次开发
 
 特别要注意的是：未授权时请务必移除"适配平台"相关页面以及代码，违者必究!
@@ -85,6 +86,15 @@ bugly {
 <img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.0.4/img4.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.0.4/img_appwidget.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.0.4/ic_launch.png" width="30%"/>
 
 ## ChangeLog
+
+### v1.0.9 `2018/10/27`
+
+- 优化UI、简化操作、完善小部件
+- 简化[同类型教务系统导入]流程,不再需要输入网址
+- 封装课程适配组件,课程适配平台对外开放
+- 修复默认课表未创建导致的空指针异常
+- 基本修复内存紧张时页面被回收时的崩溃问题
+- 修复剪切板空指针异常
 
 ### v1.0.9 `2018/10/19`
 

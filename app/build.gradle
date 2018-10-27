@@ -19,8 +19,8 @@ android {
         multiDexEnabled true
 
         //1.0.7预览版
-        versionCode 10
-        versionName "1.0.9"
+        versionCode 11
+        versionName "1.1.0"
     }
 
     // 签名配置

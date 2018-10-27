@@ -59,17 +59,8 @@ public class ScheduleAppWidget extends AppWidgetProvider {
 
         SimpleDateFormat sdf2=new SimpleDateFormat("EEEE");
         int curWeek = TimetableTools.getCurWeek(context);
-        views.setTextViewText(R.id.id_appwidget_week,"第"+curWeek+"周  "+sdf2.format(new Date()));
+        views.setTextViewText(R.id.id_appwidget_week,"第"+curWeek+"周  "+sdf2.format(new Date())+" / 怪兽课表");
 
-
-        boolean blackTheme = WidgetConfig.get(context, WidgetConfig.CONFIG_THEME_WHITE);
-        if(blackTheme){
-            views.setTextColor(R.id.id_appwidget_date, Color.BLACK);
-            views.setTextColor(R.id.id_appwidget_week, Color.BLACK);
-        }else{
-            views.setTextColor(R.id.id_appwidget_date, Color.WHITE);
-            views.setTextColor(R.id.id_appwidget_week, Color.WHITE);
-        }
         // template to handle the click listener for each item
 //        Intent pointIntent = new Intent(context,MainActivity.class);
 //        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, pointIntent, PendingIntent.FLAG_UPDATE_CURRENT);
