@@ -70,6 +70,10 @@ bugly {
 
 ## Images
 
+### v1.1.0
+
+<img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.0/img1.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.0/img2.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.0/img3.jpg" width="30%"/>
+
 ### v1.0.8
 
 <img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.0.8/img1.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.0.8/img2.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.0.8/img3.jpg" width="30%"/>
@@ -87,7 +91,7 @@ bugly {
 
 ## ChangeLog
 
-### v1.0.9 `2018/10/27`
+### v1.1.0 `2018/10/27`
 
 - 优化UI、简化操作、完善小部件
 - 简化[同类型教务系统导入]流程,不再需要输入网址
