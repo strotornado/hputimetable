@@ -69,13 +69,14 @@ public class AdapterSchoolActivity extends AppCompatActivity {
     JsSupport jsSupport;
     SpecialArea specialArea;
     String html = "";
-
-    StringBuffer sb = new StringBuffer();
     String url, school, js, type;
 
     //标记按钮是否已经被点击过
     //解析按钮如果点击一次，就不需要再去获取html了，直接解析
     boolean isButtonClicked=false;
+
+    //选课结果
+    public static final String URL_COURSE_RESULT="https://vpn.hpu.edu.cn/web/1/http/2/218.196.240.97/xkAction.do?actionType=6";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -274,7 +275,6 @@ public class AdapterSchoolActivity extends AppCompatActivity {
                     .setPositiveButton("看到了", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            sb.setLength(0);
                             isButtonClicked=true;
                             jsSupport.getPageHtml("sa");
                         }
@@ -300,6 +300,9 @@ public class AdapterSchoolActivity extends AppCompatActivity {
                                 AdapterSameTypeActivity.class, new BundleModel()
                                         .put("type", type)
                                         .put("js", js));
+                        break;
+                    case R.id.id_menu2:
+                        webView.loadUrl(URL_COURSE_RESULT);
                         break;
                 }
                 return false;

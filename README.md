@@ -61,37 +61,13 @@ bugly {
 }
 ```
 
-## 目录
-
-- [Images](#Images)
-- [ChangeLog](#ChangeLog)
-- [Resource](#Resource)
-- [About-Me](#About-Me)
-
 ## Images
 
 ### v1.1.0
 
 <img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.0/img1.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.0/img2.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.0/img3.jpg" width="30%"/>
 
-### v1.0.8
-
-<img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.0.8/img1.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.0.8/img2.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.0.8/img3.jpg" width="30%"/>
-<img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.0.8/img4.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.0.8/img5.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.0.8/img6.jpg" width="30%"/>
-<img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.0.8/img7.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.0.8/img8.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.0.8/img9.jpg" width="30%"/>
-
-### v1.0.5
-
-<img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.0.5/img1.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.0.5/img2.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.0.5/img3.jpg" width="30%"/>
-
-### v1.0.4
-
-<img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.0.4/img1.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.0.4/img2.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.0.4/img3.jpg" width="30%"/>
-<img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.0.4/img4.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.0.4/img_appwidget.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.0.4/ic_launch.png" width="30%"/>
-
-## ChangeLog
-
-### v1.1.0 `2018/10/27`
+### v1.1.0 `2018/10/28`
 
 - 优化UI、简化操作、完善小部件
 - 简化[同类型教务系统导入]流程,不再需要输入网址
@@ -99,6 +75,7 @@ bugly {
 - 修复默认课表未创建导致的空指针异常
 - 基本修复内存紧张时页面被回收时的崩溃问题
 - 修复剪切板空指针异常
+- 修复编辑时教室信息不保存问题
 
 ### v1.0.9 `2018/10/19`
 
@@ -143,6 +120,9 @@ bugly {
 - 优化视觉效果
 
 ## Resource
+
+- [效果展示](https://github.com/zfman/hputimetable/wiki/%E6%95%88%E6%9E%9C%E5%B1%95%E7%A4%BA)
+
 - [在酷安下载安装包](https://www.coolapk.com/apk/com.zhuangfei.hputimetable)
 
 - [TimetableView](https://github.com/zfman/TimetableView)
@@ -156,6 +136,55 @@ bugly {
 
 - [timetable](https://github.com/zfman/api-demo/tree/master/timetable)
   > 河南理工大学课程库(非官方)对外开放接口
+
+- [全国大学课程适配平台-授权须知](https://github.com/zfman/CourseAdapter)
+  > 课程适配平台，接入前需要取得开发者授权
+
+## 开源库
+
+这里简单的列出来，需要的话去搜索详细信息就可以了
+
+```
+    //View、事件绑定库
+    api 'com.jakewharton:butterknife:8.5.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
+
+    //图文混排
+    api 'com.zhuangfei:ExpandEditText:1.0.0'
+    api 'com.zhuangfei:GeneralPage:1.0.0'
+
+    //课表相关
+    api 'com.zhuangfei:TimetableView:2.0.6'//课表控件
+    compile 'com.zhuangfei:SuperBox:1.0.5' //超级课程表授权库
+    compile 'cn.yipianfengye.android:zxing-library:2.2'//扫码库
+
+    api 'cn.aigestudio.wheelpicker:WheelPicker:1.1.2'
+    api 'com.contrarywind:Android-PickerView:3.2.7' //节次选择库
+
+    //网络请求库
+    api 'com.squareup.retrofit2:retrofit:2.0.2'
+    api 'com.squareup.retrofit2:converter-gson:2.0.2'
+
+    //数据库
+    api 'org.litepal.android:core:1.6.1'
+
+    //Bugly相关库
+    // 多dex配置
+    api 'com.android.support:multidex:1.0.1'
+    //注释掉原有bugly的仓库
+    //api 'com.tencent.bugly:crashreport:latest.release'//其中latest.release指代最新版本号，也可以指定明确的版本号，例如1.3.4
+    api 'com.tencent.bugly:crashreport_upgrade:1.3.4'
+    api 'com.tencent.bugly:nativecrashreport:latest.release'
+
+    //权限库
+    api 'com.lovedise:permissiongen:0.0.6'
+
+    //Toast
+    api 'com.github.GrenderG:Toasty:1.3.0'
+
+    //cardView
+    api 'com.android.support:cardview-v7:27.1.1'
+```
 
 ## About-Me
 - [https://blog.csdn.net/lzhuangfei](https://blog.csdn.net/lzhuangfei)

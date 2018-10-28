@@ -77,26 +77,6 @@ public class UploadHtmlActivity extends AppCompatActivity {
 
     boolean isNeedLoad = false;
 
-    StringBuffer sb = new StringBuffer();
-
-    @BindView(R.id.id_webview_layout)
-    LinearLayout layout;
-
-    //所有成绩
-    public static final String URL_SCORE_ALL="https://vpn.hpu.edu.cn/web/1/http/2/218.196.240.97/gradeLnAllAction.do?type=ln&oper=qb";
-
-    //本学期成绩
-    public static final String URL_SCORE_TERM="https://vpn.hpu.edu.cn/web/1/http/2/218.196.240.97/bxqcjcxAction.do";
-
-    //空教室
-    public static final String URL_EMPTYROOM="https://vpn.hpu.edu.cn/web/1/http/2/218.196.240.97/xszxcxAction.do?oper=xszxcx_lb";
-
-    //选课
-    public static final String URL_COURSE_CHOOSE="https://vpn.hpu.edu.cn/web/1/http/2/218.196.240.97/xkAction.do";
-
-    //退课
-    public static final String URL_COURSE_DELETE="https://vpn.hpu.edu.cn/web/1/http/2/218.196.240.97/xkAction.do?actionType=7";
-
     //选课结果
     public static final String URL_COURSE_RESULT="https://vpn.hpu.edu.cn/web/1/http/2/218.196.240.97/xkAction.do?actionType=6";
 
@@ -136,12 +116,7 @@ public class UploadHtmlActivity extends AppCompatActivity {
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.top1:
-                        layout.setVisibility(View.VISIBLE);
-                        break;
-                    case R.id.top2:
-                        webView.loadUrl(url);
-                        break;
-                    default:
+                        webView.loadUrl(URL_COURSE_RESULT);
                         break;
                 }
                 return true;
@@ -151,42 +126,6 @@ public class UploadHtmlActivity extends AppCompatActivity {
         popup.show();
     }
 
-
-    @OnClick(R.id.id_webview_btn1)
-    public void onButton1CLicked(){
-        layout.setVisibility(View.GONE);
-        webView.loadUrl(URL_SCORE_ALL);
-    }
-
-    @OnClick(R.id.id_webview_btn2)
-    public void onButton2CLicked(){
-        layout.setVisibility(View.GONE);
-        webView.loadUrl(URL_SCORE_TERM);
-    }
-
-    @OnClick(R.id.id_webview_btn3)
-    public void onButton3CLicked(){
-        layout.setVisibility(View.GONE);
-        webView.loadUrl(URL_EMPTYROOM);
-    }
-
-    @OnClick(R.id.id_webview_btn4)
-    public void onButton4CLicked(){
-        layout.setVisibility(View.GONE);
-        webView.loadUrl(URL_COURSE_CHOOSE);
-    }
-
-    @OnClick(R.id.id_webview_btn5)
-    public void onButton5CLicked(){
-        layout.setVisibility(View.GONE);
-        webView.loadUrl(URL_COURSE_DELETE);
-    }
-
-    @OnClick(R.id.id_webview_btn6)
-    public void onButton6CLicked(){
-        layout.setVisibility(View.GONE);
-        webView.loadUrl(URL_COURSE_RESULT);
-    }
 
     @SuppressLint("SetJavaScriptEnabled")
     private void loadWebView() {
@@ -250,7 +189,6 @@ public class UploadHtmlActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         isNeedLoad = true;
-                        sb.setLength(0);
                         jsSupport.getPageHtml("source");
                     }
                 })
