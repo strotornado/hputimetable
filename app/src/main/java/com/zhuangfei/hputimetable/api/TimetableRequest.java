@@ -3,6 +3,7 @@ package com.zhuangfei.hputimetable.api;
 import android.content.Context;
 
 import com.zhuangfei.hputimetable.api.model.BaseResult;
+import com.zhuangfei.hputimetable.api.model.CheckModel;
 import com.zhuangfei.hputimetable.api.model.ListResult;
 import com.zhuangfei.hputimetable.api.model.MajorModel;
 import com.zhuangfei.hputimetable.api.model.ObjResult;
@@ -71,6 +72,12 @@ public class TimetableRequest {
     public static void putHtml(Context context,String school,String url,String html,Callback<BaseResult> callback) {
         SchoolService schoolService=ApiUtils.getRetrofitForSchool(context).create(SchoolService.class);
         Call<BaseResult> call=schoolService.putHtml(school,url,html);
+        call.enqueue(callback);
+    }
+
+    public static void checkSchool(Context context,String school,Callback<ObjResult<CheckModel>> callback) {
+        SchoolService schoolService=ApiUtils.getRetrofitForSchool(context).create(SchoolService.class);
+        Call<ObjResult<CheckModel>> call=schoolService.checkSchool(school);
         call.enqueue(callback);
     }
 }

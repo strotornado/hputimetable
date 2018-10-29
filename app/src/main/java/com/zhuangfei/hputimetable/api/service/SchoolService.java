@@ -2,6 +2,7 @@ package com.zhuangfei.hputimetable.api.service;
 
 import com.zhuangfei.hputimetable.api.constants.UrlContacts;
 import com.zhuangfei.hputimetable.api.model.BaseResult;
+import com.zhuangfei.hputimetable.api.model.CheckModel;
 import com.zhuangfei.hputimetable.api.model.ListResult;
 import com.zhuangfei.hputimetable.api.model.MajorModel;
 import com.zhuangfei.hputimetable.api.model.ObjResult;
@@ -30,4 +31,8 @@ public interface SchoolService {
     Call<BaseResult> putHtml(@Field("school") String school,
                              @Field("url") String url,
                              @Field("html") String html);
+
+    @POST(UrlContacts.URL_CHECK_SCHOOL)
+    @FormUrlEncoded
+    Call<ObjResult<CheckModel>> checkSchool(@Field("school") String school);
  }

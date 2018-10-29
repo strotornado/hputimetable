@@ -106,7 +106,7 @@ public class WebViewActivity extends AppCompatActivity {
     @OnClick(R.id.id_webview_help)
         public void showPopmenu() {
         PopupMenu popup = new PopupMenu(this, helpView);
-        popup.getMenuInflater().inflate(R.menu.menu_webview, popup.getMenu());
+        popup.getMenuInflater().inflate(R.menu.menu_webview2, popup.getMenu());
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {

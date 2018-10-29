@@ -33,4 +33,6 @@ public class UrlContacts {
     //上次html
     public final static String URL_PUT_HTML="index.php?c=Adapter&a=putSchoolHtml";
 
+    public final static String URL_CHECK_SCHOOL="index.php?c=Adapter&a=checkSchool";
+
 }
