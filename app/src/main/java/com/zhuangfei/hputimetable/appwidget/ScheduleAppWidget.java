@@ -59,7 +59,7 @@ public class ScheduleAppWidget extends AppWidgetProvider {
 
         SimpleDateFormat sdf2=new SimpleDateFormat("EEEE");
         int curWeek = TimetableTools.getCurWeek(context);
-        views.setTextViewText(R.id.id_appwidget_week,"第"+curWeek+"周  "+sdf2.format(new Date())+" / 进入怪兽课表");
+        views.setTextViewText(R.id.id_appwidget_week,"第"+curWeek+"周  "+sdf2.format(new Date())+" / 怪兽课表");
 
         // template to handle the click listener for each item
         Intent pointIntent = new Intent(context,MainActivity.class);

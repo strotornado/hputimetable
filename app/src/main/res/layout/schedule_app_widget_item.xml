@@ -20,7 +20,6 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
             android:textSize="15sp"
             android:alpha="0.9"
             android:textColor="@color/app_white"
