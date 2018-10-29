@@ -71,11 +71,14 @@ public class ScheduleService extends RemoteViewsService {
 
         @Override
         public void onCreate() {
-            data = new ArrayList<>();
+            data=new ArrayList<>();
+            data.addAll(findTodayData(context));
         }
 
         @Override
         public void onDataSetChanged() {
+            data.clear();
+            data.addAll(findTodayData(context));
         }
 
         @Override
@@ -85,57 +88,59 @@ public class ScheduleService extends RemoteViewsService {
 
         @Override
         public int getCount() {
-            return 1;
+            return data.size();
         }
 
         @Override
         public RemoteViews getViewAt(int i) {
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.schedule_app_widget_item);
+            Schedule schedule=data.get(i);
+            if(schedule==null) return views;
 
-            TimetableView timetableView = new TimetableView(context, null);
-            int curWeek = TimetableTools.getCurWeek(context);
-            if (data == null) data = new ArrayList<>();
-            data.clear();
-            data.addAll(findData(context));
+            views.setTextViewText(R.id.widget_tv_start,""+schedule.getStart()+" - "+(schedule.getStep()+schedule.getStart()-1)+"节在<"+schedule.getRoom()+">上");
 
-            boolean max15 = WidgetConfig.get(context, WidgetConfig.CONFIG_MAX_ITEM);
-            int maxItem = 10;
-            if (max15) maxItem = 15;
+            views.setTextViewText(R.id.widget_tv_name,""+schedule.getName());
 
-            CustomDateBuildAdapter dateAdapter = new CustomDateBuildAdapter();
-            OnSlideBuildAdapter slideAdapter = (OnSlideBuildAdapter) timetableView.onSlideBuildListener();
-            slideAdapter.setTextSize(15);
-            dateAdapter.setTextSize(15);
+//            TimetableView timetableView = new TimetableView(context, null);
+//            int curWeek = TimetableTools.getCurWeek(context);
+//            if (data == null) data = new ArrayList<>();
+//            data.clear();
+//            data.addAll(findData(context));
+//
+//            boolean max15 = WidgetConfig.get(context, WidgetConfig.CONFIG_MAX_ITEM);
+//            int maxItem = 10;
+//            if (max15) maxItem = 15;
+//
+//            CustomDateBuildAdapter dateAdapter = new CustomDateBuildAdapter();
+//            OnSlideBuildAdapter slideAdapter = (OnSlideBuildAdapter) timetableView.onSlideBuildListener();
+//            slideAdapter.setTextSize(15);
+//            dateAdapter.setTextSize(15);
+//
+//            slideAdapter.setTextColor(Color.BLACK);
+//            dateAdapter.setColor(Color.BLACK);
+//
+//            boolean hideWeeks = WidgetConfig.get(context, WidgetConfig.CONFIG_HIDE_WEEKS);
+//            boolean hideDate = WidgetConfig.get(context, WidgetConfig.CONFIG_HIDE_DATE);
+//            if(hideDate) timetableView.hideDateView();
+//            if(hideWeeks) timetableView.isShowWeekends(false);
+//
+//            timetableView.data(data)
+//                    .curWeek(curWeek)
+//                    .maxSlideItem(maxItem)
+//                    .isShowNotCurWeek(false)
+//                    .alpha(0f, 0f, 0.6f)
+//                    .marLeft(ScreenUtils.dip2px(context, 3))
+//                    .marTop(ScreenUtils.dip2px(context, 3))
+//                    .itemHeight(ScreenUtils.dip2px(context, 45))
+//                    .callback(dateAdapter)
+//                    .showView();
 
-            slideAdapter.setTextColor(Color.BLACK);
-            dateAdapter.setColor(Color.BLACK);
-
-            boolean hideWeeks = WidgetConfig.get(context, WidgetConfig.CONFIG_HIDE_WEEKS);
-            boolean hideDate = WidgetConfig.get(context, WidgetConfig.CONFIG_HIDE_DATE);
-            if(hideDate) timetableView.hideDateView();
-            if(hideWeeks) timetableView.isShowWeekends(false);
-
-            timetableView.data(data)
-                    .curWeek(curWeek)
-                    .maxSlideItem(maxItem)
-                    .isShowNotCurWeek(false)
-                    .alpha(0f, 0f, 0.6f)
-                    .marLeft(ScreenUtils.dip2px(context, 3))
-                    .marTop(ScreenUtils.dip2px(context, 3))
-                    .itemHeight(ScreenUtils.dip2px(context, 45))
-                    .callback(dateAdapter)
-                    .showView();
-
-            layoutView(timetableView, ScreenUtils.dip2px(context, 375f), ScreenUtils.dip2px(context, 50) + timetableView.itemHeight() * timetableView.maxSlideItem()+timetableView.marTop()*(timetableView.maxSlideItem()));
-            views.setBitmap(R.id.iv_imgview, "setImageBitmap", getViewBitmap(timetableView));
+//            layoutView(timetableView, ScreenUtils.dip2px(context, 375f), ScreenUtils.dip2px(context, 50) + timetableView.itemHeight() * timetableView.maxSlideItem()+timetableView.marTop()*(timetableView.maxSlideItem()));
+//            views.setBitmap(R.id.iv_imgview, "setImageBitmap", getViewBitmap(timetableView));
 //            Schedule schedule = data.get(i);
 //            views.setTextViewText(R.id.id_widget_item_name, schedule.getName());
 //            views.setTextViewText(R.id.id_widget_item_room, schedule.getRoom());
 //            views.setTextViewText(R.id.id_widget_item_start, schedule.getStart() + "-" + (schedule.getStart() + schedule.getStep() - 1));
-//
-            Intent clickIntent = new Intent(context, MainActivity.class);
-            PendingIntent clickPi = PendingIntent.getActivity(context, i, clickIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-            views.setOnClickPendingIntent(R.id.iv_imgview, clickPi);
 
             return views;
         }
@@ -191,10 +196,23 @@ public class ScheduleService extends RemoteViewsService {
      * @return
      */
     public List<Schedule> findData(Context context) {
-        if (context == null) return new ArrayList<>();
+        if (context == null) return null;
         int id = ScheduleDao.getApplyScheduleId(this);
         List<TimetableModel> dataModels = ScheduleDao.getAllWithScheduleId(id);
-        if (dataModels == null) return new ArrayList<>();
+        if (dataModels == null) return null;
         return ScheduleSupport.transform(dataModels);
+    }
+
+    public List<Schedule> findTodayData(Context context) {
+        List<Schedule> allModels = findData(context);
+        if (allModels == null) return new ArrayList<>();
+        int curWeek = TimetableTools.getCurWeek(context);
+        Calendar c = Calendar.getInstance();
+        int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
+        dayOfWeek = dayOfWeek - 2;
+        if (dayOfWeek == -1) dayOfWeek = 6;
+        List<Schedule> list = ScheduleSupport.getHaveSubjectsWithDay(allModels, curWeek, dayOfWeek);
+        if(list==null) return new ArrayList<>();
+        return list;
     }
 }

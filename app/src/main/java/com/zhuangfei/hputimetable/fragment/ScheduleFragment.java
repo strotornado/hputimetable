@@ -353,10 +353,10 @@ public class ScheduleFragment extends LazyLoadFragment implements OnSwitchTableL
         if (mWeekView.isShowing()) {
             mWeekView.isShow(false);
             mTimetableView.changeWeekForce(mTimetableView.curWeek());
+            mTimetableView.onDateBuildListener().onUpdateDate(tmp,mTimetableView.curWeek());
         } else {
             mWeekView.isShow(true);
             mWeekView.scrollToIndex(mTimetableView.curWeek() - 1);
-            mTimetableView.onDateBuildListener().onUpdateDate(tmp,mTimetableView.curWeek());
         }
     }
 

@@ -36,12 +36,6 @@ public class AdapterTipActivity extends AppCompatActivity {
     @BindView(R.id.id_url_edittext)
     public EditText urlEdit;
 
-    @BindView(R.id.cv_adapter)
-    CardView adapterCard;
-
-    @BindView(R.id.cv_check)
-    CardView checkCard;
-
     @BindView(R.id.tv_name)
     TextView nameText;
 
@@ -61,7 +55,7 @@ public class AdapterTipActivity extends AppCompatActivity {
                 if(charSequence!=null&&charSequence.length()>=2){
                     check(charSequence.toString());
                 }else{
-                    checkCard.setVisibility(View.INVISIBLE);
+                    nameText.setVisibility(View.INVISIBLE);
                 }
             }
 
@@ -121,10 +115,10 @@ public class AdapterTipActivity extends AppCompatActivity {
                     if(model!=null){
                         if(model.getHave()==1&&!TextUtils.isEmpty(model.getUrl())&&!TextUtils.isEmpty(model.getName())){
                             urlEdit.setText(model.getUrl()==null?"":model.getUrl());
-                            checkCard.setVisibility(View.VISIBLE);
-                            nameText.setText(model.getName());
+                            nameText.setVisibility(View.VISIBLE);
+                            nameText.setText("推荐:"+model.getName());
                         }else{
-                            checkCard.setVisibility(View.INVISIBLE);
+                            nameText.setVisibility(View.INVISIBLE);
                             urlEdit.setText("");
                         }
                     }
@@ -135,6 +129,15 @@ public class AdapterTipActivity extends AppCompatActivity {
             public void onFailure(Call<ObjResult<CheckModel>> call, Throwable t) {
             }
         });
+    }
+
+    @OnClick(R.id.tv_name)
+    public void onNameTextClicked(){
+        String val=nameText.getText().toString();
+        if(val!=null&&val.length()>3){
+            val=val.substring(3);
+        }
+        if(!TextUtils.isEmpty(val)) schoolEdit.setText(val);
     }
 
     @Override

@@ -34,7 +34,7 @@
             android:layout_height="30dp"
             android:layout_weight="1"
             android:background="@drawable/search_normal_style"
-            android:hint="搜索学校"
+            android:hint="搜索学校或教务类型"
             android:imeOptions="actionSearch"
             android:paddingBottom="2dp"
             android:paddingLeft="15dp"
@@ -115,20 +115,19 @@
         android:id="@+id/id_tip"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
         android:orientation="vertical">
 
         <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:lineSpacingExtra="5dp"
-            android:text="支持导入同类型教务系统\n如果搜索不到，请申请适配"
-            android:textSize="16sp" />
+            android:layout_margin="15dp"
+            android:text="如果本校搜索不到，可以尝试搜一下教务类型!\n任选一个学校点击进入，然后在右上角的菜单中选择[导入同类型教务系统],输入学校名称后前往教务处，在登录个人账号后点击解析按钮即可\n\n当然最好的体验需要去申请适配了，我会尽快完成!"
+            android:textSize="15sp" />
         <TextView
             android:id="@+id/id_goto_adapter"
             android:layout_width="120dp"
-            android:layout_height="30dp"
-            android:layout_marginTop="20dp"
+            android:layout_height="35dp"
+            android:layout_margin="15dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginRight="15dp"

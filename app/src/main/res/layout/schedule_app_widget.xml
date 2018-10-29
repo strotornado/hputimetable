@@ -15,16 +15,16 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:textStyle="bold"
-            android:textColor="@color/theme_dark"
+            android:textColor="@color/app_white"
             android:textSize="17sp" />
         <TextView
             android:id="@+id/id_appwidget_week"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
-            android:textSize="16sp"
+            android:textSize="17sp"
             android:textStyle="bold"
-            android:textColor="@color/theme_dark" />
+            android:textColor="@color/app_white" />
     </LinearLayout>
 
     <ListView

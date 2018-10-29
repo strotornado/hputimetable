@@ -3,14 +3,30 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center"
-    android:background="@android:color/transparent"
     android:orientation="vertical">
-
-    <ImageView
-        android:adjustViewBounds="true"
-        android:id="@+id/iv_imgview"
-        android:scaleType="fitCenter"
+    <LinearLayout
+        android:id="@+id/widget_clicklayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="55dp"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="17sp"
+            android:textColor="@color/app_white"
+            android:id="@+id/widget_tv_name"/>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"
+            android:textSize="15sp"
+            android:alpha="0.9"
+            android:textColor="@color/app_white"
+            android:id="@+id/widget_tv_start"/>
+
+
+    </LinearLayout>
 
 </LinearLayout>
