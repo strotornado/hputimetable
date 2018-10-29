@@ -58,10 +58,10 @@ public class AdapterTipActivity extends AppCompatActivity {
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if(charSequence!=null&&charSequence.length()>=3){
+                if(charSequence!=null&&charSequence.length()>=2){
                     check(charSequence.toString());
                 }else{
-                    checkCard.setVisibility(View.GONE);
+                    checkCard.setVisibility(View.INVISIBLE);
                 }
             }
 
@@ -124,7 +124,7 @@ public class AdapterTipActivity extends AppCompatActivity {
                             checkCard.setVisibility(View.VISIBLE);
                             nameText.setText(model.getName());
                         }else{
-                            checkCard.setVisibility(View.GONE);
+                            checkCard.setVisibility(View.INVISIBLE);
                             urlEdit.setText("");
                         }
                     }
