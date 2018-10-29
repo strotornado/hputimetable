@@ -82,23 +82,28 @@ public class AdapterTipActivity extends AppCompatActivity {
             Toasty.warning(this, "请填写正确的url，以http://或https://开头").show();
             return;
         }else{
-            if (!school.endsWith("学校")&&!school.endsWith("学院")&&school.endsWith("大学")) {
-                Toasty.warning(this, "").show();
+            if (!school.endsWith("学校")&&!school.endsWith("学院")&&!school.endsWith("大学")) {
+                AlertDialog.Builder builder=new AlertDialog.Builder(this)
+                        .setTitle("校名不太对哟")
+                        .setMessage("你的校名好像不太对哟，务必填写全称")
+                        .setPositiveButton("确定是对的", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                ActivityTools.toActivity(AdapterTipActivity.this, UploadHtmlActivity.class,
+                                        new BundleModel()
+                                                .put("url", url)
+                                                .put("school", school));
+                            }
+                        })
+                        .setNegativeButton("取消",null);
+                builder.create().show();
+            } else{
+                ActivityTools.toActivity(AdapterTipActivity.this, UploadHtmlActivity.class,
+                        new BundleModel()
+                                .put("url", url)
+                                .put("school", school));
             }
-            AlertDialog.Builder builder=new AlertDialog.Builder(this)
-                    .setTitle("校名不太对哟")
-                    .setMessage("你的校名好像不太对哟，务必填写全称")
-                    .setPositiveButton("确定是对的", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            ActivityTools.toActivity(AdapterTipActivity.this, UploadHtmlActivity.class,
-                                    new BundleModel()
-                                            .put("url", url)
-                                            .put("school", school));
-                        }
-                    })
-                    .setNegativeButton("取消",null);
-            builder.create().show();
+
         }
     }
 
