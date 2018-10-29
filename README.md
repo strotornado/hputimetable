@@ -67,7 +67,7 @@ bugly {
 
 <img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.0/img1.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.0/img2.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.0/img3.jpg" width="30%"/>
 
-### v1.1.0 `2018/10/28`
+### v1.1.0 `2018/10/29`
 
 - 启动速度优化
 - 优化UI、简化操作、完善小部件
