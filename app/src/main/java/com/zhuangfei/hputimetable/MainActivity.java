@@ -24,6 +24,7 @@ import com.zhuangfei.hputimetable.listener.OnSwitchPagerListener;
 import com.zhuangfei.hputimetable.listener.OnSwitchTableListener;
 import com.zhuangfei.hputimetable.listener.OnUpdateCourseListener;
 import com.zhuangfei.hputimetable.tools.BroadcastUtils;
+import com.zhuangfei.hputimetable.tools.UpdateTools;
 import com.zhuangfei.hputimetable.tools.VersionTools;
 import com.zhuangfei.toolkit.model.BundleModel;
 import com.zhuangfei.toolkit.tools.ActivityTools;
@@ -85,6 +86,12 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
         ButterKnife.bind(this);
         inits();
         shouldcheckPermission();
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                handler.sendEmptyMessage(0x124);
+            }
+        }, 500);
     }
 
     @Override
@@ -116,13 +123,6 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
                 handler.sendEmptyMessage(0x123);
             }
         }, 300);
-
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                handler.sendEmptyMessage(0x124);
-            }
-        }, 1000);
     }
 
     Handler handler = new Handler() {
@@ -137,13 +137,12 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
             }
             if(msg.what==0x124){
                 try{
-                    getValue2("e98b58875e902084a93a1daeae1ccbf7");
+                    UpdateTools.checkUpdate(MainActivity.this,false);
                 }catch (Exception e){}
             }
             if(msg.what==0x125){
                 select(toItem);
             }
-
         }
     };
 
@@ -429,7 +428,7 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
                                         if (isIgnoreUpdate == 0 && v > VersionTools.getVersionNumber()) {
                                             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this)
                                                     .setTitle("发现新版本-v"+vals[1])
-                                                    .setMessage("你可以在 设置->检查更新 中关闭提醒!\n\n更新日志:\n" + vals[2])
+                                                    .setMessage("你可以在 工具箱->自动检查更新 中关闭提醒!\n\n更新日志:\n" + vals[2])
                                                     .setPositiveButton("去看看", new DialogInterface.OnClickListener() {
                                                         @Override
                                                         public void onClick(DialogInterface dialogInterface, int i) {
@@ -442,7 +441,12 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
                                                             }
                                                         }
                                                     })
-                                                    .setNegativeButton("明天提醒", null);
+                                                    .setNegativeButton("明天提醒", new DialogInterface.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                                            ShareTools.putString(MainActivity.this,"app_update_info",s);
+                                                        }
+                                                    });
                                             builder.create().show();
                                         }
                                     }

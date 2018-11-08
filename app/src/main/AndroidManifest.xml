@@ -21,10 +21,8 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
-            android:theme="@style/mainTheme"
-            android:launchMode="singleTask">
-
-        </activity>
+            android:launchMode="singleTask"
+            android:theme="@style/mainTheme" />
         <activity
             android:name=".ImportMajorActivity"
             android:windowSoftInputMode="stateAlwaysHidden" />
@@ -37,7 +35,8 @@
         <activity android:name=".MultiScheduleActivity" />
 
         <!-- 桌面小部件 -->
-        <receiver android:name=".appwidget.ScheduleAppWidget">
+        <receiver android:name=".appwidget.ScheduleAppWidget"
+            android:label="当日课程">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -62,23 +61,55 @@
             android:exported="false"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
+        <!-- 桌面小部件 -->
+        <receiver android:name=".appwidget.WhiteBgAppWidget"
+            android:label="当日课程">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.TIME_SET" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.zhuangfei.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/whitebg_app_widget_info" />
+        </receiver>
+
+        <service
+            android:name=".appwidget.WhiteBgService"
+            android:enabled="true"
+            android:exported="false"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+
         <activity android:name=".AboutActivity" />
         <activity android:name=".ScanActivity" />
         <activity android:name=".CreateScheduleNameActivity" />
         <activity android:name=".ModifyScheduleNameActivity" />
         <activity android:name=".specialarea.SpecialAreaActivity" />
-        <activity android:name=".SearchSchoolActivity" android:theme="@style/mainTheme"/>
+        <activity
+            android:name=".SearchSchoolActivity"
+            android:theme="@style/mainTheme" />
         <activity android:name=".UploadHtmlActivity" />
         <activity android:name=".AdapterTipActivity" />
         <activity android:name=".AdapterSchoolActivity" />
         <activity android:name=".AdapterSameTypeActivity" />
-        <activity android:name=".SplashActivity" android:theme="@style/splash">
+        <activity
+            android:name=".SplashActivity"
+            android:theme="@style/splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".AdapterDebugListActivity" />
+        <activity android:name=".AdapterDebugHtmlActivity"></activity>
+        <activity android:name=".DebugActivity"></activity>
+        <activity android:name=".AdapterDebugTipActivity"></activity>
     </application>
 
 </manifest>

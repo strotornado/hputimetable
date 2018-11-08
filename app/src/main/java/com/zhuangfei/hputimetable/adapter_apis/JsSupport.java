@@ -48,6 +48,7 @@ public class JsSupport {
         settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
         webView.clearFormData();
         settings.setSupportZoom(true);
+        settings.setBuiltInZoomControls(true);
 
         webView.setDownloadListener(new DownloadListener() {
             @Override

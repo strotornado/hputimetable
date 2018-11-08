@@ -234,4 +234,9 @@ public class MenuActivity extends AppCompatActivity {
         WidgetConfig.apply(this,WidgetConfig.CONFIG_HIDE_DATE,b);
         BroadcastUtils.refreshAppWidget(this);
     }
+
+    @OnClick(R.id.id_debug)
+    public void toDebug(){
+        ActivityTools.toActivity(this,AdapterDebugTipActivity.class);
+    }
 }
