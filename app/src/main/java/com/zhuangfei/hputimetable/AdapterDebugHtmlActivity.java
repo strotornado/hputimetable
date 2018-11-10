@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 
 import com.zhuangfei.hputimetable.api.TimetableRequest;
 import com.zhuangfei.hputimetable.api.model.AdapterDebugModel;
@@ -12,6 +13,7 @@ import com.zhuangfei.hputimetable.api.model.HtmlSummary;
 import com.zhuangfei.hputimetable.api.model.ListResult;
 import com.zhuangfei.hputimetable.api.model.ObjResult;
 import com.zhuangfei.hputimetable.api.model.UserDebugModel;
+import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.ShareTools;
 
 import java.util.ArrayList;
@@ -21,6 +23,7 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.OnItemClick;
 import es.dmoral.toasty.Toasty;
 import retrofit2.Call;
@@ -36,6 +39,8 @@ public class AdapterDebugHtmlActivity extends AppCompatActivity {
 
     String aid="";
 
+    @BindView(R.id.id_debug_html_title)
+    TextView titleTextView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,7 +54,7 @@ public class AdapterDebugHtmlActivity extends AppCompatActivity {
                 new int[]{R.id.tv_name});
         listView.setAdapter(simpleAdapter);
 
-
+        titleTextView.setText(schoolName);
         getData(schoolName);
     }
 
@@ -94,6 +99,10 @@ public class AdapterDebugHtmlActivity extends AppCompatActivity {
         intent.putExtra("aid",aid);
         intent.putExtra("filename",list.get(pos).get("name"));
         startActivity(intent);
+    }
 
+    @OnClick(R.id.ib_back)
+    public void goBack(){
+       finish();
     }
 }

@@ -3,14 +3,17 @@ package com.zhuangfei.hputimetable;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.PopupMenu;
 import android.text.TextUtils;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -30,12 +33,14 @@ import com.zhuangfei.hputimetable.api.model.ScheduleName;
 import com.zhuangfei.hputimetable.api.model.TimetableModel;
 import com.zhuangfei.hputimetable.model.ScheduleDao;
 import com.zhuangfei.hputimetable.tools.BroadcastUtils;
+import com.zhuangfei.timetable.model.Schedule;
 import com.zhuangfei.toolkit.model.BundleModel;
 import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.BundleTools;
 
 import org.litepal.crud.DataSupport;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,6 +70,9 @@ public class DebugActivity extends AppCompatActivity {
     @BindView(R.id.id_webview_help)
     ImageView popmenuImageView;
 
+    @BindView(R.id.cv_webview_parse)
+    CardView parseCard;
+
     //加载进度
     @BindView(R.id.id_loadingbar)
     ContentLoadingProgressBar loadingProgressBar;
@@ -75,10 +83,6 @@ public class DebugActivity extends AppCompatActivity {
     String html = "";
     String school="", js, type="";
     String uid,aid;
-
-    //标记按钮是否已经被点击过
-    //解析按钮如果点击一次，就不需要再去获取html了，直接解析
-    boolean isButtonClicked=false;
 
     //选课结果
     public static final String URL_COURSE_RESULT="https://vpn.hpu.edu.cn/web/1/http/2/218.196.240.97/xkAction.do?actionType=6";
@@ -99,6 +103,7 @@ public class DebugActivity extends AppCompatActivity {
     private void initUrl() {
         uid=getIntent().getStringExtra("uid");
         aid=getIntent().getStringExtra("aid");
+        parseCard.setVisibility(View.GONE);
         if(uid==null||aid==null){
             ActivityTools.toBackActivityAnim(this,AdapterDebugTipActivity.class);
         }else{
@@ -198,15 +203,10 @@ public class DebugActivity extends AppCompatActivity {
             return;
         }
 
-        //save
-        List<TimetableModel> models = new ArrayList<>();
-        ScheduleName newName = new ScheduleName();
-        newName.setName(school);
-        newName.setTime(System.currentTimeMillis());
-        newName.save();
+        List<Schedule> models = new ArrayList<>();
         for (ParseResult item : data) {
             if (item == null) continue;
-            TimetableModel model = new TimetableModel();
+            Schedule model = new Schedule();
             model.setWeekList(item.getWeekList());
             model.setTeacher(item.getTeacher());
             model.setStep(item.getStep());
@@ -214,40 +214,12 @@ public class DebugActivity extends AppCompatActivity {
             model.setRoom(item.getRoom());
             model.setName(item.getName());
             model.setDay(item.getDay());
-            model.setScheduleName(newName);
             models.add(model);
         }
-        DataSupport.saveAll(models);
-        Toasty.success(this, "保存成功！").show();
-        showDialogOnApply(newName);
-    }
-
-    private void showDialogOnApply(final ScheduleName name) {
-        if (name == null) return;
-        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
-        builder.setMessage("你导入的数据已存储在多课表[" + name.getName() + "]下!\n是否直接设置为当前课表?")
-                .setTitle("课表导入成功")
-                .setPositiveButton("设为当前课表", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        ScheduleDao.applySchedule(DebugActivity.this, name.getId());
-                        BroadcastUtils.refreshAppWidget(DebugActivity.this);
-                        if (dialogInterface != null) {
-                            dialogInterface.dismiss();
-                        }
-                        ActivityTools.toBackActivityAnim(DebugActivity.this, MainActivity.class, new BundleModel().put("item", 1));
-                    }
-                })
-                .setNegativeButton("稍后设置", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        if (dialogInterface != null) {
-                            dialogInterface.dismiss();
-                        }
-                        ActivityTools.toBackActivityAnim(DebugActivity.this, MainActivity.class, new BundleModel().put("item", 1));
-                    }
-                });
-        builder.create().show();
+        Intent intent=new Intent(this,DebugDisplayActivity.class);
+        intent.putExtra("schedules",(Serializable) models);
+        startActivity(intent);
+        finish();
     }
 
     @OnClick(R.id.id_webview_help)

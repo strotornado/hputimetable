@@ -6,8 +6,32 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@color/app_white_slight">
+
+        <ImageView
+            android:id="@+id/ib_back"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingLeft="5dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:src="@drawable/ic_back2" />
+
+        <TextView
+            android:id="@+id/id_debug_html_title"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
     <ListView
         android:id="@+id/id_listView"
+        android:background="@color/app_white"
         android:layout_width="match_parent"
         android:layout_height="match_parent"></ListView>
 

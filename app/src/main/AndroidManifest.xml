@@ -35,7 +35,8 @@
         <activity android:name=".MultiScheduleActivity" />
 
         <!-- 桌面小部件 -->
-        <receiver android:name=".appwidget.ScheduleAppWidget"
+        <receiver
+            android:name=".appwidget.ScheduleAppWidget"
             android:label="当日课程">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -62,7 +63,8 @@
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
         <!-- 桌面小部件 -->
-        <receiver android:name=".appwidget.WhiteBgAppWidget"
+        <receiver
+            android:name=".appwidget.WhiteBgAppWidget"
             android:label="当日课程">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -107,9 +109,10 @@
             </intent-filter>
         </activity>
         <activity android:name=".AdapterDebugListActivity" />
-        <activity android:name=".AdapterDebugHtmlActivity"></activity>
-        <activity android:name=".DebugActivity"></activity>
-        <activity android:name=".AdapterDebugTipActivity"></activity>
+        <activity android:name=".AdapterDebugHtmlActivity" />
+        <activity android:name=".DebugActivity" />
+        <activity android:name=".AdapterDebugTipActivity" />
+        <activity android:name=".DebugDisplayActivity"></activity>
     </application>
 
 </manifest>

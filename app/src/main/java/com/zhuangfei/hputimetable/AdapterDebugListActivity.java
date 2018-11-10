@@ -20,6 +20,7 @@ import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import butterknife.OnItemClick;
 import es.dmoral.toasty.Toasty;
 import retrofit2.Call;
@@ -81,13 +82,15 @@ public class AdapterDebugListActivity extends AppCompatActivity {
 
     private void showList(List<AdapterDebugModel> data) {
        list.clear();
+       int index=1;
        for(AdapterDebugModel model:data){
            if(model!=null){
                Map<String,String> map=new HashMap<>();
-               map.put("name",model.getSchoolName());
+               map.put("name",index+"#"+model.getSchoolName());
                map.put("aid",model.getAid()+"");
                list.add(map);
            }
+           index++;
        }
        simpleAdapter.notifyDataSetChanged();
     }
@@ -98,5 +101,21 @@ public class AdapterDebugListActivity extends AppCompatActivity {
         intent.putExtra("schoolName",list.get(pos).get("name"));
         intent.putExtra("aid",list.get(pos).get("aid"));
         startActivity(intent);
+    }
+
+    @OnClick(R.id.ib_back)
+    public void goBack(){
+        finish();
+    }
+
+    @OnClick(R.id.tv_logout)
+    public void logout(){
+        clearLocal();
+        ActivityTools.toBackActivityAnim(this,AdapterDebugTipActivity.class);
+    }
+
+    void clearLocal(){
+        ShareTools.putString(this,"debug_name",null);
+        ShareTools.putString(this,"debug_userkey",null);
     }
 }
