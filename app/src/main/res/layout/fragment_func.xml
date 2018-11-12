@@ -12,7 +12,7 @@
         app:ArcHeight="35dp" />
 
 
-    <com.zhuangfei.toolkit.widget.view.ElasticScrollView
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginLeft="10dp"
@@ -48,7 +48,7 @@
                         android:gravity="center"
                         android:textSize="15sp"
                         android:layout_marginLeft="5dp"
-                        android:text="搜索学校或教务导入课程"
+                        android:text="搜索学校或服务"
                         android:textColor="@color/app_gray" />
                 </LinearLayout>
             </android.support.v7.widget.CardView>
@@ -206,6 +206,37 @@
                 </LinearLayout>
             </android.support.v7.widget.CardView>
 
+            <android.support.v7.widget.CardView
+                android:id="@+id/cv_bind"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:cardCornerRadius="5dp"
+                app:cardElevation="1dp"
+                app:cardPreventCornerOverlap="false">
+                <LinearLayout
+                    android:id="@+id/id_func_bindtable"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_marginLeft="15dp"
+                        android:layout_height="50dp"
+                        android:textSize="16sp"
+                        android:gravity="center_vertical"
+                        android:text="情侣模式-去关联Ta的课表"/>
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_marginLeft="15dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="15dp"
+                        android:textColor="@color/app_gray"
+                        android:text="选择一个课表以关联，关联后主页将显示其日视图，课表页面也可以快速切换"/>
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
+
 
             <!--日课程卡片-->
             <android.support.v7.widget.CardView
@@ -260,6 +291,69 @@
                 </LinearLayout>
             </android.support.v7.widget.CardView>
 
+            <!--日课程卡片-->
+            <android.support.v7.widget.CardView
+                android:id="@+id/cv_dayview2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                app:cardCornerRadius="5dp"
+                app:cardElevation="1dp"
+                app:cardPreventCornerOverlap="false">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="45dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/id_cardview_today2"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="15dp"
+                            android:layout_marginRight="15dp"
+                            android:layout_weight="1"
+                            android:text="第2周 周四"
+                            android:textSize="16sp" />
+
+                        <TextView
+                            android:id="@+id/id_cardview2_cancel"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="15dp"
+                            android:layout_marginRight="15dp"
+                            android:text="取消关联"
+                            android:textColor="@color/colorPrimary"
+                            android:textSize="14sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/id_cardview_layout2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"></LinearLayout>
+
+                    <TextView
+                        android:id="@+id/id_func_schedulename2"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:background="@color/app_white"
+                        android:ellipsize="end"
+                        android:gravity="center_vertical"
+                        android:paddingLeft="15dp"
+                        android:textColor="@color/app_gray"
+                        android:singleLine="true"
+                        android:textSize="14sp" />
+                </LinearLayout>
+            </android.support.v7.widget.CardView>
+
+
 
             <android.support.v7.widget.CardView
                 android:layout_width="match_parent"
@@ -286,54 +380,6 @@
                         android:textSize="16sp" />
                 </LinearLayout>
             </android.support.v7.widget.CardView>
-
-        </LinearLayout>
-    </com.zhuangfei.toolkit.widget.view.ElasticScrollView>
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:fillViewport="true"
-        android:scrollbars="none"
-        android:visibility="gone">
-
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-
-            <LinearLayout
-                android:id="@+id/id_toadapter"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="@color/app_white"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:paddingLeft="15dp"
-                    android:text="申请学校适配"
-                    android:textSize="16sp" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="40dp"
-                    android:gravity="center_vertical"
-                    android:text="申请"
-                    android:textColor="@color/app_gray" />
-
-                <ImageView
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:layout_marginRight="10dp"
-                    android:src="@drawable/ic_point_right" />
-            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>

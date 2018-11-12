@@ -95,6 +95,12 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
 	@BindView(R.id.id_cardview_today)
 	TextView todayInfo;
 
+	@BindView(R.id.id_cardview_layout2)
+	LinearLayout cardLayout2;
+
+	@BindView(R.id.id_cardview_today2)
+	TextView todayInfo2;
+
 	OnSwitchPagerListener onSwitchPagerListener;
 	OnUpdateCourseListener onUpdateCourseListener;
 
@@ -103,6 +109,9 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
 
 	@BindView(R.id.id_func_schedulename)
 	TextView scheduleNameText;
+
+	@BindView(R.id.id_func_schedulename2)
+	TextView scheduleNameText2;
 
 	@BindView(R.id.id_img1)
 	ImageView imageView1;
@@ -124,6 +133,12 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
 
 	@BindView(R.id.cv_dayview)
 	CardView dayView;
+
+	@BindView(R.id.cv_dayview2)
+	CardView dayView2;
+
+	@BindView(R.id.cv_bind)
+	CardView bindView;
 
 	@BindView(R.id.iv_search)
 	ImageView searchImageView;
@@ -155,6 +170,13 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
 		imageView3.setColorFilter(color);
 		imageView4.setColorFilter(color);
 		findData();
+	}
+
+	@OnClick(R.id.id_cardview2_cancel)
+	public void cancelBind(){
+		ShareTools.putInt(getActivity(),ShareConstants.INT_SCHEDULE_NAME_ID2,-1);
+		dayView2.setVisibility(View.GONE);
+		bindView.setVisibility(View.VISIBLE);
 	}
 
 	public void createCardView(List<Schedule> models, ScheduleName newName){
@@ -248,6 +270,70 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
 		}
 	}
 
+	public void createCardView2(List<Schedule> models, ScheduleName newName){
+		cardLayout2.removeAllViews();
+		dayView2.setVisibility(View.VISIBLE);
+		SimpleDateFormat sdf2=new SimpleDateFormat("EEEE");
+		int curWeek = TimetableTools.getCurWeek(getActivity());
+		String html="Ta的课表 第<b>"+curWeek+"</b>周  "+sdf2.format(new Date());
+		CharSequence charSequence;
+		if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+			charSequence = Html.fromHtml(html,Html.FROM_HTML_MODE_LEGACY);
+		} else {
+			charSequence = Html.fromHtml(html);
+		}
+
+		todayInfo2.setText(charSequence);
+		todayInfo2.setTextColor(getResources().getColor(R.color.app_red_orange));
+
+		if(newName!=null){
+			scheduleNameText2.setText(newName.getName());
+		}
+
+		LayoutInflater inflater=LayoutInflater.from(getActivity());
+		if(models==null){
+			View view=inflater.inflate(R.layout.item_empty,null ,false);
+			TextView infoText=view.findViewById(R.id.item_empty);
+			infoText.setText("本地没有数据,去添加!");
+			cardLayout2.addView(view);
+		}else if(models.size()==0){
+			View view=inflater.inflate(R.layout.item_empty,null ,false);
+			TextView infoText=view.findViewById(R.id.item_empty);
+			infoText.setText("Ta今天没有课");
+			cardLayout2.addView(view);
+		}else{
+			for(int i=0;i<models.size();i++){
+				final Schedule schedule=models.get(i);
+				if(schedule==null)continue;
+				View view=inflater.inflate(R.layout.item_cardview,null ,false);
+				TextView startText=view.findViewById(R.id.id_item_start);
+				TextView nameText=view.findViewById(R.id.id_item_name);
+				TextView roomText=view.findViewById(R.id.id_item_room);
+				String name=schedule.getName();
+				String room=schedule.getRoom();
+				if(TextUtils.isEmpty(name)) name="课程名未知";
+				if(TextUtils.isEmpty(room)) room="上课地点未知";
+
+				nameText.setText(name);
+				roomText.setText(room);
+				startText.setText(schedule.getStart() + " - " + (schedule.getStart() + schedule.getStep() - 1));
+				view.findViewById(R.id.id_item_clicklayout).setOnClickListener(new View.OnClickListener() {
+					@Override
+					public void onClick(View view) {
+						List<Schedule> list=new ArrayList<>();
+						list.add(schedule);
+						BundleModel model = new BundleModel();
+						model.put("timetable", list);
+						model.setFromClass(getActivity().getClass());
+						model.put("item",0);
+						ActivityTools.toActivityWithout(getActivity(), TimetableDetailActivity.class, model);
+					}
+				});
+				cardLayout2.addView(view);
+			}
+		}
+	}
+
 	/**
 	 * 获取数据
 	 *
@@ -265,7 +351,7 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
 
 		int id = ScheduleDao.getApplyScheduleId(getActivity());
 		final ScheduleName newName = DataSupport.find(ScheduleName.class, id);
-		if (scheduleName == null) return;
+		if (newName == null) return;
 
 		FindMultiExecutor executor=newName.getModelsAsync();
 		executor.listen(new FindMultiCallback() {
@@ -286,6 +372,39 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
                 }
             }
         });
+
+		int id2 = ShareTools.getInt(getActivity(),ShareConstants.INT_SCHEDULE_NAME_ID2,-1);
+		if(id2>0){
+			final ScheduleName newName2 = DataSupport.find(ScheduleName.class, id2);
+			if (newName2 !=null){
+				bindView.setVisibility(View.GONE);
+				FindMultiExecutor executor2=newName2.getModelsAsync();
+				executor2.listen(new FindMultiCallback() {
+					@Override
+					public <T> void onFinish(List<T> t) {
+						List<TimetableModel> models= (List<TimetableModel>) t;
+						if(models!=null){
+							List<Schedule> allModels=ScheduleSupport.transform(models);
+							if(allModels!=null){
+								int curWeek = TimetableTools.getCurWeek(getActivity());
+								Calendar c = Calendar.getInstance();
+								int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
+								dayOfWeek = dayOfWeek - 2;
+								if (dayOfWeek == -1) dayOfWeek = 6;
+								List<Schedule> list = ScheduleSupport.getHaveSubjectsWithDay(allModels, curWeek, dayOfWeek);
+								createCardView2(list,newName2);
+							}else createCardView2(null,newName2);
+						}
+					}
+				});
+			}else{
+				bindView.setVisibility(View.VISIBLE);
+				dayView2.setVisibility(View.GONE);
+			}
+		}else{
+			bindView.setVisibility(View.VISIBLE);
+			dayView2.setVisibility(View.GONE);
+		}
 	}
 
 	@Override
@@ -431,5 +550,21 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
 		if(onSwitchPagerListener!=null){
 			onSwitchPagerListener.onPagerSwitch();
 		}
+	}
+
+	@OnClick(R.id.id_func_bindtable)
+	public void bindTable(){
+		android.support.v7.app.AlertDialog.Builder builder=new android.support.v7.app.AlertDialog.Builder(getActivity())
+				.setTitle("关联课表")
+				.setMessage("前往多课表管理页面，选择一个课表，点击【这是Ta的课表】")
+				.setPositiveButton("前往关联", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialogInterface, int i) {
+						ActivityTools.toActivityWithout(getActivity(),MultiScheduleActivity.class);
+					}
+				})
+				.setNegativeButton("取消",null);
+
+		builder.create().show();
 	}
 }

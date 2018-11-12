@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
                         public void run() {
                             handler.sendEmptyMessage(0x125);
                         }
-                    }, 300);
+                    }, 100);
                 }
             }
         }
@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
             public void run() {
                 handler.sendEmptyMessage(0x123);
             }
-        }, 300);
+        }, 200);
     }
 
     Handler handler = new Handler() {

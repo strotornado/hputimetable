@@ -14,6 +14,7 @@ public class ShareConstants {
 
 
     public static final String INT_SCHEDULE_NAME_ID="key_schedule_name_now";
+    public static final String INT_SCHEDULE_NAME_ID2="key_schedule_name_now_ta";
 
     public static final String INT_MAYBE_SCHEDULE_NAME_ID="key_schedule_name_MAYBE";
 

@@ -86,7 +86,7 @@ public class AdapterDebugListActivity extends AppCompatActivity {
        for(AdapterDebugModel model:data){
            if(model!=null){
                Map<String,String> map=new HashMap<>();
-               map.put("name",index+"#"+model.getSchoolName());
+               map.put("name",model.getSchoolName());
                map.put("aid",model.getAid()+"");
                list.add(map);
            }

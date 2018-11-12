@@ -87,12 +87,18 @@ public class MultiScheduleActivity extends Activity {
     public void apply(ScheduleName scheduleName) {
         if (scheduleName == null) return;
         int id = scheduleName.getId();
-        ShareTools.put(context, "course_update", 1);
         ShareTools.put(context, ShareConstants.INT_SCHEDULE_NAME_ID, id);
         BroadcastUtils.refreshAppWidget(MultiScheduleActivity.this);
         ScheduleDao.changeStatus(MultiScheduleActivity.this,true);
         Toasty.success(context, "切换课表成功").show();
-        adapter.notifyDataSetChanged();
+    }
+
+    public void applyTa(ScheduleName scheduleName) {
+        if (scheduleName == null) return;
+        int id = scheduleName.getId();
+        ShareTools.put(context, ShareConstants.INT_SCHEDULE_NAME_ID2, id);
+        BroadcastUtils.refreshAppWidget(MultiScheduleActivity.this);
+        Toasty.success(context, "已关联课表").show();
     }
 
     private void deleteScheduleName(final ScheduleName scheduleName) {
@@ -120,6 +126,10 @@ public class MultiScheduleActivity extends Activity {
                                     ShareTools.put(context, ShareConstants.INT_SCHEDULE_NAME_ID, newName.getId());
                                 }
                             }
+                            int bindId=ShareTools.getInt(MultiScheduleActivity.this,ShareConstants.INT_SCHEDULE_NAME_ID2,-1);
+                            if(bindId!=-1&&scheduleName.getId()==bindId){
+                                ShareTools.putInt(MultiScheduleActivity.this,ShareConstants.INT_SCHEDULE_NAME_ID2,-1);
+                            }
                             getData();
                             Toasty.success(context, "删除成功").show();
                             ScheduleDao.changeStatus(MultiScheduleActivity.this,true);
@@ -133,7 +143,7 @@ public class MultiScheduleActivity extends Activity {
 
 
     public void showListDialog(final int pos) {
-        final String items[] = {"课程管理", "修改课表名", "删除本课表","分享本课表","设置为当前课表"};
+        final String items[] = {"课程管理", "修改课表名", "删除本课表","分享本课表","这是\"Ta\"的课表","设置为当前课表"};
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("选择操作");
@@ -169,6 +179,11 @@ public class MultiScheduleActivity extends Activity {
                         }
                         break;
                     case 4:
+                        applyTa(nameList.get(pos));
+                        getData();
+                        BroadcastUtils.refreshAppWidget(context);
+                        break;
+                    case 5:
                         apply(nameList.get(pos));
                         getData();
                         BroadcastUtils.refreshAppWidget(context);
