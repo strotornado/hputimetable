@@ -31,6 +31,7 @@ import com.zhuangfei.hputimetable.model.ScheduleDao;
 import com.zhuangfei.hputimetable.specialarea.SpecialAreaActivity;
 import com.zhuangfei.hputimetable.tools.BroadcastUtils;
 import com.zhuangfei.hputimetable.tools.TimetableTools;
+import com.zhuangfei.hputimetable.tools.UpdateTools;
 import com.zhuangfei.hputimetable.tools.WidgetConfig;
 import com.zhuangfei.toolkit.model.BundleModel;
 import com.zhuangfei.toolkit.tools.ActivityTools;
@@ -154,13 +155,13 @@ public class MenuActivity extends AppCompatActivity {
         finish();
     }
 
-    @OnClick(R.id.id_menu_issues)
+    @OnClick(R.id.id_menu_update2)
     public void issues() {
-        ActivityTools.toActivity(MenuActivity.this, WebViewActivity.class,
-                new BundleModel().setFromClass(MenuActivity.class)
-                        .put("title", "常见问题")
-                        .put("url", "https://github.com/zfman/hputimetable/labels/%E5%B8%B8%E8%A7%81%E9%97%AE%E9%A2%98"));
-        finish();
+        try {
+            UpdateTools.checkUpdate(this,true);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void goBack() {
@@ -197,6 +198,7 @@ public class MenuActivity extends AppCompatActivity {
         } else {
             ShareTools.putInt(this, "hidenotcur", 0);
         }
+        ScheduleDao.changeStatus(this,true);
     }
 
     @OnCheckedChanged(R.id.id_switch_hideweekends)
@@ -206,6 +208,7 @@ public class MenuActivity extends AppCompatActivity {
         } else {
             ShareTools.putInt(this, "hideweekends", 0);
         }
+        ScheduleDao.changeStatus(this,true);
     }
 
     @OnCheckedChanged(R.id.id_checkauto)

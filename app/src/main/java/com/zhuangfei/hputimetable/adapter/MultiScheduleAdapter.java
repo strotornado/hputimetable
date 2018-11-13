@@ -88,6 +88,7 @@ public class MultiScheduleAdapter extends BaseAdapter {
 
             if(bindId!=-1&&bindId==scheduleName.getId()){
                 holder.timeTextView.setText("已被关联");
+                holder.timeTextView.setTextColor(context.getResources().getColor(R.color.app_gold));
             }
         }
 

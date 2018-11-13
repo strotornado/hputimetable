@@ -117,12 +117,15 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
     @Override
     protected void onStart() {
         super.onStart();
+        if(onNoticeUpdateListener!=null){
+            onNoticeUpdateListener.onUpdateNotice();
+        }
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
                 handler.sendEmptyMessage(0x123);
             }
-        }, 200);
+        }, 20);
     }
 
     Handler handler = new Handler() {
@@ -131,9 +134,6 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
             super.handleMessage(msg);
             if(msg.what==0x123){
                 getFromClip();
-                if(onNoticeUpdateListener!=null){
-                    onNoticeUpdateListener.onUpdateNotice();
-                }
             }
             if(msg.what==0x124){
                 try{

@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 import android.widget.RemoteViews;
+import android.widget.Toast;
 
 import com.zhuangfei.hputimetable.MainActivity;
 import com.zhuangfei.hputimetable.R;
@@ -28,7 +29,7 @@ import es.dmoral.toasty.Toasty;
  */
 public class ScheduleAppWidget extends AppWidgetProvider {
     private static final String TAG = "ScheduleAppWidget";
-    public static final String CLICK_ACTION = "com.example.action.CLICK";
+    public static final String CLICK_ACTION = "com.zhuangfei.action.POINTER_CLICK";
     public static final String UPDATE_ACTION = "com.zhuangfei.action.APPWIDGET_UPDATE";
     public static final String UPDATE_APPWIDGET="android.appwidget.action.APPWIDGET_UPDATE";
 
@@ -41,6 +42,11 @@ public class ScheduleAppWidget extends AppWidgetProvider {
             AppWidgetManager mgr = AppWidgetManager.getInstance(context);
             ComponentName cn = new ComponentName(context, ScheduleAppWidget.class);
             mgr.notifyAppWidgetViewDataChanged(mgr.getAppWidgetIds(cn), R.id.id_widget_listview);
+        }
+        if(intent.getAction().equals(CLICK_ACTION)){
+            Toast.makeText(context,"hello",Toast.LENGTH_SHORT).show();
+            Intent intent1=new Intent(context,MainActivity.class);
+            context.startActivity(intent1);
         }
     }
 
@@ -62,10 +68,12 @@ public class ScheduleAppWidget extends AppWidgetProvider {
         views.setTextViewText(R.id.id_appwidget_week,"第"+curWeek+"周  "+sdf2.format(new Date())+" / 怪兽课表");
 
         // template to handle the click listener for each item
-        Intent pointIntent = new Intent(context,MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, pointIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        views.setOnClickPendingIntent(R.id.id_appwidget_week,pendingIntent);
-
+        Intent intent = new Intent();
+        intent.setAction(CLICK_ACTION);
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        // 设置intent模板
+        views.setPendingIntentTemplate(R.id.id_widget_listview, pendingIntent);
 
 
         // Instruct the widget manager to update the widget

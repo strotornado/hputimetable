@@ -28,7 +28,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="5dp"
-                app:cardElevation="1dp"
                 android:layout_marginTop="15dp"
                 app:cardPreventCornerOverlap="false">
                 <LinearLayout
@@ -57,7 +56,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 app:cardCornerRadius="5dp"
-                app:cardElevation="1dp"
                 android:layout_marginTop="20dp"
                 app:cardPreventCornerOverlap="false">
 
@@ -212,7 +210,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 app:cardCornerRadius="5dp"
-                app:cardElevation="1dp"
                 app:cardPreventCornerOverlap="false">
                 <LinearLayout
                     android:id="@+id/id_func_bindtable"
@@ -245,7 +242,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 app:cardCornerRadius="5dp"
-                app:cardElevation="1dp"
                 app:cardPreventCornerOverlap="false">
 
                 <LinearLayout
@@ -298,7 +294,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 app:cardCornerRadius="5dp"
-                app:cardElevation="1dp"
                 app:cardPreventCornerOverlap="false">
 
                 <LinearLayout
@@ -360,7 +355,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 app:cardCornerRadius="5dp"
-                app:cardElevation="1dp"
                 app:cardPreventCornerOverlap="false">
 
                 <LinearLayout
@@ -380,7 +374,6 @@
                         android:textSize="16sp" />
                 </LinearLayout>
             </android.support.v7.widget.CardView>
-
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>

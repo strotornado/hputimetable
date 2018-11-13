@@ -31,7 +31,7 @@ public class ScheduleDao {
 
     public static void changeStatus(Context context,boolean isNeedUpdate){
         int v=isNeedUpdate==true?1:0;
-        ShareTools.putInt(context,"schedule_is_need_update",1);
+        ShareTools.putInt(context,"schedule_is_need_update",v);
     }
 
     public static boolean isNeedUpdate(Context context){

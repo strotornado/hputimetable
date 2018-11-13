@@ -41,15 +41,6 @@
                     android:textSize="14sp" />
 
                 <TextView
-                    android:id="@+id/id_menu_issues"
-                    android:layout_width="wrap_content"
-                    android:layout_height="50dp"
-                    android:background="@drawable/layout_ripple"
-                    android:gravity="center"
-                    android:text="常见问题"
-                    android:textSize="14sp" />
-
-                <TextView
                     android:id="@+id/id_menu_share"
                     android:layout_width="wrap_content"
                     android:layout_height="50dp"
@@ -59,17 +50,37 @@
                     android:textSize="14sp" />
 
                 <TextView
+                    android:id="@+id/id_menu_update2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="50dp"
+                    android:background="@drawable/layout_ripple"
+                    android:gravity="center"
+                    android:text="去酷安更新"
+                    android:textSize="14sp" />
+
+                <TextView
                     android:id="@+id/id_menu_update"
                     android:layout_width="wrap_content"
                     android:layout_height="50dp"
                     android:background="@drawable/layout_ripple"
                     android:gravity="center"
-                    android:text="版本更新"
+                    android:text="在线更新"
                     android:textSize="14sp" />
 
             </TableRow>
         </TableLayout>
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="15dp"
+            android:background="@color/app_white"
+            android:gravity="center_vertical"
+            android:paddingLeft="15dp"
+            android:text="开发者选项"
+            android:visibility="gone"
+            android:textColor="@color/app_gray" />
+        <include layout="@layout/view_line" />
         <TextView
             android:id="@+id/id_debug"
             android:layout_width="match_parent"
@@ -169,11 +180,11 @@
             android:gravity="center_vertical"
             android:paddingLeft="15dp"
             android:text="桌面部件设置"
+            android:visibility="gone"
             android:textColor="@color/app_gray" />
 
-        <include layout="@layout/view_line" />
-
         <LinearLayout
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:background="@color/app_white"

@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.app.AlertDialog;
+import android.widget.Toast;
 
 import com.zhuangfei.hputimetable.MainActivity;
 import com.zhuangfei.hputimetable.api.TimetableRequest;
@@ -24,14 +25,22 @@ import retrofit2.Response;
  */
 public class UpdateTools {
 
-    public static void checkUpdate(final Context context,boolean isUserTodo) throws Exception{
+    public static void checkUpdate(final Context context, final boolean isUserTodo) throws Exception{
         if(context==null) return;
         String id="e98b58875e902084a93a1daeae1ccbf7";
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         final String s = sdf.format(new Date()) + VersionTools.getVersionName();
         String store = ShareTools.getString(context, "app_update_info", null);
         int isIgnoreUpdate = ShareTools.getInt(context, "isIgnoreUpdate", 0);
-        if (isUserTodo||(isIgnoreUpdate == 0 && (store == null || !store.equals(s)))) {
+        if(isUserTodo){
+            Intent intent = new Intent();
+            intent.setAction("android.intent.action.VIEW");
+            intent.setData(Uri.parse("https://www.coolapk.com/apk/com.zhuangfei.hputimetable"));
+            context.startActivity(intent);
+            return;
+        }
+
+        if (isIgnoreUpdate == 0 && (store == null || !store.equals(s))) {
             TimetableRequest.getValue(context, id, new Callback<ObjResult<ValuePair>>() {
                 @Override
                 public void onResponse(Call<ObjResult<ValuePair>> call, Response<ObjResult<ValuePair>> response) {

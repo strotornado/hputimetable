@@ -51,6 +51,7 @@
                 <action android:name="com.zhuangfei.action.APPWIDGET_UPDATE" />
             </intent-filter>
 
+
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/schedule_app_widget_info" />
@@ -58,31 +59,6 @@
 
         <service
             android:name=".appwidget.ScheduleService"
-            android:enabled="true"
-            android:exported="false"
-            android:permission="android.permission.BIND_REMOTEVIEWS" />
-
-        <!-- 桌面小部件 -->
-        <receiver
-            android:name=".appwidget.WhiteBgAppWidget"
-            android:label="当日课程">
-            <intent-filter>
-                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.TIME_SET" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="com.zhuangfei.action.APPWIDGET_UPDATE" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.appwidget.provider"
-                android:resource="@xml/whitebg_app_widget_info" />
-        </receiver>
-
-        <service
-            android:name=".appwidget.WhiteBgService"
             android:enabled="true"
             android:exported="false"
             android:permission="android.permission.BIND_REMOTEVIEWS" />

@@ -51,6 +51,7 @@ import es.dmoral.toasty.Toasty;
 
 public class ScheduleService extends RemoteViewsService {
     private static final String TAG = "ScheduleService";
+    private boolean isHave = true;
 
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
@@ -71,7 +72,7 @@ public class ScheduleService extends RemoteViewsService {
 
         @Override
         public void onCreate() {
-            data=new ArrayList<>();
+            data = new ArrayList<>();
             data.addAll(findTodayData(context));
         }
 
@@ -88,18 +89,28 @@ public class ScheduleService extends RemoteViewsService {
 
         @Override
         public int getCount() {
+            if(data==null||data.size()==0) return 1;
             return data.size();
         }
 
         @Override
         public RemoteViews getViewAt(int i) {
-            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.schedule_app_widget_item);
-            Schedule schedule=data.get(i);
-            if(schedule==null) return views;
+            if(data!=null&&data.size()!=0){
+                RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.schedule_app_widget_item);
+                Schedule schedule = data.get(i);
+                if (schedule == null) return views;
 
-            views.setTextViewText(R.id.widget_tv_start,""+schedule.getStart()+" - "+(schedule.getStep()+schedule.getStart()-1)+"节在<"+schedule.getRoom()+">上");
+                views.setTextViewText(R.id.widget_tv_start, schedule.getStart() + "-" + (schedule.getStart() + schedule.getStep() - 1) + "节");
+                views.setTextViewText(R.id.widget_tv_name, "" + schedule.getName());
+                views.setTextViewText(R.id.widget_tv_room, "" + schedule.getRoom());
+                if (data.size() > 1) {
+                    views.setTextViewText(R.id.widget_tv_count, (i + 1) + "/" + data.size());
+                } else {
+                    views.setTextViewText(R.id.widget_tv_count, "");
+                }
 
-            views.setTextViewText(R.id.widget_tv_name,""+schedule.getName());
+                Intent fillInIntent = new Intent();
+                views.setOnClickFillInIntent(R.id.widget_clicklayout, fillInIntent);
 
 //            TimetableView timetableView = new TimetableView(context, null);
 //            int curWeek = TimetableTools.getCurWeek(context);
@@ -142,7 +153,11 @@ public class ScheduleService extends RemoteViewsService {
 //            views.setTextViewText(R.id.id_widget_item_room, schedule.getRoom());
 //            views.setTextViewText(R.id.id_widget_item_start, schedule.getStart() + "-" + (schedule.getStart() + schedule.getStep() - 1));
 
-            return views;
+                return views;
+            }else{
+                RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.schedule_app_widget_empty);
+                return views;
+            }
         }
 
         public void layoutView(View v, int width, int height) {
@@ -171,7 +186,8 @@ public class ScheduleService extends RemoteViewsService {
 
         @Override
         public RemoteViews getLoadingView() {
-            return null;
+            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.schedule_app_widget_empty);
+            return views;
         }
 
         @Override
@@ -181,13 +197,14 @@ public class ScheduleService extends RemoteViewsService {
 
         @Override
         public long getItemId(int i) {
-            return i;
+            return (long) i;
         }
 
         @Override
         public boolean hasStableIds() {
             return false;
         }
+
     }
 
     /**
@@ -212,7 +229,7 @@ public class ScheduleService extends RemoteViewsService {
         dayOfWeek = dayOfWeek - 2;
         if (dayOfWeek == -1) dayOfWeek = 6;
         List<Schedule> list = ScheduleSupport.getHaveSubjectsWithDay(allModels, curWeek, dayOfWeek);
-        if(list==null) return new ArrayList<>();
+        if (list == null) return new ArrayList<>();
         return list;
     }
 }

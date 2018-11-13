@@ -2,5 +2,4 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/id_menu2"
         android:title="添加课程"/>
-
 </menu>
