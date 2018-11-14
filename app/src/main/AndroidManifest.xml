@@ -22,7 +22,14 @@
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTask"
-            android:theme="@style/mainTheme" />
+            android:theme="@style/mainTheme" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <activity
             android:name=".ImportMajorActivity"
             android:windowSoftInputMode="stateAlwaysHidden" />
@@ -37,7 +44,7 @@
         <!-- 桌面小部件 -->
         <receiver
             android:name=".appwidget.ScheduleAppWidget"
-            android:label="当日课程">
+            android:label="课表日视图">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -78,11 +85,7 @@
         <activity
             android:name=".SplashActivity"
             android:theme="@style/splash">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity android:name=".AdapterDebugListActivity" />
         <activity android:name=".AdapterDebugHtmlActivity" />

@@ -190,7 +190,7 @@ public class UploadHtmlActivity extends AppCompatActivity {
     public void onBtnClicked() {
         AlertDialog.Builder builder=new AlertDialog.Builder(this)
                 .setTitle("重要内容!")
-                .setMessage("请在你看到课表后再点击此按钮!!!")
+                .setMessage("请在你看到课表后再点击此按钮!!!\n\n如果教务是URP，可能会出现点击无反应的问题，在该页面右上角选择URP-兼容模式即可")
                 .setPositiveButton("看到了", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {

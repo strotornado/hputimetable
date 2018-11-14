@@ -18,9 +18,8 @@ android {
         // 开启multidex
         multiDexEnabled true
 
-        //1.0.7预览版
-        versionCode 11
-        versionName "1.1.0"
+        versionCode 12
+        versionName "1.1.1"
     }
 
     // 签名配置

@@ -9,6 +9,8 @@
 
     <color name="colorPrimary">#3DD7F1</color>
     <color name="colorPrimaryDark">#3DD7F1</color>
+    <!--<color name="colorPrimary">@color/color_11</color>-->
+    <!--<color name="colorPrimaryDark">@color/color_11</color>-->
     <color name="colorAccent">@color/app_blue_bg</color>
 
     <color name="theme_dark">#2A3033</color>

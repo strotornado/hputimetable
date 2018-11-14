@@ -63,9 +63,19 @@ bugly {
 
 ## Images
 
-### v1.1.0
+### v1.1.1
 
-<img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.0/img1.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.0/img2.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.0/img3.jpg" width="30%"/>
+<img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.1/img1.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.1/img2.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.1/img3.jpg" width="30%"/>
+
+### v1.1.1 `2018/11/14`
+
+- 网页可缩放
+- 新增情侣模式
+- 新增调试控制台
+- 优化小部件日视图
+- 优化设置页面
+- 减少主界面刷新频率
+- 减少数据刷新延迟时间
 
 ### v1.1.0 `2018/10/29`
 
