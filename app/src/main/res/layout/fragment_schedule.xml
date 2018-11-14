@@ -37,7 +37,6 @@
         android:id="@+id/id_timetableView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/app_white"
         android:layout_marginBottom="5dp">
     </com.zhuangfei.timetable.TimetableView>
     

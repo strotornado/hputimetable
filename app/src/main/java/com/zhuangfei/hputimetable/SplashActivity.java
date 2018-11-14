@@ -19,6 +19,6 @@ public class SplashActivity extends AppCompatActivity {
             public void run() {
                 ActivityTools.toActivity(SplashActivity.this,MainActivity.class);
             }
-        },100);
+        },500);
     }
 }

@@ -13,7 +13,7 @@
     </style>
 
     <style name="splash" parent="AppTheme">
-        <item name="android:background">@drawable/list_start</item>
+        <item name="android:background">@drawable/launch1</item>
         <item name="android:windowFullscreen">true</item>
     </style>
 
