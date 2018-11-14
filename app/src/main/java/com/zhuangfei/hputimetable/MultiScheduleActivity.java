@@ -121,6 +121,7 @@ public class MultiScheduleActivity extends Activity {
                             scheduleName.delete();
                             int cur = ShareTools.getInt(context, ShareConstants.INT_SCHEDULE_NAME_ID, -1);
                             if (cur == scheduleName.getId()) {
+                                ScheduleDao.changeFuncStatus(MultiScheduleActivity.this,true);
                                 ScheduleName newName = DataSupport.where("name=?", "默认课表").findFirst(ScheduleName.class);
                                 if (newName != null) {
                                     ShareTools.put(context, ShareConstants.INT_SCHEDULE_NAME_ID, newName.getId());
@@ -179,11 +180,13 @@ public class MultiScheduleActivity extends Activity {
                         }
                         break;
                     case 4:
+                        ScheduleDao.changeFuncStatus(MultiScheduleActivity.this,true);
                         applyTa(nameList.get(pos));
                         getData();
                         BroadcastUtils.refreshAppWidget(context);
                         break;
                     case 5:
+                        ScheduleDao.changeFuncStatus(MultiScheduleActivity.this,true);
                         apply(nameList.get(pos));
                         getData();
                         BroadcastUtils.refreshAppWidget(context);
@@ -197,6 +200,11 @@ public class MultiScheduleActivity extends Activity {
 
     private void modifyScheduleName(ScheduleName scheduleName) {
         if (scheduleName == null) return;
+        int cur = ShareTools.getInt(context, ShareConstants.INT_SCHEDULE_NAME_ID, -1);
+        if (cur == scheduleName.getId()) {
+            ScheduleDao.changeFuncStatus(MultiScheduleActivity.this,true);
+        }
+
         BundleModel model = new BundleModel()
                 .put(ModifyScheduleNameActivity.STRING_EXTRA_NAME, scheduleName.getName())
                 .put(ModifyScheduleNameActivity.INT_EXTRA_ID, scheduleName.getId());

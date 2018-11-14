@@ -75,6 +75,9 @@ public class MenuActivity extends AppCompatActivity {
     @BindView(R.id.id_widget_hidedate)
     SwitchCompat hideDateSwitch;
 
+    @BindView(R.id.id_switch_alone)
+    SwitchCompat aloneSwitch;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -112,6 +115,13 @@ public class MenuActivity extends AppCompatActivity {
             checkedAutoSwitch.setChecked(true);
         } else {
             checkedAutoSwitch.setChecked(false);
+        }
+
+        int isAlone = ShareTools.getInt(this, "isAlone", 0);
+        if (isAlone == 0) {
+            aloneSwitch.setChecked(true);
+        } else {
+            aloneSwitch.setChecked(false);
         }
 
         boolean maxItem= WidgetConfig.get(this,WidgetConfig.CONFIG_MAX_ITEM);
@@ -217,6 +227,15 @@ public class MenuActivity extends AppCompatActivity {
             ShareTools.putInt(this, "isIgnoreUpdate", 0);
         } else {
             ShareTools.putInt(this, "isIgnoreUpdate", 1);
+        }
+    }
+
+    @OnCheckedChanged(R.id.id_switch_alone)
+    public void onAloneSwitchClicked(boolean b) {
+        if (b) {
+            ShareTools.putInt(this, "isAlone", 0);
+        } else {
+            ShareTools.putInt(this, "isAlone", 1);
         }
     }
 

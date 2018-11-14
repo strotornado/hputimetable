@@ -218,6 +218,7 @@ public class ImportMajorActivity extends AppCompatActivity {
                 .setPositiveButton("设为当前课表", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+                        ScheduleDao.changeFuncStatus(ImportMajorActivity.this,true);
                         ScheduleDao.applySchedule(ImportMajorActivity.this,name.getId());
                         BroadcastUtils.refreshAppWidget(ImportMajorActivity.this);
                         if(dialogInterface!=null){

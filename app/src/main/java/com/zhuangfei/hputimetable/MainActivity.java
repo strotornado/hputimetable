@@ -125,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
             public void run() {
                 handler.sendEmptyMessage(0x123);
             }
-        }, 20);
+        }, 200);
     }
 
     Handler handler = new Handler() {

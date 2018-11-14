@@ -246,6 +246,7 @@ public class AdapterSchoolActivity extends AppCompatActivity {
                 .setPositiveButton("设为当前课表", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+                        ScheduleDao.changeFuncStatus(AdapterSchoolActivity.this,true);
                         ScheduleDao.applySchedule(AdapterSchoolActivity.this, name.getId());
                         BroadcastUtils.refreshAppWidget(AdapterSchoolActivity.this);
                         if (dialogInterface != null) {

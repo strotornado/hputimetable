@@ -34,6 +34,17 @@ public class ScheduleDao {
         ShareTools.putInt(context,"schedule_is_need_update",v);
     }
 
+    public static void changeFuncStatus(Context context,boolean isNeedUpdate){
+        int v=isNeedUpdate==true?1:0;
+        ShareTools.putInt(context,"schedule_is_need_update_func",v);
+    }
+
+    public static boolean isNeedFuncUpdate(Context context){
+        int v= ShareTools.getInt(context,"schedule_is_need_update_func",0);
+        if(v==1) return true;
+        return false;
+    }
+
     public static boolean isNeedUpdate(Context context){
         int v= ShareTools.getInt(context,"schedule_is_need_update",0);
         if(v==1) return true;

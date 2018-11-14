@@ -230,7 +230,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="15dp"
                         android:textColor="@color/app_gray"
-                        android:text="选择一个课表以关联，关联后主页将显示其日视图，课表页面也可以快速切换"/>
+                        android:text="选择一个课表以关联，关联后主页将显示其日视图"/>
                 </LinearLayout>
             </android.support.v7.widget.CardView>
 

@@ -160,6 +160,13 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
 		super.onViewCreated(view, savedInstanceState);
 	}
 
+	public void showBindView(){
+		int v=ShareTools.getInt(getActivity(),"isAlone",0);
+		if(v==0){
+			bindView.setVisibility(View.VISIBLE);
+		}
+	}
+
 	@Override
 	protected void lazyLoad() {
 		inits();
@@ -181,7 +188,7 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
 	public void cancelBind(){
 		ShareTools.putInt(getActivity(),ShareConstants.INT_SCHEDULE_NAME_ID2,-1);
 		dayView2.setVisibility(View.GONE);
-		bindView.setVisibility(View.VISIBLE);
+		showBindView();
 	}
 
 	public void createCardView(List<Schedule> models, ScheduleName newName){
@@ -403,11 +410,11 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
 					}
 				});
 			}else{
-				bindView.setVisibility(View.VISIBLE);
+				showBindView();
 				dayView2.setVisibility(View.GONE);
 			}
 		}else{
-			bindView.setVisibility(View.VISIBLE);
+			showBindView();
 			dayView2.setVisibility(View.GONE);
 		}
 	}
@@ -488,6 +495,7 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
 				.setPositiveButton("设为当前课表", new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialogInterface, int i) {
+						ScheduleDao.changeFuncStatus(getActivity(),true);
 						ScheduleDao.applySchedule(getActivity(),name.getId());
 						BroadcastUtils.refreshAppWidget(getActivity());
 						if(onSwitchPagerListener!=null){
@@ -544,10 +552,13 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
 
 	@Override
 	public void onUpdateNotice() {
-		if(todayInfo.getText()!=null){
-			findData();
+		if(ScheduleDao.isNeedFuncUpdate(getActivity())){
+			if(todayInfo.getText()!=null){
+				findData();
+			}
+			getValue("1f088b55140a49e101e79c420b19bce6");
+			ScheduleDao.changeFuncStatus(getActivity(),false);
 		}
-		getValue("1f088b55140a49e101e79c420b19bce6");
 	}
 
 	@OnClick(R.id.id_week_view)
@@ -561,7 +572,7 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
 	public void bindTable(){
 		android.support.v7.app.AlertDialog.Builder builder=new android.support.v7.app.AlertDialog.Builder(getActivity())
 				.setTitle("关联课表")
-				.setMessage("前往多课表管理页面，选择一个课表，点击【这是Ta的课表】")
+				.setMessage("可在工具箱中设置隐藏情侣模式以隐藏本卡片!\n\n关联课表步骤:\n前往多课表管理页面，选择一个课表，点击【这是Ta的课表】")
 				.setPositiveButton("前往关联", new DialogInterface.OnClickListener() {
 					@Override
 					public void onClick(DialogInterface dialogInterface, int i) {

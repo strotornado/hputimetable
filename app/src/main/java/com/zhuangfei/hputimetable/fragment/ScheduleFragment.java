@@ -146,7 +146,6 @@ public class ScheduleFragment extends LazyLoadFragment implements OnSwitchTableL
                 onUpdateData();
                 ScheduleDao.changeStatus(getActivity(),false);
             }
-
         }
     };
 

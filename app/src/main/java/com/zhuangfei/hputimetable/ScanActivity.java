@@ -184,6 +184,7 @@ public class ScanActivity extends AppCompatActivity {
                 .setPositiveButton("设为当前课表", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+                        ScheduleDao.changeFuncStatus(ScanActivity.this,true);
                         ScheduleDao.applySchedule(ScanActivity.this,name.getId());
                         BroadcastUtils.refreshAppWidget(ScanActivity.this);
                         if(dialogInterface!=null){
