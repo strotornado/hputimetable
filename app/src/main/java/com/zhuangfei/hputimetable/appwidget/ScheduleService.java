@@ -15,6 +15,7 @@ import android.widget.LinearLayout;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 import android.widget.ScrollView;
+import android.widget.Toast;
 
 import com.zhuangfei.hputimetable.AddTimetableActivity;
 import com.zhuangfei.hputimetable.MainActivity;
@@ -51,7 +52,6 @@ import es.dmoral.toasty.Toasty;
 
 public class ScheduleService extends RemoteViewsService {
     private static final String TAG = "ScheduleService";
-    private boolean isHave = true;
 
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
@@ -186,8 +186,9 @@ public class ScheduleService extends RemoteViewsService {
 
         @Override
         public RemoteViews getLoadingView() {
-            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.schedule_app_widget_empty);
-            return views;
+//            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.schedule_app_widget_empty);
+//            return views;
+            return null;
         }
 
         @Override

@@ -196,6 +196,7 @@ public class TimetableManagerActivity extends Activity implements OnClickListene
 								@Override
 								public void onConfirm(MessageAlert messageAlert) {
 									allDelete();
+
 									messageAlert.hide();
 								}
 							}).show();
@@ -215,6 +216,8 @@ public class TimetableManagerActivity extends Activity implements OnClickListene
 		boxList.clear();
 		allCheckBox.setChecked(false);
 		Toasty.success(this, "删除成功!", Toast.LENGTH_SHORT).show();
+		ScheduleDao.changeFuncStatus(this,true);
+		ScheduleDao.changeStatus(this,true);
 		addCourseItemView();
 		BroadcastUtils.refreshAppWidget(this);
 	}

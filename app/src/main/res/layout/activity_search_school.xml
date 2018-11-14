@@ -121,7 +121,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="15dp"
-            android:text="如果本校搜索不到，可以尝试搜一下教务类型!\n任选一个学校点击进入，然后在右上角的菜单中选择[导入同类型教务系统],输入学校名称后前往教务处，在登录个人账号后点击解析按钮即可\n\n当然最好的体验需要去申请适配了，我会尽快完成!"
+            android:text="如果本校搜索不到，可以尝试搜一下教务类型!\n任选一个学校点击进入，然后在右上角的菜单中选择[导入同类型教务系统],输入学校名称后前往教务处，在登录个人账号后点击解析按钮即可\n\n当然最好的体验需要去申请适配了，我会尽快完成适配!"
             android:textSize="15sp" />
         <TextView
             android:id="@+id/id_goto_adapter"

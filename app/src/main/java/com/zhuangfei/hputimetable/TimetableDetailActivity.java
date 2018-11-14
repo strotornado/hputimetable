@@ -165,6 +165,7 @@ public class TimetableDetailActivity extends AppCompatActivity {
             TimetableModel model = DataSupport.find(TimetableModel.class, id);
             if (model != null) {
                 model.delete();
+                ScheduleDao.changeFuncStatus(this,true);
                 ShareTools.put(this, "course_update", 1);
                 Toasty.success(this, "删除成功！").show();
                 ScheduleDao.changeStatus(this,true);

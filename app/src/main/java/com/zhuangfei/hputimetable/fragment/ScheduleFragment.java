@@ -157,7 +157,7 @@ public class ScheduleFragment extends LazyLoadFragment implements OnSwitchTableL
             public void run() {
                 handler.sendEmptyMessage(0x123);
             }
-        },300);
+        },100);
 
     }
 
@@ -375,6 +375,20 @@ public class ScheduleFragment extends LazyLoadFragment implements OnSwitchTableL
 
     @Override
     public void onUpdateData() {
+        int status=ShareTools.getInt(context,"hidenotcur",0);
+        if(status==0){
+            mTimetableView.isShowNotCurWeek(true);
+        }else {
+            mTimetableView.isShowNotCurWeek(false);
+        }
+
+        int status2=ShareTools.getInt(context,"hideweekends",0);
+        if(status2==0){
+            mTimetableView.isShowWeekends(true);
+        }else {
+            mTimetableView.isShowWeekends(false);
+        }
+
         ScheduleName newName = DataSupport.find(ScheduleName.class, ScheduleDao.getApplyScheduleId(getActivity()));
         if(newName==null) return;
         mCurScheduleTextView.setText(newName.getName());

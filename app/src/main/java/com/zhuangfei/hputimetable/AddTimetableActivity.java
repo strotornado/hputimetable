@@ -289,6 +289,7 @@ public class AddTimetableActivity extends Activity {
         }
         DataSupport.saveAll(models);
         BroadcastUtils.refreshAppWidget(this);
+        ScheduleDao.changeFuncStatus(this,true);
         ScheduleDao.changeStatus(this,true);
         Toasty.success(this, "保存成功", Toast.LENGTH_SHORT).show();
         goBack();
@@ -330,6 +331,7 @@ public class AddTimetableActivity extends Activity {
         ShareTools.putInt(this, "course_update", 1);
         BroadcastUtils.refreshAppWidget(this);
         ScheduleDao.changeStatus(this,true);
+        ScheduleDao.changeFuncStatus(this,true);
         Toasty.success(this, "修改成功", Toast.LENGTH_SHORT).show();
         goBack();
     }

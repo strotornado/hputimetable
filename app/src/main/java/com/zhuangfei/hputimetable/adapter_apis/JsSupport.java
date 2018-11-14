@@ -49,7 +49,6 @@ public class JsSupport {
         webView.clearFormData();
         settings.setSupportZoom(true);
         settings.setBuiltInZoomControls(true);
-
         webView.setDownloadListener(new DownloadListener() {
             @Override
             public void onDownloadStart(String url, String userAgent,

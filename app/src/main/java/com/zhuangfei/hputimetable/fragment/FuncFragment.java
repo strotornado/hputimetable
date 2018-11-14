@@ -164,6 +164,8 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
 		int v=ShareTools.getInt(getActivity(),"isAlone",0);
 		if(v==0){
 			bindView.setVisibility(View.VISIBLE);
+		}else{
+			bindView.setVisibility(View.GONE);
 		}
 	}
 

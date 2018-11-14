@@ -136,9 +136,9 @@ public class AdapterSchoolActivity extends AppCompatActivity {
             else loadingProgressBar.show();
 
             //河南理工大学教务兼容性处理
-            if (webView.getUrl().startsWith("https://vpn.hpu.edu.cn/web/1/http/1/218.196.240.97/loginAction.do")) {
-                webView.loadUrl("https://vpn.hpu.edu.cn/web/1/http/2/218.196.240.97/xkAction.do?actionType=6");
-            }
+//            if (webView.getUrl().startsWith("https://vpn.hpu.edu.cn/web/1/http/1/218.196.240.97/loginAction.do")) {
+//                webView.loadUrl("https://vpn.hpu.edu.cn/web/1/http/2/218.196.240.97/xkAction.do?actionType=6");
+//            }
         }
     }
 
@@ -272,7 +272,7 @@ public class AdapterSchoolActivity extends AppCompatActivity {
         if(!isButtonClicked){
             AlertDialog.Builder builder = new AlertDialog.Builder(this)
                     .setTitle("重要内容!")
-                    .setMessage("请在你看到课表后再点击此按钮!!!")
+                    .setMessage("请在你看到课表后再点击此按钮!!!\n\n如果教务是URP，可能会出现点击无反应的问题，在该页面右上角选择URP-兼容模式即可")
                     .setPositiveButton("看到了", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
@@ -303,7 +303,15 @@ public class AdapterSchoolActivity extends AppCompatActivity {
                                         .put("js", js));
                         break;
                     case R.id.id_menu2:
-                        webView.loadUrl(URL_COURSE_RESULT);
+
+                        String now=webView.getUrl();
+                        if(now.indexOf("/")!=-1){
+                            int index=now.lastIndexOf("/");
+                            webView.loadUrl(now.substring(0,index)+"/xkAction.do?actionType=6");
+                        }else{
+                            webView.loadUrl(now+"/xkAction.do?actionType=6");
+                        }
+
                         break;
                 }
                 return false;

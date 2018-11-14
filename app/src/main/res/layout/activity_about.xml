@@ -159,7 +159,7 @@
                 android:layout_marginTop="16dp"
                 android:gravity="center_horizontal"
                 android:lineSpacingExtra="8dp"
-                android:text="对App有任何的建议\n可以在群中交流\n\n感谢WakeUp课程表的开发者，本软件的[关于软件]界面、[添加课程]界面的UI风格借鉴了WakeUp课程表"
+                android:text="对App有任何的建议\n可以在群中交流\n\n感谢WakeUp课程表的开发者\n本软件的[关于软件]界面、[添加课程]界面的UI风格借鉴了WakeUp课程表"
                 android:textSize="12sp" />
 
         </LinearLayout>

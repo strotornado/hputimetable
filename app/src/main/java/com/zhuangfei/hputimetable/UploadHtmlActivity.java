@@ -116,7 +116,13 @@ public class UploadHtmlActivity extends AppCompatActivity {
             public boolean onMenuItemClick(MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.top1:
-                        webView.loadUrl(URL_COURSE_RESULT);
+                        String now=webView.getUrl();
+                        if(now.indexOf("/")!=-1){
+                            int index=now.lastIndexOf("/");
+                            webView.loadUrl(now.substring(0,index)+"/xkAction.do?actionType=6");
+                        }else{
+                            webView.loadUrl(now+"/xkAction.do?actionType=6");
+                        }
                         break;
                 }
                 return true;
