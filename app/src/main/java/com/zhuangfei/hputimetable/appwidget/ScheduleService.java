@@ -94,9 +94,10 @@ public class ScheduleService extends RemoteViewsService {
 
         @Override
         public RemoteViews getViewAt(int i) {
-            if(i<0) return null;
             if(data!=null&&data.size()!=0){
                 RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.schedule_app_widget_item);
+                if (i<0 ||i>=data.size()) return views;
+
                 Schedule schedule = data.get(i);
                 if (schedule == null) return views;
 

@@ -64,11 +64,18 @@ public class TimetableDetailActivity extends AppCompatActivity {
     private void loadData() {
         int cur_week = TimetableTools.getCurWeek(this);
         BundleModel model = BundleTools.getModel(this);
+        if(model==null) {
+            Toasty.error(this,"参数传递错误!").show();
+            goBack();
+            return;
+        }
+
         if (model != null && model.get("timetable") != null) {
             schedules = (List<Schedule>) model.get("timetable");
         }else{
             Toasty.error(this,"参数传递错误!").show();
             goBack();
+            return;
         }
         if (model != null && model.getFromClass() != null) {
             returnClass = model.getFromClass();
@@ -78,6 +85,7 @@ public class TimetableDetailActivity extends AppCompatActivity {
         if(schedules==null){
             Toasty.error(this,"参数传递错误:schedule==null").show();
             goBack();
+            return;
         }
         List<Schedule> list = new ArrayList<>();
         for (int i = 0; i < schedules.size(); i++) {

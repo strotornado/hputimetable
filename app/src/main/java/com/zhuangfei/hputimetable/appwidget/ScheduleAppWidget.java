@@ -44,11 +44,6 @@ public class ScheduleAppWidget extends AppWidgetProvider {
             ComponentName cn = new ComponentName(context, ScheduleAppWidget.class);
             mgr.notifyAppWidgetViewDataChanged(mgr.getAppWidgetIds(cn), R.id.id_widget_listview);
         }
-        if(intent.getAction().equals(CLICK_ACTION)){
-            Toast.makeText(context,"hello",Toast.LENGTH_SHORT).show();
-            Intent intent1=new Intent(context,MainActivity.class);
-            context.startActivity(intent1);
-        }
     }
 
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,

@@ -95,6 +95,11 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
     }
 
     @Override
+    protected void onSaveInstanceState(Bundle outState) {
+//        super.onSaveInstanceState(outState);
+    }
+
+    @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
         Serializable serializable=intent.getSerializableExtra("model");
