@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
+import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
@@ -74,7 +75,6 @@ public class ScheduleAppWidget extends AppWidgetProvider {
         PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         // 设置intent模板
         views.setPendingIntentTemplate(R.id.id_widget_listview, pendingIntent);
-
 
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);

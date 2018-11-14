@@ -15,7 +15,6 @@ import android.widget.LinearLayout;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 import android.widget.ScrollView;
-import android.widget.Toast;
 
 import com.zhuangfei.hputimetable.AddTimetableActivity;
 import com.zhuangfei.hputimetable.MainActivity;
@@ -52,6 +51,7 @@ import es.dmoral.toasty.Toasty;
 
 public class ScheduleService extends RemoteViewsService {
     private static final String TAG = "ScheduleService";
+    private boolean isHave = true;
 
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
@@ -73,7 +73,6 @@ public class ScheduleService extends RemoteViewsService {
         @Override
         public void onCreate() {
             data = new ArrayList<>();
-            data.addAll(findTodayData(context));
         }
 
         @Override
@@ -95,6 +94,7 @@ public class ScheduleService extends RemoteViewsService {
 
         @Override
         public RemoteViews getViewAt(int i) {
+            if(i<0) return null;
             if(data!=null&&data.size()!=0){
                 RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.schedule_app_widget_item);
                 Schedule schedule = data.get(i);
@@ -111,51 +111,10 @@ public class ScheduleService extends RemoteViewsService {
 
                 Intent fillInIntent = new Intent();
                 views.setOnClickFillInIntent(R.id.widget_clicklayout, fillInIntent);
-
-//            TimetableView timetableView = new TimetableView(context, null);
-//            int curWeek = TimetableTools.getCurWeek(context);
-//            if (data == null) data = new ArrayList<>();
-//            data.clear();
-//            data.addAll(findData(context));
-//
-//            boolean max15 = WidgetConfig.get(context, WidgetConfig.CONFIG_MAX_ITEM);
-//            int maxItem = 10;
-//            if (max15) maxItem = 15;
-//
-//            CustomDateBuildAdapter dateAdapter = new CustomDateBuildAdapter();
-//            OnSlideBuildAdapter slideAdapter = (OnSlideBuildAdapter) timetableView.onSlideBuildListener();
-//            slideAdapter.setTextSize(15);
-//            dateAdapter.setTextSize(15);
-//
-//            slideAdapter.setTextColor(Color.BLACK);
-//            dateAdapter.setColor(Color.BLACK);
-//
-//            boolean hideWeeks = WidgetConfig.get(context, WidgetConfig.CONFIG_HIDE_WEEKS);
-//            boolean hideDate = WidgetConfig.get(context, WidgetConfig.CONFIG_HIDE_DATE);
-//            if(hideDate) timetableView.hideDateView();
-//            if(hideWeeks) timetableView.isShowWeekends(false);
-//
-//            timetableView.data(data)
-//                    .curWeek(curWeek)
-//                    .maxSlideItem(maxItem)
-//                    .isShowNotCurWeek(false)
-//                    .alpha(0f, 0f, 0.6f)
-//                    .marLeft(ScreenUtils.dip2px(context, 3))
-//                    .marTop(ScreenUtils.dip2px(context, 3))
-//                    .itemHeight(ScreenUtils.dip2px(context, 45))
-//                    .callback(dateAdapter)
-//                    .showView();
-
-//            layoutView(timetableView, ScreenUtils.dip2px(context, 375f), ScreenUtils.dip2px(context, 50) + timetableView.itemHeight() * timetableView.maxSlideItem()+timetableView.marTop()*(timetableView.maxSlideItem()));
-//            views.setBitmap(R.id.iv_imgview, "setImageBitmap", getViewBitmap(timetableView));
-//            Schedule schedule = data.get(i);
-//            views.setTextViewText(R.id.id_widget_item_name, schedule.getName());
-//            views.setTextViewText(R.id.id_widget_item_room, schedule.getRoom());
-//            views.setTextViewText(R.id.id_widget_item_start, schedule.getStart() + "-" + (schedule.getStart() + schedule.getStep() - 1));
-
                 return views;
             }else{
                 RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.schedule_app_widget_empty);
+
                 return views;
             }
         }
@@ -193,7 +152,7 @@ public class ScheduleService extends RemoteViewsService {
 
         @Override
         public int getViewTypeCount() {
-            return 1;
+            return 2;
         }
 
         @Override
