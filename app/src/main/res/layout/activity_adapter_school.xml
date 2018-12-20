@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-        <include layout="@layout/header_upload_html"/>
+        <include layout="@layout/zfman_header_upload_html"/>
         <android.support.v4.widget.ContentLoadingProgressBar
             android:id="@+id/id_loadingbar"
             style="?android:attr/android:progressBarStyleHorizontal"

@@ -33,6 +33,7 @@ import com.zhuangfei.hputimetable.tools.BroadcastUtils;
 import com.zhuangfei.hputimetable.tools.TimetableTools;
 import com.zhuangfei.hputimetable.tools.UpdateTools;
 import com.zhuangfei.hputimetable.tools.WidgetConfig;
+import com.zhuangfei.scheduleadapter.ZfmanUploadSourceActivity;
 import com.zhuangfei.toolkit.model.BundleModel;
 import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.ShareTools;
@@ -261,5 +262,11 @@ public class MenuActivity extends AppCompatActivity {
     @OnClick(R.id.id_debug)
     public void toDebug(){
         ActivityTools.toActivity(this,AdapterDebugTipActivity.class);
+    }
+
+    @OnClick(R.id.id_other)
+    public void jumpTo(){
+        Intent intent=new Intent(this, ZfmanUploadSourceActivity.class);
+        startActivity(intent);
     }
 }

@@ -1,4 +1,4 @@
-package com.zhuangfei.hputimetable;
+package com.zhuangfei.scheduleadapter;
 
 import android.annotation.SuppressLint;
 import android.content.DialogInterface;
@@ -8,23 +8,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.text.TextUtils;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.zhuangfei.hputimetable.adapter_apis.IArea;
-import com.zhuangfei.hputimetable.adapter_apis.JsSupport;
-import com.zhuangfei.hputimetable.api.TimetableRequest;
-import com.zhuangfei.hputimetable.api.model.BaseResult;
-import com.zhuangfei.toolkit.tools.ActivityTools;
-import com.zhuangfei.toolkit.tools.BundleTools;
+import com.zhuangfei.scheduleadapter.openapis.IArea;
+import com.zhuangfei.scheduleadapter.openapis.JsSupport;
+import com.zhuangfei.scheduleadapter.webapis.TimetableRequest;
+import com.zhuangfei.scheduleadapter.webapis.model.BaseResult;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import es.dmoral.toasty.Toasty;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -33,79 +29,90 @@ import retrofit2.Response;
  * 源码上传页面
  * 内部增加了对河南理工大学的兼容，不需要的话可以忽略
  */
-public class UploadHtmlActivity extends AppCompatActivity {
+public class ZfmanUploadSourceActivity extends AppCompatActivity {
 
     private static final String TAG = "WebViewActivity";
-    // wenview与加载条
-    @BindView(R.id.id_webview)
     WebView webView;
 
-    // 关闭
-    private LinearLayout closeLayout;
-    Class returnClass;
-
     // 标题
-    @BindView(R.id.id_web_title)
     TextView titleTextView;
     String url, school;
-
-    @BindView(R.id.id_webview_help)
     ImageView helpView;
 
     boolean isNeedLoad = false;
-
-    //选课结果
-    public static final String URL_COURSE_RESULT="https://vpn.hpu.edu.cn/web/1/http/2/218.196.240.97/xkAction.do?actionType=6";
-
-
     JsSupport jsSupport;
+    LinearLayout buttonGroupLinear;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.zfman_activity_upload_html);
-        ButterKnife.bind(this);
-        initUrl();
+        initViews();
+        initEvents();
         loadWebView();
     }
 
-    private void initUrl() {
-        returnClass = BundleTools.getFromClass(this, MainActivity.class);
-        url = BundleTools.getString(this, "url", "http://www.liuzhuangfei.com");
-        school = BundleTools.getString(this, "school", "WebView");
-        titleTextView.setText("适配-"+school);
+    private void initEvents() {
+        findViewById(R.id.id_close).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
+
+        helpView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showPopmenu();
+            }
+        });
+
+        findViewById(R.id.iv_parseBtn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+//                onBtnClicked();
+                buttonGroupLinear.setVisibility(View.VISIBLE);
+            }
+        });
+
+        buttonGroupLinear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                buttonGroupLinear.setVisibility(View.GONE);
+            }
+        });
     }
 
-    @OnClick(R.id.id_close)
-    public void goBack() {
-        ActivityTools.toBackActivityAnim(UploadHtmlActivity.this,
-                returnClass);
+    private void initViews() {
+        webView=findViewById(R.id.id_webview);
+        titleTextView=findViewById(R.id.id_web_title);
+        helpView=findViewById(R.id.id_webview_help);
+        buttonGroupLinear=findViewById(R.id.linear_buttongroup);
+
+        url="http://www.liuzhuangfei.com";
+        school="hpu";
     }
 
     /**
      * 显示弹出菜单
      */
-    @OnClick(R.id.id_webview_help)
     public void showPopmenu() {
         PopupMenu popup = new PopupMenu(this, helpView);
         popup.getMenuInflater().inflate(R.menu.menu_webview, popup.getMenu());
         popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
             public boolean onMenuItemClick(MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.top1:
-                        String now=webView.getUrl();
-                        if(now.indexOf("/")!=-1){
-                            int index=now.lastIndexOf("/");
-                            webView.loadUrl(now.substring(0,index)+"/xkAction.do?actionType=6");
-                        }else{
-                            webView.loadUrl(now+"/xkAction.do?actionType=6");
-                        }
-                        break;
+                if(item.getItemId()==R.id.top1){
+                    String now=webView.getUrl();
+                    if(now.indexOf("/")!=-1){
+                        int index=now.lastIndexOf("/");
+                        webView.loadUrl(now.substring(0,index)+"/xkAction.do?actionType=6");
+                    }else{
+                        webView.loadUrl(now+"/xkAction.do?actionType=6");
+                    }
                 }
                 return true;
             }
         });
-
         popup.show();
     }
 
@@ -145,25 +152,28 @@ public class UploadHtmlActivity extends AppCompatActivity {
                 BaseResult result=response.body();
                 if(result!=null){
                     if(result.getCode()==200){
-                        Toasty.success(UploadHtmlActivity.this,"上传源码成功，请等待开发者适配").show();
+                        showToast("上传源码成功，请等待开发者适配");
                     }else{
-                        Toasty.error(UploadHtmlActivity.this,result.getMsg()).show();
+                        showToast("Error:"+result.getMsg());
                     }
                 }else{
-                    Toasty.error(UploadHtmlActivity.this,"result is null!").show();
+                    showToast("result is null!");
                 }
-                ActivityTools.toBackActivityAnim(UploadHtmlActivity.this, returnClass);
+                finish();
             }
 
             @Override
             public void onFailure(Call<BaseResult> call, Throwable t) {
-                Toasty.error(UploadHtmlActivity.this,t.getMessage()).show();
-                ActivityTools.toBackActivityAnim(UploadHtmlActivity.this, returnClass);
+                showToast("Exception:"+t.getMessage());
+                finish();
             }
         });
     }
 
-    @OnClick(R.id.cv_webview_code)
+    public void showToast(String msg){
+        Toast.makeText(this,msg,Toast.LENGTH_SHORT).show();
+    }
+
     public void onBtnClicked() {
         AlertDialog.Builder builder=new AlertDialog.Builder(this)
                 .setTitle("重要内容!")
@@ -183,6 +193,6 @@ public class UploadHtmlActivity extends AppCompatActivity {
     public void onBackPressed() {
         if (webView.canGoBack()&&!isNeedLoad)
             webView.goBack();
-        goBack();
+        else finish();
     }
 }
