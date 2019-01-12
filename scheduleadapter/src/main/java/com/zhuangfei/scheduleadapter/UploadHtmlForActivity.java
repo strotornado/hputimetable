@@ -29,7 +29,7 @@ import retrofit2.Response;
  * 源码上传页面
  * 内部增加了对河南理工大学的兼容，不需要的话可以忽略
  */
-public class ZfmanUploadSourceActivity extends AppCompatActivity {
+public class UploadHtmlForActivity extends AppCompatActivity {
 
     private static final String TAG = "WebViewActivity";
     WebView webView;
@@ -46,7 +46,7 @@ public class ZfmanUploadSourceActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.zfman_activity_upload_html);
+        setContentView(R.layout.activity_upload_html_for);
         initViews();
         initEvents();
         loadWebView();
@@ -194,5 +194,9 @@ public class ZfmanUploadSourceActivity extends AppCompatActivity {
         if (webView.canGoBack()&&!isNeedLoad)
             webView.goBack();
         else finish();
+    }
+
+    static class Params{
+
     }
 }

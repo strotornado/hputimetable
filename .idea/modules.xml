@@ -3,13 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
-      <module fileurl="file://$PROJECT_DIR$/hputimetable.iml" filepath="$PROJECT_DIR$/hputimetable.iml" />
       <module fileurl="file://$PROJECT_DIR$/hputimetable.iml" filepath="$PROJECT_DIR$/hputimetable.iml" />
       <module fileurl="file://$PROJECT_DIR$/scheduleadapter/scheduleadapter.iml" filepath="$PROJECT_DIR$/scheduleadapter/scheduleadapter.iml" />
       <module fileurl="file://$PROJECT_DIR$/smartalert/smartalert.iml" filepath="$PROJECT_DIR$/smartalert/smartalert.iml" />
-      <module fileurl="file://$PROJECT_DIR$/smartalert/smartalert.iml" filepath="$PROJECT_DIR$/smartalert/smartalert.iml" />
-      <module fileurl="file://$PROJECT_DIR$/toolkit/toolkit.iml" filepath="$PROJECT_DIR$/toolkit/toolkit.iml" />
       <module fileurl="file://$PROJECT_DIR$/toolkit/toolkit.iml" filepath="$PROJECT_DIR$/toolkit/toolkit.iml" />
     </modules>
   </component>

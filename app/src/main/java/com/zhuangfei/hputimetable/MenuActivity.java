@@ -2,52 +2,30 @@ package com.zhuangfei.hputimetable;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
-import android.content.BroadcastReceiver;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
-import android.util.Log;
 import android.view.View;
-import android.widget.CompoundButton;
-import android.widget.DatePicker;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
-import com.aigestudio.wheelpicker.widgets.WheelDatePicker;
 import com.tencent.bugly.beta.Beta;
-import com.zhuangfei.classbox.activity.AuthActivity;
-import com.zhuangfei.classbox.model.SuperLesson;
-import com.zhuangfei.classbox.model.SuperResult;
-import com.zhuangfei.classbox.utils.SuperUtils;
-import com.zhuangfei.hputimetable.api.model.ScheduleName;
 import com.zhuangfei.hputimetable.api.model.TimetableModel;
-import com.zhuangfei.hputimetable.constants.ConfigConstants;
-import com.zhuangfei.hputimetable.constants.ShareConstants;
-import com.zhuangfei.hputimetable.fragment.ScheduleFragment;
 import com.zhuangfei.hputimetable.model.ScheduleDao;
-import com.zhuangfei.hputimetable.specialarea.SpecialAreaActivity;
 import com.zhuangfei.hputimetable.tools.BroadcastUtils;
-import com.zhuangfei.hputimetable.tools.TimetableTools;
 import com.zhuangfei.hputimetable.tools.UpdateTools;
 import com.zhuangfei.hputimetable.tools.WidgetConfig;
-import com.zhuangfei.scheduleadapter.ZfmanUploadSourceActivity;
-import com.zhuangfei.toolkit.model.BundleModel;
+import com.zhuangfei.scheduleadapter.UploadHtmlForActivity;
 import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.ShareTools;
 
 import org.litepal.crud.DataSupport;
 
-import java.util.Calendar;
-import java.util.List;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
-import es.dmoral.toasty.Toasty;
 
 public class MenuActivity extends AppCompatActivity {
 
@@ -266,7 +244,7 @@ public class MenuActivity extends AppCompatActivity {
 
     @OnClick(R.id.id_other)
     public void jumpTo(){
-        Intent intent=new Intent(this, ZfmanUploadSourceActivity.class);
+        Intent intent=new Intent(this, UploadHtmlForActivity.class);
         startActivity(intent);
     }
 }
