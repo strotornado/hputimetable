@@ -25,13 +25,19 @@ import com.zhuangfei.hputimetable.AddTimetableActivity;
 import com.zhuangfei.hputimetable.CustomWeekView;
 import com.zhuangfei.hputimetable.R;
 import com.zhuangfei.hputimetable.TimetableDetailActivity;
+import com.zhuangfei.hputimetable.adapter.OnGryphonConfigHandler;
 import com.zhuangfei.hputimetable.api.model.ScheduleName;
 import com.zhuangfei.hputimetable.api.model.TimetableModel;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
+import com.zhuangfei.hputimetable.event.UpdateScheduleEvent;
 import com.zhuangfei.hputimetable.listener.OnNoticeUpdateListener;
 import com.zhuangfei.hputimetable.listener.OnSwitchTableListener;
 import com.zhuangfei.hputimetable.listener.OnUpdateCourseListener;
 import com.zhuangfei.hputimetable.model.ScheduleDao;
+import com.zhuangfei.hputimetable.theme.IThemeView;
+import com.zhuangfei.hputimetable.theme.MyThemeLoader;
+import com.zhuangfei.hputimetable.theme.core.ThemeLoader;
+import com.zhuangfei.hputimetable.timetable_custom.CalenderDateBuildAdapter;
 import com.zhuangfei.hputimetable.tools.BroadcastUtils;
 import com.zhuangfei.hputimetable.tools.TimetableTools;
 import com.zhuangfei.timetable.TimetableView;
@@ -44,6 +50,9 @@ import com.zhuangfei.toolkit.model.BundleModel;
 import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.ShareTools;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.litepal.crud.DataSupport;
 import org.litepal.crud.async.FindMultiExecutor;
 import org.litepal.crud.callback.FindMultiCallback;
@@ -58,7 +67,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import es.dmoral.toasty.Toasty;
 
-public class ScheduleFragment extends LazyLoadFragment implements OnSwitchTableListener,OnUpdateCourseListener {
+public class ScheduleFragment extends LazyLoadFragment implements IThemeView,OnSwitchTableListener,OnUpdateCourseListener {
 
     private static final String TAG = "MainActivity";
 
@@ -101,10 +110,13 @@ public class ScheduleFragment extends LazyLoadFragment implements OnSwitchTableL
 
     int tmp=1;
 
+    MyThemeLoader mThemeLoader;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         mView=inflater.inflate(R.layout.fragment_schedule, container, false);
+        EventBus.getDefault().register(this);
         return mView;
     }
 
@@ -135,13 +147,13 @@ public class ScheduleFragment extends LazyLoadFragment implements OnSwitchTableL
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            mTimetableView.onDateBuildListener().onHighLight();
-            int newCurWeek = TimetableTools.getCurWeek(context);
-            if(newCurWeek != mTimetableView.curWeek()) {
-                mTimetableView.onDateBuildListener().onUpdateDate(mTimetableView.curWeek(), newCurWeek);
-                mTimetableView.changeWeekForce(newCurWeek);
-                mWeekView.curWeek(newCurWeek).updateView();
-            }
+//            mTimetableView.onDateBuildListener().onHighLight();
+//            int newCurWeek = TimetableTools.getCurWeek(context);
+//            if(newCurWeek != mTimetableView.curWeek()) {
+//                mTimetableView.onDateBuildListener().onUpdateDate(mTimetableView.curWeek(), newCurWeek);
+//                mTimetableView.changeWeekForce(newCurWeek);
+//                mWeekView.curWeek(newCurWeek).updateView();
+//            }
             if(ScheduleDao.isNeedUpdate(getActivity())){
                 onUpdateData();
                 ScheduleDao.changeStatus(getActivity(),false);
@@ -166,6 +178,7 @@ public class ScheduleFragment extends LazyLoadFragment implements OnSwitchTableL
         menuImageView.setVisibility(View.VISIBLE);
         context = getActivity();
         schedules = new ArrayList<>();
+        mThemeLoader=new MyThemeLoader(this);
 
         int id = ScheduleDao.getApplyScheduleId(context);
         ScheduleName scheduleName = DataSupport.find(ScheduleName.class, id);
@@ -218,7 +231,10 @@ public class ScheduleFragment extends LazyLoadFragment implements OnSwitchTableL
 
         mTimetableView.curWeek(curWeek)
                 .maxSlideItem(10)
+                .configName(String.valueOf(scheduleName.getId()))
                 .itemHeight(ScreenUtils.dip2px(context,50))
+//                .callback(new CalenderDateBuildAdapter(context))
+                .callback(new OnGryphonConfigHandler())
                 .callback(new ISchedule.OnItemClickListener() {
                     @Override
                     public void onItemClick(View v, List<Schedule> scheduleList) {
@@ -259,6 +275,7 @@ public class ScheduleFragment extends LazyLoadFragment implements OnSwitchTableL
                 })
                 .showView();
         loadLayout.setVisibility(View.GONE);
+        mThemeLoader.execute();
     }
 
     /**
@@ -375,20 +392,16 @@ public class ScheduleFragment extends LazyLoadFragment implements OnSwitchTableL
 
     @Override
     public void onUpdateData() {
-        int status=ShareTools.getInt(context,"hidenotcur",0);
-        if(status==0){
-            mTimetableView.isShowNotCurWeek(true);
-        }else {
-            mTimetableView.isShowNotCurWeek(false);
-        }
 
-        int status2=ShareTools.getInt(context,"hideweekends",0);
-        if(status2==0){
-            mTimetableView.isShowWeekends(true);
-        }else {
-            mTimetableView.isShowWeekends(false);
-        }
+    }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onConfigChangeEvent(){
+        mTimetableView.updateView();
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onUpdateScheduleEvent(UpdateScheduleEvent event){
         ScheduleName newName = DataSupport.find(ScheduleName.class, ScheduleDao.getApplyScheduleId(getActivity()));
         if(newName==null) return;
         mCurScheduleTextView.setText(newName.getName());
@@ -403,5 +416,16 @@ public class ScheduleFragment extends LazyLoadFragment implements OnSwitchTableL
                 }
             }
         });
+    }
+
+    @Override
+    public TimetableView getTimetableView() {
+        return mTimetableView;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 }

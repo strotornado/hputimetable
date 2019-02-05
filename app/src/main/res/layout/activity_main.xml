@@ -6,10 +6,109 @@
     android:background="@color/app_white"
     android:orientation="vertical">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:paddingLeft="10dp">
+        <TextView
+            android:id="@+id/id_title_tab1"
+            android:layout_width="40dp"
+            android:layout_height="30dp"
+            android:gravity="center"
+            android:layout_centerVertical="true"
+            android:textSize="15sp"
+            android:text="首页"/>
+        <TextView
+            android:id="@+id/id_title_tab2"
+            android:layout_toRightOf="@id/id_title_tab1"
+            android:layout_width="40dp"
+            android:layout_height="30dp"
+            android:gravity="center"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:textSize="15sp"
+            android:text="课表"/>
+        <View
+            android:id="@+id/id_title_nav"
+            android:layout_alignLeft="@id/id_title_tab1"
+            android:layout_below="@id/id_title_tab1"
+            android:layout_width="50dp"
+            android:layout_height="2dp"
+            android:background="@color/app_red"/>
+
+        <LinearLayout
+            android:id="@+id/id_search_school"
+            android:layout_toRightOf="@id/id_title_tab2"
+            android:layout_marginLeft="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:gravity="center"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/border_f5f5f5"
+            android:orientation="horizontal">
+            <TextView
+                android:text="河南理工大学"
+                android:textColor="@color/app_gray"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:paddingLeft="5dp"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:textSize="16sp"
+                android:background="@android:color/transparent"
+                android:layout_weight="1"/>
+            <ImageView
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_marginRight="5dp"
+                android:src="@drawable/ic_search2"/>
+        </LinearLayout>
+    </RelativeLayout>
+
     <android.support.v4.view.ViewPager
         android:id="@+id/id_viewpager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"/>
 
+    <LinearLayout
+        android:visibility="gone"
+        android:clickable="true"
+        android:id="@+id/id_bind_school_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@color/app_gray"
+        android:layout_marginTop="90dp">
+        <EditText
+            android:id="@+id/id_school_edit"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:background="@color/app_white"
+            android:hint="输入学校全称"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:gravity="center_vertical"
+            android:textColor="@color/app_gray"
+            android:background="@color/app_white"
+            android:text="请如实填写,学校信息主要用于为您筛选相关的校园服务"/>
+
+        <Button
+            android:id="@+id/id_bind_button"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="绑定学校"
+            android:textColor="@color/app_white" />
+
+    </LinearLayout>
 </LinearLayout>
 

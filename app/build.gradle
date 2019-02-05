@@ -74,6 +74,7 @@ dependencies {
     compile 'cn.yipianfengye.android:zxing-library:2.2'
     compile 'com.zhuangfei:SuperBox:1.0.5'
     implementation project(':scheduleadapter')
+    implementation 'org.greenrobot:eventbus:3.1.1'
 }
 
 apply plugin: 'bugly'

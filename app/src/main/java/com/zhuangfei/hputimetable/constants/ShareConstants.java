@@ -21,4 +21,6 @@ public class ShareConstants {
     //开学时间
     public static final String STRING_START_TIME="string_start_time";
 
+    public static final String STRING_SCHOOL_NAME="string_school_name";
+
 }

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/id_widget_item_container"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/item_dayview_text"
+        android:layout_width="34dp"
+        android:layout_height="34dp"
+        android:layout_margin="6dp"
+        android:gravity="center"
+        android:text="1"/>
+</LinearLayout>

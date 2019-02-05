@@ -23,7 +23,11 @@
             android:name=".MainActivity"
             android:launchMode="singleTask"
             android:theme="@style/mainTheme" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
 
         <activity
@@ -81,17 +85,14 @@
         <activity
             android:name=".SplashActivity"
             android:theme="@style/splash">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity android:name=".AdapterDebugListActivity" />
         <activity android:name=".AdapterDebugHtmlActivity" />
         <activity android:name=".DebugActivity" />
         <activity android:name=".AdapterDebugTipActivity" />
         <activity android:name=".DebugDisplayActivity"></activity>
+        <activity android:name=".ThemeMarketActivity"></activity>
     </application>
 
 </manifest>

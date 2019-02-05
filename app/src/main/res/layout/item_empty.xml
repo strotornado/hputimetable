@@ -6,8 +6,8 @@
     <TextView
         android:id="@+id/item_empty"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="55dp"
         android:gravity="center"
         android:textSize="17sp"
-        android:text="今天没有课，好闲呀~"/>
+        android:text="今天没有课程"/>
 </LinearLayout>

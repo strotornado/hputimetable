@@ -11,15 +11,20 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.tencent.bugly.beta.Beta;
+import com.zhuangfei.hputimetable.adapter.OnGryphonConfigHandler;
+import com.zhuangfei.hputimetable.api.model.ScheduleName;
 import com.zhuangfei.hputimetable.api.model.TimetableModel;
+import com.zhuangfei.hputimetable.event.ConfigChangeEvent;
 import com.zhuangfei.hputimetable.model.ScheduleDao;
 import com.zhuangfei.hputimetable.tools.BroadcastUtils;
 import com.zhuangfei.hputimetable.tools.UpdateTools;
 import com.zhuangfei.hputimetable.tools.WidgetConfig;
 import com.zhuangfei.scheduleadapter.UploadHtmlForActivity;
+import com.zhuangfei.timetable.model.ScheduleConfig;
 import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.ShareTools;
 
+import org.greenrobot.eventbus.EventBus;
 import org.litepal.crud.DataSupport;
 
 import butterknife.BindView;
@@ -57,6 +62,9 @@ public class MenuActivity extends AppCompatActivity {
     @BindView(R.id.id_switch_alone)
     SwitchCompat aloneSwitch;
 
+    ScheduleConfig scheduleConfig;
+    boolean changeStatus=false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,6 +75,11 @@ public class MenuActivity extends AppCompatActivity {
 
     private void inits() {
         context = this;
+        scheduleConfig=new ScheduleConfig(this);
+        ScheduleName newName = DataSupport.find(ScheduleName.class, ScheduleDao.getApplyScheduleId(this));
+        if(newName!=null){
+            scheduleConfig.setConfigName(String.valueOf(newName.getId()));
+        }
         backLayout = findViewById(R.id.id_back);
         backLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -182,22 +195,16 @@ public class MenuActivity extends AppCompatActivity {
 
     @OnCheckedChanged(R.id.id_switch_hidenotcur)
     public void onHideNotCurSwitchClicked(boolean b) {
-        if (b) {
-            ShareTools.putInt(this, "hidenotcur", 1);
-        } else {
-            ShareTools.putInt(this, "hidenotcur", 0);
-        }
-        ScheduleDao.changeStatus(this,true);
+        changeStatus=true;
+        String value=b?OnGryphonConfigHandler.VALUE_TRUE:OnGryphonConfigHandler.VALUE_FALSE;
+        scheduleConfig.put(OnGryphonConfigHandler.KEY_HIDE_NOT_CUR,value);
     }
 
     @OnCheckedChanged(R.id.id_switch_hideweekends)
     public void onHideWeekendsSwitchClicked(boolean b) {
-        if (b) {
-            ShareTools.putInt(this, "hideweekends", 1);
-        } else {
-            ShareTools.putInt(this, "hideweekends", 0);
-        }
-        ScheduleDao.changeStatus(this,true);
+        changeStatus=true;
+        String value=b?OnGryphonConfigHandler.VALUE_TRUE:OnGryphonConfigHandler.VALUE_FALSE;
+        scheduleConfig.put(OnGryphonConfigHandler.KEY_HIDE_WEEKENDS,value);
     }
 
     @OnCheckedChanged(R.id.id_checkauto)
@@ -246,5 +253,13 @@ public class MenuActivity extends AppCompatActivity {
     public void jumpTo(){
         Intent intent=new Intent(this, UploadHtmlForActivity.class);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(changeStatus){
+            EventBus.getDefault().post(new ConfigChangeEvent());
+        }
     }
 }
