@@ -10,6 +10,7 @@
     <uses-feature android:name="android.hardware.camera.autofocus" />
 
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
         android:name=".MyApplication"
@@ -31,15 +32,15 @@
         </activity>
 
         <activity
-            android:name=".ImportMajorActivity"
+            android:name=".activity.hpu.ImportMajorActivity"
             android:windowSoftInputMode="stateAlwaysHidden" />
-        <activity android:name=".TimetableDetailActivity" />
-        <activity android:name=".HpuRepertoryActivity" />
-        <activity android:name=".AddTimetableActivity" />
-        <activity android:name=".MenuActivity" />
-        <activity android:name=".WebViewActivity" />
-        <activity android:name=".TimetableManagerActivity" />
-        <activity android:name=".MultiScheduleActivity" />
+        <activity android:name=".activity.schedule.TimetableDetailActivity" />
+        <activity android:name=".activity.hpu.HpuRepertoryActivity" />
+        <activity android:name=".activity.schedule.AddTimetableActivity" />
+        <activity android:name=".activity.MenuActivity" />
+        <activity android:name=".activity.WebViewActivity" />
+        <activity android:name=".activity.schedule.TimetableManagerActivity" />
+        <activity android:name=".activity.schedule.MultiScheduleActivity" />
 
         <!-- 桌面小部件 -->
         <receiver
@@ -70,29 +71,31 @@
             android:exported="false"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
 
-        <activity android:name=".AboutActivity" />
-        <activity android:name=".ScanActivity" />
-        <activity android:name=".CreateScheduleNameActivity" />
-        <activity android:name=".ModifyScheduleNameActivity" />
+        <activity android:name=".activity.AboutActivity" />
+        <activity android:name=".activity.ScanActivity" />
+        <activity android:name=".activity.schedule.CreateScheduleNameActivity" />
+        <activity android:name=".activity.schedule.ModifyScheduleNameActivity" />
         <activity android:name=".specialarea.SpecialAreaActivity" />
         <activity
-            android:name=".SearchSchoolActivity"
+            android:name=".activity.adapter.SearchSchoolActivity"
             android:theme="@style/mainTheme" />
-        <activity android:name=".UploadHtmlActivity" />
-        <activity android:name=".AdapterTipActivity" />
-        <activity android:name=".AdapterSchoolActivity" />
-        <activity android:name=".AdapterSameTypeActivity" />
+        <activity android:name=".activity.adapter.UploadHtmlActivity" />
+        <activity android:name=".activity.adapter.AdapterTipActivity" />
+        <activity android:name=".activity.adapter.AdapterSchoolActivity" />
+        <activity android:name=".activity.adapter.AdapterSameTypeActivity" />
         <activity
-            android:name=".SplashActivity"
+            android:name=".activity.SplashActivity"
             android:theme="@style/splash">
 
         </activity>
-        <activity android:name=".AdapterDebugListActivity" />
-        <activity android:name=".AdapterDebugHtmlActivity" />
-        <activity android:name=".DebugActivity" />
-        <activity android:name=".AdapterDebugTipActivity" />
-        <activity android:name=".DebugDisplayActivity"></activity>
-        <activity android:name=".ThemeMarketActivity"></activity>
+        <activity android:name=".activity.debug.AdapterDebugListActivity" />
+        <activity android:name=".activity.debug.AdapterDebugHtmlActivity" />
+        <activity android:name=".activity.debug.DebugActivity" />
+        <activity android:name=".activity.debug.AdapterDebugTipActivity" />
+        <activity android:name=".activity.debug.DebugDisplayActivity"></activity>
+        <activity android:name=".activity.ThemeMarketActivity"></activity>
+        <activity android:name=".activity.StationWebViewActivity"></activity>
+        <activity android:name=".activity.MessageActivity"></activity>
     </application>
 
 </manifest>

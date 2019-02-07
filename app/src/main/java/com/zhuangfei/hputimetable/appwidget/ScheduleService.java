@@ -1,49 +1,24 @@
 package com.zhuangfei.hputimetable.appwidget;
 
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.net.Uri;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
-import android.widget.ScrollView;
 
-import com.zhuangfei.hputimetable.AddTimetableActivity;
-import com.zhuangfei.hputimetable.MainActivity;
 import com.zhuangfei.hputimetable.R;
-import com.zhuangfei.hputimetable.TimetableDetailActivity;
 import com.zhuangfei.hputimetable.api.model.TimetableModel;
-import com.zhuangfei.hputimetable.constants.ShareConstants;
 import com.zhuangfei.hputimetable.model.ScheduleDao;
 import com.zhuangfei.hputimetable.tools.TimetableTools;
-import com.zhuangfei.hputimetable.tools.WidgetConfig;
-import com.zhuangfei.timetable.TimetableView;
-import com.zhuangfei.timetable.listener.ISchedule;
-import com.zhuangfei.timetable.listener.OnDateBuildAapter;
-import com.zhuangfei.timetable.listener.OnSlideBuildAdapter;
 import com.zhuangfei.timetable.model.Schedule;
 import com.zhuangfei.timetable.model.ScheduleSupport;
-import com.zhuangfei.timetable.operater.SimpleOperater;
-import com.zhuangfei.timetable.utils.ColorUtils;
-import com.zhuangfei.timetable.utils.ScreenUtils;
-import com.zhuangfei.toolkit.model.BundleModel;
-import com.zhuangfei.toolkit.tools.ActivityTools;
-import com.zhuangfei.toolkit.tools.ShareTools;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.TimeZone;
-
-import es.dmoral.toasty.Toasty;
 
 /**
  * Created by Liu ZhuangFei on 2018/8/14.

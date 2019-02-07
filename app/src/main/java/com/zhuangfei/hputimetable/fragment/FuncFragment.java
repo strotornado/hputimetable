@@ -5,16 +5,13 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
-import android.text.Html;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -23,18 +20,14 @@ import com.zhuangfei.classbox.model.SuperLesson;
 import com.zhuangfei.classbox.model.SuperResult;
 import com.zhuangfei.classbox.utils.SuperUtils;
 import com.zhuangfei.hputimetable.MainActivity;
-import com.zhuangfei.hputimetable.MenuActivity;
-import com.zhuangfei.hputimetable.MultiScheduleActivity;
+import com.zhuangfei.hputimetable.activity.MenuActivity;
+import com.zhuangfei.hputimetable.activity.MessageActivity;
+import com.zhuangfei.hputimetable.activity.schedule.MultiScheduleActivity;
 import com.zhuangfei.hputimetable.R;
-import com.zhuangfei.hputimetable.ScanActivity;
-import com.zhuangfei.hputimetable.SearchSchoolActivity;
-import com.zhuangfei.hputimetable.ThemeMarketActivity;
-import com.zhuangfei.hputimetable.TimetableDetailActivity;
-import com.zhuangfei.hputimetable.api.TimetableRequest;
-import com.zhuangfei.hputimetable.api.model.ObjResult;
+import com.zhuangfei.hputimetable.activity.ScanActivity;
+import com.zhuangfei.hputimetable.activity.schedule.TimetableDetailActivity;
 import com.zhuangfei.hputimetable.api.model.ScheduleName;
 import com.zhuangfei.hputimetable.api.model.TimetableModel;
-import com.zhuangfei.hputimetable.api.model.ValuePair;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
 import com.zhuangfei.hputimetable.listener.OnNoticeUpdateListener;
 import com.zhuangfei.hputimetable.listener.OnSwitchPagerListener;
@@ -64,9 +57,6 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import es.dmoral.toasty.Toasty;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * @author Administrator 刘壮飞
@@ -298,6 +288,11 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
         ActivityTools.toActivityWithout(getActivity(), MultiScheduleActivity.class);
     }
 
+    @OnClick(R.id.id_func_message)
+    public void toMessageActivity() {
+        ActivityTools.toActivityWithout(getActivity(), MessageActivity.class);
+    }
+
     public void toSimportActivity() {
         Intent intent = new Intent(getActivity(), AuthActivity.class);
         intent.putExtra(AuthActivity.FLAG_TYPE, AuthActivity.TYPE_IMPORT);
@@ -394,6 +389,7 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
             qinglvMode=false;
             topNavLayout.setVisibility(View.VISIBLE);
         }
-
     }
+
+
 }

@@ -5,9 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.app.AlertDialog;
-import android.widget.Toast;
 
-import com.zhuangfei.hputimetable.MainActivity;
 import com.zhuangfei.hputimetable.api.TimetableRequest;
 import com.zhuangfei.hputimetable.api.model.ObjResult;
 import com.zhuangfei.hputimetable.api.model.ValuePair;

@@ -28,7 +28,7 @@
             android:textSize="16sp" />
     </LinearLayout>
 
-    <com.zhuangfei.hputimetable.CustomWeekView
+    <com.zhuangfei.hputimetable.timetable_custom.CustomWeekView
         android:id="@+id/id_weekview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

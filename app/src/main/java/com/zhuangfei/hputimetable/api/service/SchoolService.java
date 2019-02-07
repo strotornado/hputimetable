@@ -9,8 +9,10 @@ import com.zhuangfei.hputimetable.api.model.HtmlDetail;
 import com.zhuangfei.hputimetable.api.model.HtmlSummary;
 import com.zhuangfei.hputimetable.api.model.ListResult;
 import com.zhuangfei.hputimetable.api.model.MajorModel;
+import com.zhuangfei.hputimetable.api.model.MessageModel;
 import com.zhuangfei.hputimetable.api.model.ObjResult;
 import com.zhuangfei.hputimetable.api.model.School;
+import com.zhuangfei.hputimetable.api.model.StationModel;
 import com.zhuangfei.hputimetable.api.model.TimetableModel;
 import com.zhuangfei.hputimetable.api.model.TimetableResultModel;
 import com.zhuangfei.hputimetable.api.model.UserDebugModel;
@@ -57,4 +59,13 @@ public interface SchoolService {
     @FormUrlEncoded
     Call<ObjResult<AdapterInfo>> getAdapterInfo(@Field("key") String uid,
                                                 @Field("aid") String aid);
+
+    @POST(UrlContacts.URL_GET_STATIONS)
+    @FormUrlEncoded
+    Call<ListResult<StationModel>> getStations(@Field("key") String key);
+
+    @POST(UrlContacts.URL_GET_MESSAGES)
+    @FormUrlEncoded
+    Call<ListResult<MessageModel>> getMessages(@Field("device") String device,
+                                               @Field("school") String school);
  }

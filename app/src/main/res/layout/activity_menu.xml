@@ -11,10 +11,50 @@
         android:orientation="vertical">
 
         <include layout="@layout/header_timetable_menu" />
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:paddingLeft="15dp"
+            android:gravity="center_vertical"
+            android:background="@color/app_white"
+            android:paddingRight="15dp">
+            <TextView
+                android:id="@+id/id_device_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="17sp"
+                android:textStyle="bold"/>
+            <TextView
+                android:id="@+id/id_school_text"
+                android:layout_below="@id/id_device_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/border_start_end2"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:includeFontPadding="false"
+                android:textColor="@color/app_white"
+                android:textSize="14sp" />
+            <TextView
+                android:id="@+id/id_school_count_text"
+                android:layout_toRightOf="@id/id_school_text"
+                android:layout_alignTop="@id/id_school_text"
+                android:layout_marginLeft="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/border_start_end2"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:text="0名校友"
+                android:includeFontPadding="false"
+                android:textColor="@color/app_white"
+                android:textSize="14sp" />
+        </RelativeLayout>
 
         <TextView
             android:layout_width="match_parent"
             android:layout_height="40dp"
+            android:layout_marginTop="15dp"
             android:background="@color/app_white"
             android:gravity="center_vertical"
             android:paddingLeft="15dp"
@@ -108,28 +148,6 @@
             android:textColor="@color/app_gray" />
 
         <include layout="@layout/view_line" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:background="@color/app_white"
-            android:gravity="center_vertical"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="15dp"
-                android:layout_weight="1"
-                android:gravity="center_vertical"
-                android:text="隐藏情侣模式" />
-
-            <android.support.v7.widget.SwitchCompat
-                android:id="@+id/id_switch_alone"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginRight="15dp" />
-        </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"

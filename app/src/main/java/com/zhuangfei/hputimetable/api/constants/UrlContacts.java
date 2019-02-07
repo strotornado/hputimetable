@@ -43,4 +43,8 @@ public class UrlContacts {
 
     public final static String URL_GET_ADAPTER_INFO="index.php?c=Adapter&a=getAdapterInfo";
 
+    public final static String URL_GET_STATIONS="index.php?c=Adapter&a=getStations";
+
+    public final static String URL_GET_MESSAGES="index.php?c=Adapter&a=checkMessages";
+
 }

@@ -9,6 +9,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.google.gson.Gson;
+import com.zhuangfei.hputimetable.activity.StationWebViewActivity;
+import com.zhuangfei.hputimetable.activity.adapter.SearchSchoolActivity;
 import com.zhuangfei.hputimetable.api.TimetableRequest;
 import com.zhuangfei.hputimetable.api.model.ObjResult;
 import com.zhuangfei.hputimetable.api.model.ScheduleName;
@@ -18,10 +20,7 @@ import com.zhuangfei.hputimetable.api.model.ValuePair;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
 import com.zhuangfei.hputimetable.fragment.FuncFragment;
 import com.zhuangfei.hputimetable.adapter.MyFragmentPagerAdapter;
-import com.zhuangfei.hputimetable.fragment.HomeFragment;
 import com.zhuangfei.hputimetable.fragment.ScheduleFragment;
-import com.zhuangfei.hputimetable.fragment.ServiceStationFragment;
-import com.zhuangfei.hputimetable.fragment.ThemeMarketFragment;
 import com.zhuangfei.hputimetable.listener.OnNoticeUpdateListener;
 import com.zhuangfei.hputimetable.listener.OnSwitchPagerListener;
 import com.zhuangfei.hputimetable.listener.OnSwitchTableListener;
@@ -48,7 +47,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.PersistableBundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
@@ -58,14 +56,10 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.TranslateAnimation;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.litepal.crud.DataSupport;
 
@@ -115,6 +109,9 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
     @BindView(R.id.id_title_nav)
     View titleNavView;//指示条
 
+    @BindView(R.id.id_search_school)
+    LinearLayout searchLayout;
+
     RelativeLayout.LayoutParams lp;
     float leftStart=0;
     float leftEnd=0;
@@ -124,7 +121,14 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
     int titleWidthDip=40;//Tab宽度
     int marLeftDip=10;//边距
 
-    float lastTextSize=0;
+    //搜索框的边距dp
+    int searchViewStartMarDp=20;
+    int searchViewEndMarDp=60;
+    int searchViewStartMar=0;
+    int searchViewEndMar=0;
+    RelativeLayout.LayoutParams searchLayoutParams;
+    int searchViewStartMarRightDp=10;
+    int searchViewStartMarRight=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -215,6 +219,10 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
 //    }
 
     private void inits() {
+        searchLayoutParams= (RelativeLayout.LayoutParams) searchLayout.getLayoutParams();
+        searchViewStartMar=ScreenUtils.dip2px(MainActivity.this,searchViewStartMarDp);
+        searchViewEndMar=ScreenUtils.dip2px(MainActivity.this,searchViewEndMarDp);
+        searchViewStartMarRight= ScreenUtils.dip2px(MainActivity.this,searchViewStartMarRightDp);
         ScheduleName scheduleName = DataSupport.where("name=?", "默认课表").findFirst(ScheduleName.class);
         if (scheduleName == null) {
             scheduleName = new ScheduleName();
@@ -238,6 +246,11 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
                 float marLeft=leftStart+(leftEnd-leftStart)*(position+positionOffset);
                 lp.setMargins((int) marLeft,0,0,0);
                 titleNavView.setLayoutParams(lp);
+
+
+                float newMar=searchViewStartMar+(searchViewEndMar-searchViewStartMar)*(position+positionOffset);
+                searchLayoutParams.setMargins((int) newMar,0,searchViewStartMarRight,0);
+                searchLayout.setLayoutParams(searchLayoutParams);
 
 //                float rato=normalTextSize+(highlighTextSize-normalTextSize)*(position+positionOffset);
 //                float rato2=highlighTextSize-(highlighTextSize-normalTextSize)*(position+positionOffset);
@@ -512,7 +525,8 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
                 .addRequestCode(SUCCESSCODE)
                 .permissions(
                         Manifest.permission.CAMERA,
-                        Manifest.permission.VIBRATE
+                        Manifest.permission.VIBRATE,
+                        Manifest.permission.READ_PHONE_STATE
                 )
                 .request();
     }

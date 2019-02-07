@@ -9,7 +9,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.PopupMenu;
 import android.view.LayoutInflater;
@@ -21,10 +20,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.zhuangfei.hputimetable.AddTimetableActivity;
-import com.zhuangfei.hputimetable.CustomWeekView;
+import com.zhuangfei.hputimetable.activity.schedule.AddTimetableActivity;
+import com.zhuangfei.hputimetable.timetable_custom.CustomWeekView;
+import com.zhuangfei.hputimetable.activity.MenuActivity;
 import com.zhuangfei.hputimetable.R;
-import com.zhuangfei.hputimetable.TimetableDetailActivity;
+import com.zhuangfei.hputimetable.activity.schedule.TimetableDetailActivity;
 import com.zhuangfei.hputimetable.adapter.OnGryphonConfigHandler;
 import com.zhuangfei.hputimetable.api.model.ScheduleName;
 import com.zhuangfei.hputimetable.api.model.TimetableModel;
@@ -36,14 +36,13 @@ import com.zhuangfei.hputimetable.listener.OnUpdateCourseListener;
 import com.zhuangfei.hputimetable.model.ScheduleDao;
 import com.zhuangfei.hputimetable.theme.IThemeView;
 import com.zhuangfei.hputimetable.theme.MyThemeLoader;
-import com.zhuangfei.hputimetable.theme.core.ThemeLoader;
-import com.zhuangfei.hputimetable.timetable_custom.CalenderDateBuildAdapter;
 import com.zhuangfei.hputimetable.tools.BroadcastUtils;
 import com.zhuangfei.hputimetable.tools.TimetableTools;
 import com.zhuangfei.timetable.TimetableView;
 import com.zhuangfei.timetable.listener.ISchedule;
 import com.zhuangfei.timetable.listener.IWeekView;
 import com.zhuangfei.timetable.model.Schedule;
+import com.zhuangfei.timetable.model.ScheduleConfig;
 import com.zhuangfei.timetable.model.ScheduleSupport;
 import com.zhuangfei.timetable.utils.ScreenUtils;
 import com.zhuangfei.toolkit.model.BundleModel;
@@ -231,7 +230,7 @@ public class ScheduleFragment extends LazyLoadFragment implements IThemeView,OnS
 
         mTimetableView.curWeek(curWeek)
                 .maxSlideItem(10)
-                .configName(String.valueOf(scheduleName.getId()))
+                .configName(MenuActivity.defaultConfigName)
                 .itemHeight(ScreenUtils.dip2px(context,50))
 //                .callback(new CalenderDateBuildAdapter(context))
                 .callback(new OnGryphonConfigHandler())
@@ -397,6 +396,21 @@ public class ScheduleFragment extends LazyLoadFragment implements IThemeView,OnS
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onConfigChangeEvent(){
+        ScheduleConfig config=new ScheduleConfig(getContext());
+        config.setConfigName(MenuActivity.defaultConfigName);
+        String value1=config.get(OnGryphonConfigHandler.KEY_HIDE_NOT_CUR);
+        if (value1==null||value1.equals(OnGryphonConfigHandler.VALUE_FALSE)) {
+            mTimetableView.isShowNotCurWeek(true);
+        } else {
+            mTimetableView.isShowNotCurWeek(false);
+        }
+
+        String value2=config.get(OnGryphonConfigHandler.KEY_HIDE_WEEKENDS);
+        if (value2==null||value2.equals(OnGryphonConfigHandler.VALUE_FALSE)) {
+            mTimetableView.isShowWeekends(true);
+        } else {
+            mTimetableView.isShowWeekends(false);
+        }
         mTimetableView.updateView();
     }
 

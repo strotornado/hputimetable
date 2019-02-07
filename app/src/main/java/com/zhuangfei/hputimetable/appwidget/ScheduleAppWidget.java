@@ -6,24 +6,14 @@ import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
-import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
-import android.view.View;
 import android.widget.RemoteViews;
-import android.widget.Toast;
 
-import com.zhuangfei.hputimetable.MainActivity;
 import com.zhuangfei.hputimetable.R;
-import com.zhuangfei.hputimetable.constants.ShareConstants;
 import com.zhuangfei.hputimetable.tools.TimetableTools;
-import com.zhuangfei.hputimetable.tools.WidgetConfig;
-import com.zhuangfei.toolkit.tools.ShareTools;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import es.dmoral.toasty.Toasty;
 
 /**
  * Implementation of App Widget functionality.

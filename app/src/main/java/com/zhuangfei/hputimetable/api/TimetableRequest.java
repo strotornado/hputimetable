@@ -9,8 +9,10 @@ import com.zhuangfei.hputimetable.api.model.HtmlDetail;
 import com.zhuangfei.hputimetable.api.model.HtmlSummary;
 import com.zhuangfei.hputimetable.api.model.ListResult;
 import com.zhuangfei.hputimetable.api.model.MajorModel;
+import com.zhuangfei.hputimetable.api.model.MessageModel;
 import com.zhuangfei.hputimetable.api.model.ObjResult;
 import com.zhuangfei.hputimetable.api.model.School;
+import com.zhuangfei.hputimetable.api.model.StationModel;
 import com.zhuangfei.hputimetable.api.model.TimetableModel;
 import com.zhuangfei.hputimetable.api.model.TimetableResultModel;
 import com.zhuangfei.hputimetable.api.model.UserDebugModel;
@@ -106,6 +108,18 @@ public class TimetableRequest {
     public static void getAdapterInfo(Context context,String uid,String aid,Callback<ObjResult<AdapterInfo>> callback) {
         SchoolService schoolService=ApiUtils.getRetrofitForSchool(context).create(SchoolService.class);
         Call<ObjResult<AdapterInfo>> call=schoolService.getAdapterInfo(uid,aid);
+        call.enqueue(callback);
+    }
+
+    public static void getStations(Context context,String key,Callback<ListResult<StationModel>> callback) {
+        SchoolService schoolService=ApiUtils.getRetrofitForSchool(context).create(SchoolService.class);
+        Call<ListResult<StationModel>> call=schoolService.getStations(key);
+        call.enqueue(callback);
+    }
+
+    public static void getMessages(Context context,String device,String school,Callback<ListResult<MessageModel>> callback) {
+        SchoolService schoolService=ApiUtils.getRetrofitForSchool(context).create(SchoolService.class);
+        Call<ListResult<MessageModel>> call=schoolService.getMessages(device,school);
         call.enqueue(callback);
     }
 }
