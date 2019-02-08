@@ -2,11 +2,14 @@ package com.zhuangfei.hputimetable.activity;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.zhuangfei.hputimetable.MainActivity;
 import com.zhuangfei.hputimetable.R;
 import com.zhuangfei.hputimetable.adapter.MessageAdapter;
 import com.zhuangfei.hputimetable.api.TimetableRequest;
@@ -35,6 +38,9 @@ public class MessageActivity extends AppCompatActivity {
     MessageAdapter adapter;
     List<MessageModel> list;
 
+    @BindView(R.id.id_loadlayout)
+    LinearLayout loadLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,13 +56,23 @@ public class MessageActivity extends AppCompatActivity {
         getMessages();
     }
 
+    public void setLoadLayout(boolean isShow){
+        if(isShow){
+            loadLayout.setVisibility(View.VISIBLE);
+        }else {
+            loadLayout.setVisibility(View.GONE);
+        }
+    }
+
     public void getMessages(){
         String deviceId= DeviceTools.getDeviceId(this);
         if(deviceId==null) return;
         String school="unknow";
-        TimetableRequest.getMessages(this, deviceId,school, new Callback<ListResult<MessageModel>>() {
+        setLoadLayout(true);
+        TimetableRequest.getMessages(this, deviceId,school,null, new Callback<ListResult<MessageModel>>() {
             @Override
             public void onResponse(Call<ListResult<MessageModel>> call, Response<ListResult<MessageModel>> response) {
+                setLoadLayout(false);
                 if(response==null) return;
                 ListResult<MessageModel> result=response.body();
                 if(result.getCode()==200){
@@ -68,7 +84,7 @@ public class MessageActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ListResult<MessageModel>> call, Throwable t) {
-
+                setLoadLayout(false);
             }
         });
     }
@@ -82,6 +98,6 @@ public class MessageActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        ActivityTools.toBackActivityAnim(this, MenuActivity.class);
+        ActivityTools.toBackActivityAnim(this, MainActivity.class);
     }
 }

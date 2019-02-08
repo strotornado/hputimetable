@@ -47,4 +47,6 @@ public class UrlContacts {
 
     public final static String URL_GET_MESSAGES="index.php?c=Adapter&a=checkMessages";
 
+    public final static String URL_SET_MESSAGE_READ="index.php?c=Adapter&a=setMessageRead";
+
 }

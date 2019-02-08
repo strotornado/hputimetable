@@ -67,5 +67,10 @@ public interface SchoolService {
     @POST(UrlContacts.URL_GET_MESSAGES)
     @FormUrlEncoded
     Call<ListResult<MessageModel>> getMessages(@Field("device") String device,
-                                               @Field("school") String school);
+                                               @Field("school") String school,
+                                               @Field("mode") String mode);
+
+    @POST(UrlContacts.URL_SET_MESSAGE_READ)
+    @FormUrlEncoded
+    Call<BaseResult> setMessageRead(@Field("id") int messageId);
  }

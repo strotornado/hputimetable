@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.zhuangfei.classbox.activity.AuthActivity;
 import com.zhuangfei.classbox.model.SuperLesson;
@@ -26,6 +27,9 @@ import com.zhuangfei.hputimetable.activity.schedule.MultiScheduleActivity;
 import com.zhuangfei.hputimetable.R;
 import com.zhuangfei.hputimetable.activity.ScanActivity;
 import com.zhuangfei.hputimetable.activity.schedule.TimetableDetailActivity;
+import com.zhuangfei.hputimetable.api.TimetableRequest;
+import com.zhuangfei.hputimetable.api.model.ListResult;
+import com.zhuangfei.hputimetable.api.model.MessageModel;
 import com.zhuangfei.hputimetable.api.model.ScheduleName;
 import com.zhuangfei.hputimetable.api.model.TimetableModel;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
@@ -34,6 +38,7 @@ import com.zhuangfei.hputimetable.listener.OnSwitchPagerListener;
 import com.zhuangfei.hputimetable.listener.OnUpdateCourseListener;
 import com.zhuangfei.hputimetable.model.ScheduleDao;
 import com.zhuangfei.hputimetable.tools.BroadcastUtils;
+import com.zhuangfei.hputimetable.tools.DeviceTools;
 import com.zhuangfei.hputimetable.tools.TimetableTools;
 import com.zhuangfei.timetable.model.Schedule;
 import com.zhuangfei.timetable.model.ScheduleColorPool;
@@ -57,6 +62,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import es.dmoral.toasty.Toasty;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * @author Administrator 刘壮飞
@@ -93,6 +101,9 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
     @BindView(R.id.id_top_nav)
     LinearLayout topNavLayout;
 
+    @BindView(R.id.id_func_message_count)
+    TextView messageCountView;
+
     boolean qinglvMode=false;
 
     @Override
@@ -115,6 +126,7 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
     private void inits() {
 //        createDayViewBottom();
         findData();
+        getUnreadMessageCount();
     }
 
     public void createCardView(List<Schedule> models, ScheduleName newName) {
@@ -392,4 +404,38 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
     }
 
 
+    public void getUnreadMessageCount(){
+        String deviceId= DeviceTools.getDeviceId(getContext());
+        if(deviceId==null) return;
+        String school="unknow";
+        TimetableRequest.getMessages(getContext(), deviceId,school,"only_unread_count", new Callback<ListResult<MessageModel>>() {
+            @Override
+            public void onResponse(Call<ListResult<MessageModel>> call, Response<ListResult<MessageModel>> response) {
+                if(response==null) return;
+                ListResult<MessageModel> result=response.body();
+                if(result.getCode()==200){
+                    List<MessageModel> models=result.getData();
+                    if(models!=null){
+                        int size=models.size();
+                        if(size>0){
+                            messageCountView.setVisibility(View.VISIBLE);
+                            messageCountView.setText(String.valueOf(size));
+                        }else hideMessageCountView();
+                    }else hideMessageCountView();
+                }else {
+                    hideMessageCountView();
+                    Toast.makeText(getContext(),result.getMsg(),Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ListResult<MessageModel>> call, Throwable t) {
+                hideMessageCountView();
+            }
+        });
+    }
+
+    public void hideMessageCountView(){
+        messageCountView.setVisibility(View.GONE);
+    }
 }

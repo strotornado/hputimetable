@@ -117,9 +117,15 @@ public class TimetableRequest {
         call.enqueue(callback);
     }
 
-    public static void getMessages(Context context,String device,String school,Callback<ListResult<MessageModel>> callback) {
+    public static void getMessages(Context context,String device,String school,String mode,Callback<ListResult<MessageModel>> callback) {
         SchoolService schoolService=ApiUtils.getRetrofitForSchool(context).create(SchoolService.class);
-        Call<ListResult<MessageModel>> call=schoolService.getMessages(device,school);
+        Call<ListResult<MessageModel>> call=schoolService.getMessages(device,school,mode==null?"":mode);
+        call.enqueue(callback);
+    }
+
+    public static void setMessageRead(Context context,int messageId,Callback<BaseResult> callback) {
+        SchoolService schoolService=ApiUtils.getRetrofitForSchool(context).create(SchoolService.class);
+        Call<BaseResult> call=schoolService.setMessageRead(messageId);
         call.enqueue(callback);
     }
 }

@@ -44,8 +44,8 @@
                     android:id="@+id/id_item_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:ellipsize="middle"
-                    android:layout_marginLeft="5dp"
+                    android:ellipsize="end"
+                    android:layout_marginLeft="10dp"
                     android:includeFontPadding="false"
                     android:singleLine="true"
                     android:textColor="@color/app_dark2"
@@ -66,6 +66,7 @@
 
         <View
             android:id="@+id/id_item_color"
+            android:layout_marginLeft="10dp"
             android:layout_width="20dp"
             android:layout_height="20dp"/>
     </LinearLayout>

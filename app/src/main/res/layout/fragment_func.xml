@@ -165,18 +165,30 @@
                 android:gravity="center"
                 android:orientation="vertical">
 
-                <LinearLayout
+
+                <RelativeLayout
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:background="@drawable/border_25dp"
-                    android:gravity="center"
                     android:orientation="vertical">
 
                     <ImageView
+                        android:layout_centerVertical="true"
+                        android:layout_centerHorizontal="true"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:src="@drawable/ic_message" />
-                </LinearLayout>
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/id_func_message_count"
+                        android:gravity="center"
+                        android:text="1"
+                        android:layout_alignParentRight="true"
+                        android:background="@drawable/border_10_red"
+                        android:textColor="@color/app_white"
+                        android:layout_width="20dp"
+                        android:layout_height="20dp" />
+                </RelativeLayout>
 
                 <TextView
                     android:layout_width="wrap_content"

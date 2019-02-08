@@ -26,6 +26,7 @@ import com.zhuangfei.hputimetable.api.model.ListResult;
 import com.zhuangfei.hputimetable.api.model.School;
 import com.zhuangfei.hputimetable.api.model.StationModel;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
+import com.zhuangfei.hputimetable.tools.StationManager;
 import com.zhuangfei.toolkit.model.BundleModel;
 import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.ShareTools;
@@ -142,9 +143,9 @@ public class SearchSchoolActivity extends AppCompatActivity {
                 search(charSequence.toString());
 
                 if(key.equals("123ZFMAN")){
-                    ActivityTools.toActivityWithout(SearchSchoolActivity.this, SearchSchoolActivity.class,
-                new BundleModel().put(StationWebViewActivity.KEY_URL,
-                        "http://www.liuzhuangfei.com/apis/area/station/hpu_import/index.html"));
+                    StationManager.openStationWithout(SearchSchoolActivity.this,
+                            "http://www.liuzhuangfei.com/apis/area/station/hpu_import/index.html",
+                            "班级课表");
                 }
             }
         }

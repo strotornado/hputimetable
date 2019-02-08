@@ -26,6 +26,7 @@ import com.zhuangfei.toolkit.tools.BundleTools;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 
 /**
  * 服务站加载引擎
@@ -81,8 +82,8 @@ public class StationWebViewActivity extends AppCompatActivity {
         settings.setDefaultTextEncodingName("gb2312");
         settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
 
-        settings.setSupportZoom(true);
-        settings.setBuiltInZoomControls(true);
+//        settings.setSupportZoom(true);
+//        settings.setBuiltInZoomControls(true);
 
         webView.setDownloadListener(new DownloadListener() {
             @Override
@@ -122,7 +123,7 @@ public class StationWebViewActivity extends AppCompatActivity {
             @Override
             public void onReceivedTitle(WebView view, String title) {
                 super.onReceivedTitle(view, title);
-                titleTextView.setText(title);
+//                titleTextView.setText(title);
             }
         });
 
@@ -152,5 +153,16 @@ public class StationWebViewActivity extends AppCompatActivity {
     public void setButtonSettings(String text,String[] linkArray){
         functionButton.setText(text);
         functionButton.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        this.overridePendingTransition(R.anim.anim_station_close_activity,0);
+    }
+
+    @OnClick(R.id.id_station_close)
+    public void back(){
+        finish();
     }
 }

@@ -9,9 +9,12 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.google.gson.Gson;
+import com.zhuangfei.hputimetable.activity.MessageActivity;
 import com.zhuangfei.hputimetable.activity.StationWebViewActivity;
 import com.zhuangfei.hputimetable.activity.adapter.SearchSchoolActivity;
 import com.zhuangfei.hputimetable.api.TimetableRequest;
+import com.zhuangfei.hputimetable.api.model.ListResult;
+import com.zhuangfei.hputimetable.api.model.MessageModel;
 import com.zhuangfei.hputimetable.api.model.ObjResult;
 import com.zhuangfei.hputimetable.api.model.ScheduleName;
 import com.zhuangfei.hputimetable.api.model.ShareModel;
@@ -26,6 +29,7 @@ import com.zhuangfei.hputimetable.listener.OnSwitchPagerListener;
 import com.zhuangfei.hputimetable.listener.OnSwitchTableListener;
 import com.zhuangfei.hputimetable.listener.OnUpdateCourseListener;
 import com.zhuangfei.hputimetable.tools.BroadcastUtils;
+import com.zhuangfei.hputimetable.tools.DeviceTools;
 import com.zhuangfei.hputimetable.tools.UpdateTools;
 import com.zhuangfei.hputimetable.tools.VersionTools;
 import com.zhuangfei.hputimetable.tools.ViewTools;
@@ -60,6 +64,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.litepal.crud.DataSupport;
 

@@ -47,6 +47,7 @@
                 android:background="@color/app_gray"/>
 
             <LinearLayout
+                android:id="@+id/id_station_close"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:gravity="center"

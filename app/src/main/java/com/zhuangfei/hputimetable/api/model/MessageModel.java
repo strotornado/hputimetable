@@ -1,6 +1,8 @@
 package com.zhuangfei.hputimetable.api.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Liu ZhuangFei on 2019/2/7.
@@ -10,6 +12,33 @@ public class MessageModel implements Serializable{
     private String from_device;
     private String content;
     private String time;
+    private int isread=0;
+    private int unreadId;
+    private String target;
+
+    public void setTarget(String target) {
+        this.target = target;
+    }
+
+    public String getTarget() {
+        return target;
+    }
+
+    public void setUnreadId(int unreadId) {
+        this.unreadId = unreadId;
+    }
+
+    public int getUnreadId() {
+        return unreadId;
+    }
+
+    public int getIsread() {
+        return isread;
+    }
+
+    public void setIsread(int isread) {
+        this.isread = isread;
+    }
 
     public int getId() {
         return id;
