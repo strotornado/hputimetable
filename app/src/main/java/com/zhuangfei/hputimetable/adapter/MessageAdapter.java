@@ -171,8 +171,8 @@ public class MessageAdapter extends BaseAdapter {
                 boolean isFind2 = matcher2.find();
                 if (isFind2) {
                     final Map<String, String> map = new HashMap();
-                    String stationInfo = matcher.group(1);
-                    String[] array = stationInfo.split("&next;");
+                    String urlInfo = matcher2.group(1);
+                    String[] array = urlInfo.split("&next;");
                     if (array != null) {
                         for (int i = 0; i < array.length; i++) {
                             String[] params = array[i].split("=");
