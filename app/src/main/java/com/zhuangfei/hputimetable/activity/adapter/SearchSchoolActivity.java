@@ -17,21 +17,25 @@ import android.widget.Toast;
 
 import com.zhuangfei.hputimetable.MainActivity;
 import com.zhuangfei.hputimetable.R;
+import com.zhuangfei.hputimetable.activity.MessageActivity;
 import com.zhuangfei.hputimetable.activity.StationWebViewActivity;
 import com.zhuangfei.hputimetable.activity.WebViewActivity;
 import com.zhuangfei.hputimetable.activity.hpu.HpuRepertoryActivity;
 import com.zhuangfei.hputimetable.activity.hpu.ImportMajorActivity;
+import com.zhuangfei.hputimetable.adapter.SearchSchoolAdapter;
 import com.zhuangfei.hputimetable.api.TimetableRequest;
 import com.zhuangfei.hputimetable.api.model.ListResult;
 import com.zhuangfei.hputimetable.api.model.School;
 import com.zhuangfei.hputimetable.api.model.StationModel;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
+import com.zhuangfei.hputimetable.model.SearchResultModel;
 import com.zhuangfei.hputimetable.tools.StationManager;
 import com.zhuangfei.toolkit.model.BundleModel;
 import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.ShareTools;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,23 +55,15 @@ public class SearchSchoolActivity extends AppCompatActivity {
 
     @BindView(R.id.id_search_listview)
     ListView searchListView;
-    List<Map<String, String>> data;
-    List<School> schools;
-    SimpleAdapter adapter;
+    List<SearchResultModel> models;
+    List<SearchResultModel> allDatas;
+    SearchSchoolAdapter searchAdapter;
 
     @BindView(R.id.id_search_edittext)
     EditText searchEditText;
 
-    LinearLayout backLayout;
-
-    @BindView(R.id.id_layout_hpusa)
-    LinearLayout hpuAreaLayout;
-
     @BindView(R.id.id_loadlayout)
     LinearLayout loadLayout;
-
-    @BindView(R.id.id_tip)
-    LinearLayout tipLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,38 +81,48 @@ public class SearchSchoolActivity extends AppCompatActivity {
         }
     }
 
-    @OnClick(R.id.id_goto_adapter)
-    public void toAdapter(){
+    public void toAdapter() {
         ActivityTools.toActivity(this, AdapterTipActivity.class);
     }
 
     private void inits() {
         context = this;
-        backLayout = findViewById(R.id.id_back);
-        backLayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                goBack();
-            }
-        });
+//        backLayout = findViewById(R.id.id_back);
+//        backLayout.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                goBack();
+//            }
+//        });
 
-        data = new ArrayList<>();
-        schools = new ArrayList<>();
-        adapter = new SimpleAdapter(this, data, R.layout.item_search_school, new String[]{
-                "name"}, new int[]{R.id.item_school_val});
-        searchListView.setAdapter(adapter);
+        models = new ArrayList<>();
+        allDatas=new ArrayList<>();
+        searchAdapter = new SearchSchoolAdapter(this, allDatas,models);
+        searchListView.setAdapter(searchAdapter);
         searchEditText.addTextChangedListener(textWatcher);
+
+
+        String school= ShareTools.getString(SearchSchoolActivity.this, ShareConstants.STRING_SCHOOL_NAME,"unknow");
+        search(school);
     }
 
     @OnItemClick(R.id.id_search_listview)
     public void onItemClick(int i) {
-        School school = schools.get(i);
-        ActivityTools.toActivity(this, AdapterSchoolActivity.class,
-                new BundleModel().setFromClass(SearchSchoolActivity.class)
-                        .put("school", school.getSchoolName())
-                        .put("url", school.getUrl())
-                        .put("type", school.getType())
-                        .put("parsejs", school.getParsejs()));
+        SearchResultModel model=models.get(i);
+        if(model.getType()==SearchResultModel.TYPE_SCHOOL){
+            School school = (School) model.getObject();
+            ActivityTools.toActivity(this, AdapterSchoolActivity.class,
+                    new BundleModel().setFromClass(SearchSchoolActivity.class)
+                            .put("school", school.getSchoolName())
+                            .put("url", school.getUrl())
+                            .put("type", school.getType())
+                            .put("parsejs", school.getParsejs()));
+        }else {
+            StationModel stationModel= (StationModel) model.getObject();
+            StationManager.openStationWithout(this,
+                    stationModel.getUrl(),
+                    stationModel.getName());
+        }
     }
 
     public Activity getContext() {
@@ -133,16 +139,12 @@ public class SearchSchoolActivity extends AppCompatActivity {
         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
             String key = charSequence.toString();
             if (TextUtils.isEmpty(key)) {
-                data.clear();
-                schools.clear();
-                adapter.notifyDataSetChanged();
-                hpuAreaLayout.setVisibility(View.GONE);
-                tipLayout.setVisibility(View.VISIBLE);
+                models.clear();
+                searchAdapter.notifyDataSetChanged();
             } else {
-                tipLayout.setVisibility(View.GONE);
                 search(charSequence.toString());
 
-                if(key.equals("123ZFMAN")){
+                if (key.equals("123ZFMAN")) {
                     StationManager.openStationWithout(SearchSchoolActivity.this,
                             "http://www.liuzhuangfei.com/apis/area/station/hpu_import/index.html",
                             "班级课表");
@@ -163,11 +165,12 @@ public class SearchSchoolActivity extends AppCompatActivity {
     }
 
     public void search(String key) {
-        if (TextUtils.isEmpty(key) || key.indexOf("河南理工") == -1) {
-            hpuAreaLayout.setVisibility(View.GONE);
-        } else {
-            hpuAreaLayout.setVisibility(View.VISIBLE);
-        }
+        if(TextUtils.isEmpty(key)) return;
+
+        models.clear();
+        allDatas.clear();
+        searchStation(key);
+
         if (!TextUtils.isEmpty(key)) {
             setLoadLayout(true);
             TimetableRequest.getAdapterSchools(this, key, new Callback<ListResult<School>>() {
@@ -193,14 +196,15 @@ public class SearchSchoolActivity extends AppCompatActivity {
                 }
             });
         }
-        searchStation(key);
     }
 
     public void searchStation(String key) {
         if (!TextUtils.isEmpty(key)) {
+            setLoadLayout(true);
             TimetableRequest.getStations(this, key, new Callback<ListResult<StationModel>>() {
                 @Override
                 public void onResponse(Call<ListResult<StationModel>> call, Response<ListResult<StationModel>> response) {
+                    setLoadLayout(false);
                     ListResult<StationModel> result = response.body();
                     if (result != null) {
                         if (result.getCode() == 200) {
@@ -216,45 +220,67 @@ public class SearchSchoolActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Call<ListResult<StationModel>> call, Throwable t) {
-
+                    setLoadLayout(false);
                 }
             });
         }
     }
 
     private void showStationResult(List<StationModel> result) {
-        if(result==null) return;
-        if(result.size()!=0){
-            StationModel stationItem=result.get(0);
-            Toast.makeText(this,"id:"+stationItem.getId()+"\nname:"+stationItem.getName()
-                    +"\ntags:"+stationItem.getTag()+"\nurl:"+stationItem.getUrl()
-                    ,Toast.LENGTH_SHORT).show();
+        if (result == null) return;
+        result.addAll(result);
+        result.addAll(result);
+        result.addAll(result);
+        for (int i=0;i<Math.min(result.size(),3);i++) {
+            StationModel model=result.get(i);
+            SearchResultModel searchResultModel = new SearchResultModel();
+            searchResultModel.setType(SearchResultModel.TYPE_STATION);
+            if(result.size()>3){
+                searchResultModel.setType(SearchResultModel.TYPE_STATION_MORE);
+            }
+            searchResultModel.setObject(model);
+            addModelToList(searchResultModel);
         }
+
+        sortResult();
+        allDatas.addAll(models);
+        sortResultForAllDatas();
+        searchAdapter.notifyDataSetChanged();
     }
 
     private void showResult(List<School> list) {
-        if (list == null||list.size()==0) {
-            tipLayout.setVisibility(View.VISIBLE);
+        if (list == null || list.size() == 0) {
             return;
         }
-        tipLayout.setVisibility(View.GONE);
 
-        data.clear();
-        schools.clear();
-        schools.addAll(list);
-        for (School school : list) {
-            if (school != null) {
-                Map<String, String> map = new HashMap<>();
-                String type = school.getType();
-                if (TextUtils.isEmpty(type)) {
-                    map.put("name", school.getSchoolName());
-                }else{
-                    map.put("name", school.getSchoolName() + "-" + type );
-                }
-                data.add(map);
-            }
+        for (School schoolBean : list) {
+            SearchResultModel searchResultModel = new SearchResultModel();
+            searchResultModel.setType(SearchResultModel.TYPE_SCHOOL);
+            searchResultModel.setObject(schoolBean);
+            addModelToList(searchResultModel);
         }
-        adapter.notifyDataSetChanged();
+        sortResult();
+        allDatas.addAll(models);
+        sortResultForAllDatas();
+        searchAdapter.notifyDataSetChanged();
+    }
+
+    public void sortResult() {
+        if (models != null) {
+            Collections.sort(models);
+        }
+    }
+
+    public void sortResultForAllDatas() {
+        if (allDatas != null) {
+            Collections.sort(allDatas);
+        }
+    }
+
+    public synchronized void addModelToList(SearchResultModel searchResultModel) {
+        if (models != null) {
+            models.add(searchResultModel);
+        }
     }
 
     public void goBack() {
@@ -278,7 +304,7 @@ public class SearchSchoolActivity extends AppCompatActivity {
 
     @OnClick(R.id.id_menu_food)
     public void food() {
-        Toasty.info(this,"暂未开放!").show();
+        Toasty.info(this, "暂未开放!").show();
     }
 
     @OnClick(R.id.id_menu_score)

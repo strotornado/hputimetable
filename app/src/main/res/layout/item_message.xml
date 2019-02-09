@@ -54,13 +54,13 @@
         android:id="@+id/item_content"
         android:lineSpacingExtra="2dp"
         android:textSize="16sp"
+        android:layout_marginBottom="10dp"
         android:textColor="@color/app_gray"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
     <LinearLayout
         android:visibility="gone"
         android:id="@+id/item_station_layout"
-        android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
         android:layout_width="match_parent"
         android:layout_height="58dp"
@@ -85,7 +85,6 @@
     <LinearLayout
         android:visibility="gone"
         android:id="@+id/item_url_layout"
-        android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
         android:layout_width="match_parent"
         android:layout_height="58dp"
@@ -93,11 +92,11 @@
         android:paddingRight="10dp"
         android:gravity="center_vertical"
         android:background="@color/app_tipcolor"
-        android:orientation="vertical">
+        android:orientation="horizontal">
 
         <ImageView
-            android:layout_width="45dp"
-            android:layout_height="45dp"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:src="@drawable/ic_link"/>

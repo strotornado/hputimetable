@@ -49,4 +49,8 @@ public class UrlContacts {
 
     public final static String URL_SET_MESSAGE_READ="index.php?c=Adapter&a=setMessageRead";
 
+    public final static String URL_BIND_SCHOOL="index.php?c=Adapter&a=bindSchool";
+
+    public final static String URL_GET_SCHOOL_PERSON_COUNT="index.php?c=Adapter&a=getSchoolPersonCount";
+
 }

@@ -23,7 +23,7 @@ public class StationManager {
         bundle.putSerializable("model",model);
         intent.putExtras(bundle);
         context.startActivity(intent);
-        context.overridePendingTransition(R.anim.anim_station_open_activity,0);//动画
+        context.overridePendingTransition(R.anim.anim_station_open_activity,R.anim.anim_station_static);//动画
     }
 
     public static void openStation(Activity context,String url,String title){

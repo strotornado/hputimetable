@@ -7,9 +7,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
+import android.view.Menu;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.tencent.bugly.beta.Beta;
 import com.zhuangfei.hputimetable.MainActivity;
@@ -17,7 +19,12 @@ import com.zhuangfei.hputimetable.R;
 import com.zhuangfei.hputimetable.activity.debug.AdapterDebugTipActivity;
 import com.zhuangfei.hputimetable.activity.hpu.ImportMajorActivity;
 import com.zhuangfei.hputimetable.adapter.OnGryphonConfigHandler;
+import com.zhuangfei.hputimetable.api.TimetableRequest;
+import com.zhuangfei.hputimetable.api.model.BaseResult;
+import com.zhuangfei.hputimetable.api.model.ObjResult;
+import com.zhuangfei.hputimetable.api.model.SchoolPersonModel;
 import com.zhuangfei.hputimetable.api.model.TimetableModel;
+import com.zhuangfei.hputimetable.constants.ShareConstants;
 import com.zhuangfei.hputimetable.event.ConfigChangeEvent;
 import com.zhuangfei.hputimetable.tools.BroadcastUtils;
 import com.zhuangfei.hputimetable.tools.DeviceTools;
@@ -37,6 +44,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MenuActivity extends AppCompatActivity {
 
@@ -141,6 +151,14 @@ public class MenuActivity extends AppCompatActivity {
 
         boolean hideDate= WidgetConfig.get(this,WidgetConfig.CONFIG_HIDE_DATE);
         hideDateSwitch.setChecked(hideDate);
+
+        String schoolName=ShareTools.getString(MenuActivity.this,ShareConstants.STRING_SCHOOL_NAME,null);
+        if(schoolName==null){
+            schoolText.setText("未关联学校");
+        }else {
+            schoolText.setText(schoolName);
+            getSchoolPersonCount(schoolName);
+        }
     }
 
     public Activity getContext() {
@@ -166,6 +184,26 @@ public class MenuActivity extends AppCompatActivity {
                 })
                 .setNegativeButton("取消", null);
         builder.create().show();
+    }
+
+    public void getSchoolPersonCount(final String school){
+        TimetableRequest.getSchoolPersonCount(this, school, new Callback<ObjResult<SchoolPersonModel>>() {
+            @Override
+            public void onResponse(Call<ObjResult<SchoolPersonModel>> call, Response<ObjResult<SchoolPersonModel>> response) {
+                if(response==null) return;
+                ObjResult<SchoolPersonModel> result=response.body();
+                if(result.getCode()==200){
+
+                }else {
+                    Toast.makeText(MenuActivity.this,result.getMsg(),Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ObjResult<SchoolPersonModel>> call, Throwable t) {
+                Toast.makeText(MenuActivity.this,t.getMessage(),Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @OnClick(R.id.id_menu_about)

@@ -12,6 +12,7 @@ import com.zhuangfei.hputimetable.api.model.MajorModel;
 import com.zhuangfei.hputimetable.api.model.MessageModel;
 import com.zhuangfei.hputimetable.api.model.ObjResult;
 import com.zhuangfei.hputimetable.api.model.School;
+import com.zhuangfei.hputimetable.api.model.SchoolPersonModel;
 import com.zhuangfei.hputimetable.api.model.StationModel;
 import com.zhuangfei.hputimetable.api.model.TimetableModel;
 import com.zhuangfei.hputimetable.api.model.TimetableResultModel;
@@ -126,6 +127,18 @@ public class TimetableRequest {
     public static void setMessageRead(Context context,int messageId,Callback<BaseResult> callback) {
         SchoolService schoolService=ApiUtils.getRetrofitForSchool(context).create(SchoolService.class);
         Call<BaseResult> call=schoolService.setMessageRead(messageId);
+        call.enqueue(callback);
+    }
+
+    public static void bindSchool(Context context,String device,String school,Callback<BaseResult> callback) {
+        SchoolService schoolService=ApiUtils.getRetrofitForSchool(context).create(SchoolService.class);
+        Call<BaseResult> call=schoolService.bindSchool(device,school);
+        call.enqueue(callback);
+    }
+
+    public static void getSchoolPersonCount(Context context,String school,Callback<ObjResult<SchoolPersonModel>> callback) {
+        SchoolService schoolService=ApiUtils.getRetrofitForSchool(context).create(SchoolService.class);
+        Call<ObjResult<SchoolPersonModel>> call=schoolService.getSchoolPersonCount(school);
         call.enqueue(callback);
     }
 }

@@ -137,7 +137,7 @@ public class MessageAdapter extends BaseAdapter {
             final String content = model.getContent();
             if (content != null) {
                 String realContent = content.replaceAll("<station>.*?</station>", "");
-                realContent = content.replaceAll("<url>.*?</url>", "");
+                realContent = realContent.replaceAll("<url>.*?</url>", "");
                 holder.contentTextView.setText(realContent);
 
                 Pattern pattern = Pattern.compile("<station>(.*?)</station>");

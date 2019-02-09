@@ -70,45 +70,5 @@
         android:id="@+id/id_viewpager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
-
-    <LinearLayout
-        android:visibility="gone"
-        android:clickable="true"
-        android:id="@+id/id_bind_school_layout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:background="@color/app_gray"
-        android:layout_marginTop="90dp">
-        <EditText
-            android:id="@+id/id_school_edit"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:paddingLeft="15dp"
-            android:paddingRight="15dp"
-            android:background="@color/app_white"
-            android:hint="输入学校全称"/>
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:paddingLeft="15dp"
-            android:paddingRight="15dp"
-            android:gravity="center_vertical"
-            android:textColor="@color/app_gray"
-            android:background="@color/app_white"
-            android:text="请如实填写,学校信息主要用于为您筛选相关的校园服务"/>
-
-        <Button
-            android:id="@+id/id_bind_button"
-            android:layout_width="match_parent"
-            android:layout_height="45dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:text="绑定学校"
-            android:textColor="@color/app_white" />
-
-    </LinearLayout>
 </LinearLayout>
 

@@ -32,4 +32,6 @@
     <color name="app_textcolor_gray">#525252</color>
     <color name="app_textcolor_black">#000000</color>
     <color name="app_dark2">#313131</color>
+    <color name="app_gray_f0f0f0">#F0F0F0</color>
+    <color name="app_gray_border_d7d7d7">#D7D7D7</color>
 </resources>

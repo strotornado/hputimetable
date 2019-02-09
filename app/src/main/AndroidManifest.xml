@@ -78,7 +78,7 @@
         <activity android:name=".specialarea.SpecialAreaActivity" />
         <activity
             android:name=".activity.adapter.SearchSchoolActivity"
-            android:theme="@style/mainTheme" />
+            android:theme="@style/searchTheme" />
         <activity android:name=".activity.adapter.UploadHtmlActivity" />
         <activity android:name=".activity.adapter.AdapterTipActivity" />
         <activity android:name=".activity.adapter.AdapterSchoolActivity" />
@@ -96,6 +96,7 @@
         <activity android:name=".activity.ThemeMarketActivity"></activity>
         <activity android:name=".activity.StationWebViewActivity"></activity>
         <activity android:name=".activity.MessageActivity"></activity>
+        <activity android:name=".activity.BindSchoolActivity"></activity>
     </application>
 
 </manifest>

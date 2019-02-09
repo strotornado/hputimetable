@@ -9,6 +9,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.google.gson.Gson;
+import com.zhuangfei.hputimetable.activity.BindSchoolActivity;
 import com.zhuangfei.hputimetable.activity.MessageActivity;
 import com.zhuangfei.hputimetable.activity.StationWebViewActivity;
 import com.zhuangfei.hputimetable.activity.adapter.SearchSchoolActivity;
@@ -41,6 +42,7 @@ import com.zhuangfei.toolkit.tools.ShareTools;
 import com.zhuangfei.toolkit.tools.ToastTools;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -96,14 +98,6 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
     public static final int REQUEST_IMPORT = 1;
 
     int toItem=0;
-
-    @BindView(R.id.id_bind_school_layout)
-    LinearLayout bindSchoolLayout;
-
-    @BindView(R.id.id_school_edit)
-    EditText schoolEdit;
-
-    Animation upAnim,downAnim;
 
     @BindView(R.id.id_title_tab1)
     TextView tabTitle1;
@@ -204,7 +198,7 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
                 }catch (Exception e){}
                 String schoolName=ShareTools.getString(MainActivity.this,ShareConstants.STRING_SCHOOL_NAME,null);
                 if(schoolName==null){
-                    doUpAnim();
+                    openBindSchoolActivity();
                 }
             }
             if(msg.what==0x125){
@@ -212,6 +206,12 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
             }
         }
     };
+
+    public void openBindSchoolActivity(){
+        Intent intent=new Intent(this, BindSchoolActivity.class);
+        startActivity(intent);
+        overridePendingTransition(R.anim.anim_station_open_activity,R.anim.anim_station_static);//动画
+    }
 
 //    @Override
 //    protected void onRestoreInstanceState(Bundle savedInstanceState) {
@@ -256,18 +256,6 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
                 float newMar=searchViewStartMar+(searchViewEndMar-searchViewStartMar)*(position+positionOffset);
                 searchLayoutParams.setMargins((int) newMar,0,searchViewStartMarRight,0);
                 searchLayout.setLayoutParams(searchLayoutParams);
-
-//                float rato=normalTextSize+(highlighTextSize-normalTextSize)*(position+positionOffset);
-//                float rato2=highlighTextSize-(highlighTextSize-normalTextSize)*(position+positionOffset);
-//                if(positionOffset==0||positionOffset==1||Math.abs(positionOffset-1)<0.1f||
-//                        Math.abs(positionOffset-0)<0.1f||Math.abs(rato-lastTextSize)>0.5f){
-//                    tabTitle1.setTextSize(rato2);
-//                    tabTitle2.setTextSize(rato);
-//                    lastTextSize=rato;
-//                }
-
-//                tabTitle1.setTextSize(rato2);
-//                tabTitle2.setTextSize(rato);
             }
 
             @Override
@@ -280,9 +268,6 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
 
             }
         });
-
-        upAnim= AnimationUtils.loadAnimation(this,R.anim.anim_bind_up);
-        downAnim= AnimationUtils.loadAnimation(this,R.anim.anim_bind_down);
 
         lp= (RelativeLayout.LayoutParams) titleNavView.getLayoutParams();
         lp.width=ScreenUtils.dip2px(this,navWidthDip);
@@ -297,48 +282,6 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
         mViewPager.setAdapter(mAdapter);
         int item = (int) BundleTools.getInt(this, "item", 0);
         select(item);
-    }
-
-    /**
-     * 绑定学校页面上滑动画
-     */
-    public void doUpAnim(){
-        bindSchoolLayout.setVisibility(View.VISIBLE);
-        upAnim.startNow();
-    }
-
-    /**
-     * 绑定学校页面下滑动画
-     */
-    public void doDownAnim(){
-        downAnim.setAnimationListener(new Animation.AnimationListener() {
-            @Override
-            public void onAnimationStart(Animation animation) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(Animation animation) {
-                bindSchoolLayout.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onAnimationRepeat(Animation animation) {
-
-            }
-        });
-        downAnim.startNow();
-    }
-
-    @OnClick(R.id.id_bind_button)
-    public void onBindButtonClicked(){
-        String school=schoolEdit.getText().toString();
-        if(!TextUtils.isEmpty(school)&&!TextUtils.isEmpty(school.trim())){
-            ShareTools.putString(this,ShareConstants.STRING_SCHOOL_NAME,school);
-        }
-
-        bindSchoolLayout.setVisibility(View.GONE);
-//        doDownAnim();
     }
 
     public void getFromClip() {

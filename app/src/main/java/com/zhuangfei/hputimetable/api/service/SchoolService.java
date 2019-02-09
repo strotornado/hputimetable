@@ -12,6 +12,7 @@ import com.zhuangfei.hputimetable.api.model.MajorModel;
 import com.zhuangfei.hputimetable.api.model.MessageModel;
 import com.zhuangfei.hputimetable.api.model.ObjResult;
 import com.zhuangfei.hputimetable.api.model.School;
+import com.zhuangfei.hputimetable.api.model.SchoolPersonModel;
 import com.zhuangfei.hputimetable.api.model.StationModel;
 import com.zhuangfei.hputimetable.api.model.TimetableModel;
 import com.zhuangfei.hputimetable.api.model.TimetableResultModel;
@@ -73,4 +74,13 @@ public interface SchoolService {
     @POST(UrlContacts.URL_SET_MESSAGE_READ)
     @FormUrlEncoded
     Call<BaseResult> setMessageRead(@Field("id") int messageId);
+
+    @POST(UrlContacts.URL_SET_MESSAGE_READ)
+    @FormUrlEncoded
+    Call<BaseResult> bindSchool(@Field("device") String device,
+                                @Field("school") String school);
+
+    @POST(UrlContacts.URL_GET_SCHOOL_PERSON_COUNT)
+    @FormUrlEncoded
+    Call<ObjResult<SchoolPersonModel>> getSchoolPersonCount(@Field("school") String school);
  }

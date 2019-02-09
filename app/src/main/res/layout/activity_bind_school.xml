@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activity.AboutActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:background="@color/app_white">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="关联学校"
+            android:layout_marginLeft="15dp"
+            android:textSize="18sp" />
+
+    </LinearLayout>
+
+    <EditText
+        android:id="@+id/id_school_edit"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp"
+        android:background="@color/app_white"
+        android:hint="输入学校全称"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:layout_marginLeft="10dp"
+        android:background="@color/app_line"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="15dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="20dp"
+        android:paddingRight="15dp"
+        android:gravity="center_vertical"
+        android:textColor="@color/app_blue2"
+        android:lineSpacingExtra="2dp"
+        android:background="@color/app_white"
+        android:text="请务必如实填写学校名称,本平台保证会保护您的学校信息，仅将作为筛选相关服务的依据。"/>
+
+    <Button
+        android:id="@+id/id_bind_button"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="关联学校"
+        android:textColor="@color/app_white" />
+
+</LinearLayout>

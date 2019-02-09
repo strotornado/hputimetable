@@ -134,7 +134,7 @@ public class StationWebViewActivity extends AppCompatActivity {
         if (webView.canGoBack()) {
             webView.goBack();
         } else {
-            ActivityTools.toBackActivityAnim(this, returnClass);
+            back();
         }
     }
 
@@ -158,7 +158,7 @@ public class StationWebViewActivity extends AppCompatActivity {
     @Override
     public void finish() {
         super.finish();
-        this.overridePendingTransition(R.anim.anim_station_close_activity,0);
+        this.overridePendingTransition(R.anim.anim_station_static,R.anim.anim_station_close_activity);
     }
 
     @OnClick(R.id.id_station_close)

@@ -15,9 +15,11 @@ import com.zhuangfei.hputimetable.adapter.MessageAdapter;
 import com.zhuangfei.hputimetable.api.TimetableRequest;
 import com.zhuangfei.hputimetable.api.model.ListResult;
 import com.zhuangfei.hputimetable.api.model.MessageModel;
+import com.zhuangfei.hputimetable.constants.ShareConstants;
 import com.zhuangfei.hputimetable.tools.DeviceTools;
 import com.zhuangfei.hputimetable.tools.VersionTools;
 import com.zhuangfei.toolkit.tools.ActivityTools;
+import com.zhuangfei.toolkit.tools.ShareTools;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +69,7 @@ public class MessageActivity extends AppCompatActivity {
     public void getMessages(){
         String deviceId= DeviceTools.getDeviceId(this);
         if(deviceId==null) return;
-        String school="unknow";
+        String school= ShareTools.getString(MessageActivity.this, ShareConstants.STRING_SCHOOL_NAME,"unknow");
         setLoadLayout(true);
         TimetableRequest.getMessages(this, deviceId,school,null, new Callback<ListResult<MessageModel>>() {
             @Override

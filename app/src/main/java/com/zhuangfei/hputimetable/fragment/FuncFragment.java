@@ -143,6 +143,7 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
         LayoutInflater inflater = LayoutInflater.from(getActivity());
 
         if (models == null) {
+            Toast.makeText(getContext(),"models is null",Toast.LENGTH_SHORT).show();
             countTextView.setText("0");
             countTipTextView.setText("你还没有添加数据呀!");
             dayView.setVisibility(View.GONE);
@@ -160,6 +161,7 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
             infoText.setText("本地没有数据,去添加!");
             cardLayout.addView(view);
         } else if (models.size() == 0) {
+            Toast.makeText(getContext(),"models size= 0",Toast.LENGTH_SHORT).show();
 			View view=inflater.inflate(R.layout.item_empty,null ,false);
 			TextView infoText=view.findViewById(R.id.item_empty);
 			view.findViewById(R.id.item_empty).setOnClickListener(new View.OnClickListener() {
@@ -252,6 +254,7 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
                         if (dayOfWeek == -1) dayOfWeek = 6;
                         List<Schedule> list = ScheduleSupport.getHaveSubjectsWithDay(allModels, curWeek, dayOfWeek);
                         list=ScheduleSupport.getColorReflect(list);
+                        if(list==null) list=new ArrayList<>();
                         createCardView(list, newName);
                     } else createCardView(null, newName);
                 }
