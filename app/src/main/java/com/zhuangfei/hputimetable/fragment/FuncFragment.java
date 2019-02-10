@@ -115,7 +115,6 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
     boolean qinglvMode=false;
 
     SharedPreferences messagePreferences;
-    SharedPreferences.Editor messageEditor;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -138,7 +137,6 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
     private void inits() {
 //        createDayViewBottom();
         messagePreferences=getContext().getSharedPreferences("app_message",Context.MODE_PRIVATE);
-        messageEditor=messagePreferences.edit();
         findData();
         getUnreadMessageCount();
     }

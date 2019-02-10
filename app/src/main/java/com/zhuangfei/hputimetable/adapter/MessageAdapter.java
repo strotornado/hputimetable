@@ -141,12 +141,20 @@ public class MessageAdapter extends BaseAdapter {
             }else {
                 holder.targetTextView.setVisibility(View.GONE);
             }
-
+            final String target=model.getTarget();
+            final int id=model.getId();
             final TextView finalTextView=holder.readTextView;
             holder.readTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    setMessageRead(model.getId(),finalTextView);
+                    if(target!=null&&target.equals("all")){
+                        readSet=getReadSet();
+                        readSet.add(String.valueOf(id));
+                        messageEditor.putStringSet("app_message_set",readSet).commit();
+                        Toast.makeText(context,"已标为已读!",Toast.LENGTH_SHORT).show();
+                    }else {
+                        setMessageRead(model.getId(),finalTextView);
+                    }
                 }
             });
 
@@ -229,7 +237,7 @@ public class MessageAdapter extends BaseAdapter {
                     }
                     readSet=getReadSet();
                     readSet.add(String.valueOf(id));
-                    messageEditor.putStringSet("app_message_set",readSet);
+                    messageEditor.putStringSet("app_message_set",readSet).commit();
                     Toast.makeText(context,"已标为已读!",Toast.LENGTH_SHORT).show();
                 }else {
                     Toast.makeText(context,baseResult.getMsg(),Toast.LENGTH_SHORT).show();
