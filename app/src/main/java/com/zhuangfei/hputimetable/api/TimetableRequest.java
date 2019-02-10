@@ -4,6 +4,7 @@ import android.content.Context;
 
 import com.zhuangfei.hputimetable.api.model.AdapterInfo;
 import com.zhuangfei.hputimetable.api.model.BaseResult;
+import com.zhuangfei.hputimetable.api.model.CheckBindResultModel;
 import com.zhuangfei.hputimetable.api.model.CheckModel;
 import com.zhuangfei.hputimetable.api.model.HtmlDetail;
 import com.zhuangfei.hputimetable.api.model.HtmlSummary;
@@ -139,6 +140,12 @@ public class TimetableRequest {
     public static void getSchoolPersonCount(Context context,String school,Callback<ObjResult<SchoolPersonModel>> callback) {
         SchoolService schoolService=ApiUtils.getRetrofitForSchool(context).create(SchoolService.class);
         Call<ObjResult<SchoolPersonModel>> call=schoolService.getSchoolPersonCount(school);
+        call.enqueue(callback);
+    }
+
+    public static void checkIsBindSchool(Context context,String device,Callback<ObjResult<CheckBindResultModel>> callback) {
+        SchoolService schoolService=ApiUtils.getRetrofitForSchool(context).create(SchoolService.class);
+        Call<ObjResult<CheckBindResultModel>> call=schoolService.checkIsBindSchool(device);
         call.enqueue(callback);
     }
 }

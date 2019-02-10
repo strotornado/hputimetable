@@ -1,5 +1,6 @@
 package com.zhuangfei.hputimetable.activity;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -9,6 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.zhuangfei.hputimetable.MainActivity;
 import com.zhuangfei.hputimetable.R;
 import com.zhuangfei.hputimetable.api.TimetableRequest;
 import com.zhuangfei.hputimetable.api.model.BaseResult;
@@ -37,6 +39,11 @@ public class BindSchoolActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bind_school);
         ButterKnife.bind(this);
+
+        String schoolName=ShareTools.getString(BindSchoolActivity.this,ShareConstants.STRING_SCHOOL_NAME,null);
+        if(!TextUtils.isEmpty(schoolName)){
+            finish();
+        }
     }
 
     @OnClick(R.id.id_bind_button)
@@ -64,7 +71,7 @@ public class BindSchoolActivity extends AppCompatActivity {
                 if(result.getCode()==200){
                     ShareTools.putString(BindSchoolActivity.this, ShareConstants.STRING_SCHOOL_NAME,school);
                     Toast.makeText(BindSchoolActivity.this,"关联成功",Toast.LENGTH_SHORT).show();
-                    finish();
+                    ActivityTools.toActivity(BindSchoolActivity.this,MainActivity.class);
                 }else {
                     Toast.makeText(BindSchoolActivity.this,result.getMsg(),Toast.LENGTH_SHORT).show();
                 }

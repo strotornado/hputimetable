@@ -14,6 +14,7 @@ import com.zhuangfei.hputimetable.activity.MessageActivity;
 import com.zhuangfei.hputimetable.activity.StationWebViewActivity;
 import com.zhuangfei.hputimetable.activity.adapter.SearchSchoolActivity;
 import com.zhuangfei.hputimetable.api.TimetableRequest;
+import com.zhuangfei.hputimetable.api.model.CheckBindResultModel;
 import com.zhuangfei.hputimetable.api.model.ListResult;
 import com.zhuangfei.hputimetable.api.model.MessageModel;
 import com.zhuangfei.hputimetable.api.model.ObjResult;
@@ -81,7 +82,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity implements OnNoticeUpdateListener,OnSwitchPagerListener, OnUpdateCourseListener {
+public class MainActivity extends AppCompatActivity implements OnNoticeUpdateListener, OnSwitchPagerListener, OnUpdateCourseListener {
 
     private static final String TAG = "MainActivity";
 
@@ -97,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
 
     public static final int REQUEST_IMPORT = 1;
 
-    int toItem=0;
+    int toItem = 0;
 
     @BindView(R.id.id_title_tab1)
     TextView tabTitle1;
@@ -112,22 +113,22 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
     LinearLayout searchLayout;
 
     RelativeLayout.LayoutParams lp;
-    float leftStart=0;
-    float leftEnd=0;
-    int normalTextSize=15;
-    int highlighTextSize=20;
-    int navWidthDip=16;//指示条宽度
-    int titleWidthDip=40;//Tab宽度
-    int marLeftDip=10;//边距
+    float leftStart = 0;
+    float leftEnd = 0;
+    int normalTextSize = 15;
+    int highlighTextSize = 20;
+    int navWidthDip = 16;//指示条宽度
+    int titleWidthDip = 40;//Tab宽度
+    int marLeftDip = 10;//边距
 
     //搜索框的边距dp
-    int searchViewStartMarDp=20;
-    int searchViewEndMarDp=60;
-    int searchViewStartMar=0;
-    int searchViewEndMar=0;
+    int searchViewStartMarDp = 20;
+    int searchViewEndMarDp = 60;
+    int searchViewStartMar = 0;
+    int searchViewEndMar = 0;
     RelativeLayout.LayoutParams searchLayoutParams;
-    int searchViewStartMarRightDp=10;
-    int searchViewStartMarRight=0;
+    int searchViewStartMarRightDp = 10;
+    int searchViewStartMarRight = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,12 +149,12 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        Serializable serializable=intent.getSerializableExtra("model");
-        if(serializable!=null){
-            BundleModel model= (BundleModel) serializable;
-            if(model!=null){
-                toItem = (int) model.get("item",0);
-                if(mViewPager.getCurrentItem()!=toItem) {
+        Serializable serializable = intent.getSerializableExtra("model");
+        if (serializable != null) {
+            BundleModel model = (BundleModel) serializable;
+            if (model != null) {
+                toItem = (int) model.get("item", 0);
+                if (mViewPager.getCurrentItem() != toItem) {
                     new Timer().schedule(new TimerTask() {
                         @Override
                         public void run() {
@@ -168,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
     @Override
     protected void onStart() {
         super.onStart();
-        if(onNoticeUpdateListener!=null){
+        if (onNoticeUpdateListener != null) {
             onNoticeUpdateListener.onUpdateNotice();
         }
         new Timer().schedule(new TimerTask() {
@@ -183,19 +184,20 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            if(msg.what==0x123){
+            if (msg.what == 0x123) {
                 getFromClip();
             }
-            if(msg.what==0x125){
+            if (msg.what == 0x125) {
                 select(toItem);
             }
         }
     };
 
-    public void openBindSchoolActivity(){
-        Intent intent=new Intent(this, BindSchoolActivity.class);
+    public void openBindSchoolActivity() {
+        Intent intent = new Intent(this, BindSchoolActivity.class);
         startActivity(intent);
-        overridePendingTransition(R.anim.anim_station_open_activity,R.anim.anim_station_static);//动画
+        overridePendingTransition(R.anim.anim_station_open_activity, R.anim.anim_station_static);//动画
+        finish();
     }
 
 //    @Override
@@ -209,10 +211,16 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
 //    }
 
     private void inits() {
-        searchLayoutParams= (RelativeLayout.LayoutParams) searchLayout.getLayoutParams();
-        searchViewStartMar=ScreenUtils.dip2px(MainActivity.this,searchViewStartMarDp);
-        searchViewEndMar=ScreenUtils.dip2px(MainActivity.this,searchViewEndMarDp);
-        searchViewStartMarRight= ScreenUtils.dip2px(MainActivity.this,searchViewStartMarRightDp);
+        String schoolName = ShareTools.getString(MainActivity.this, ShareConstants.STRING_SCHOOL_NAME, null);
+        if (schoolName == null) {
+            checkIsBindSchool();
+            return;
+        }
+
+        searchLayoutParams = (RelativeLayout.LayoutParams) searchLayout.getLayoutParams();
+        searchViewStartMar = ScreenUtils.dip2px(MainActivity.this, searchViewStartMarDp);
+        searchViewEndMar = ScreenUtils.dip2px(MainActivity.this, searchViewEndMarDp);
+        searchViewStartMarRight = ScreenUtils.dip2px(MainActivity.this, searchViewStartMarRightDp);
         ScheduleName scheduleName = DataSupport.where("name=?", "默认课表").findFirst(ScheduleName.class);
         if (scheduleName == null) {
             scheduleName = new ScheduleName();
@@ -226,26 +234,26 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                Log.d(TAG, "onPageScrolled: "+position+"&&&"+positionOffset+"&&&"+positionOffsetPixels);
+                Log.d(TAG, "onPageScrolled: " + position + "&&&" + positionOffset + "&&&" + positionOffsetPixels);
 
 //                marLeft=(int)((screenWidth/3)*(position+positionOffset));
 //                tabBottomViewParams.setMargins(marLeft,0,0,0);
 //                tabBottomView.setLayoutParams(tabBottomViewParams);
 
                 //20dp:Tab宽度的一半，8dp:指示条宽度的一半
-                float marLeft=leftStart+(leftEnd-leftStart)*(position+positionOffset);
-                lp.setMargins((int) marLeft,0,0,0);
+                float marLeft = leftStart + (leftEnd - leftStart) * (position + positionOffset);
+                lp.setMargins((int) marLeft, 0, 0, 0);
                 titleNavView.setLayoutParams(lp);
 
 
-                float newMar=searchViewStartMar+(searchViewEndMar-searchViewStartMar)*(position+positionOffset);
-                searchLayoutParams.setMargins((int) newMar,0,searchViewStartMarRight,0);
+                float newMar = searchViewStartMar + (searchViewEndMar - searchViewStartMar) * (position + positionOffset);
+                searchLayoutParams.setMargins((int) newMar, 0, searchViewStartMarRight, 0);
                 searchLayout.setLayoutParams(searchLayoutParams);
             }
 
             @Override
             public void onPageSelected(int position) {
-               updateTabStatus(position);
+                updateTabStatus(position);
             }
 
             @Override
@@ -254,11 +262,11 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
             }
         });
 
-        lp= (RelativeLayout.LayoutParams) titleNavView.getLayoutParams();
-        lp.width=ScreenUtils.dip2px(this,navWidthDip);
-        lp.height=ScreenUtils.dip2px(this,3);
-        leftStart=ScreenUtils.dip2px(MainActivity.this,titleWidthDip/2-navWidthDip/2);
-        leftEnd=ScreenUtils.dip2px(MainActivity.this,titleWidthDip+marLeftDip+titleWidthDip/2-navWidthDip/2);
+        lp = (RelativeLayout.LayoutParams) titleNavView.getLayoutParams();
+        lp.width = ScreenUtils.dip2px(this, navWidthDip);
+        lp.height = ScreenUtils.dip2px(this, 3);
+        leftStart = ScreenUtils.dip2px(MainActivity.this, titleWidthDip / 2 - navWidthDip / 2);
+        leftEnd = ScreenUtils.dip2px(MainActivity.this, titleWidthDip + marLeftDip + titleWidthDip / 2 - navWidthDip / 2);
 
         mFragmentList = new ArrayList<>();
         mFragmentList.add(new FuncFragment());
@@ -268,25 +276,47 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
         int item = (int) BundleTools.getInt(this, "item", 0);
         select(item);
 
-        String schoolName=ShareTools.getString(MainActivity.this,ShareConstants.STRING_SCHOOL_NAME,null);
-        if(schoolName==null){
-            openBindSchoolActivity();
-        }
-
         try {
-            UpdateTools.checkUpdate(MainActivity.this,false);
+            UpdateTools.checkUpdate(MainActivity.this, false);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void checkIsBindSchool() {
+        String deviceId = DeviceTools.getDeviceId(this);
+        TimetableRequest.checkIsBindSchool(this, deviceId, new Callback<ObjResult<CheckBindResultModel>>() {
+            @Override
+            public void onResponse(Call<ObjResult<CheckBindResultModel>> call, Response<ObjResult<CheckBindResultModel>> response) {
+                if (response == null) return;
+                ObjResult<CheckBindResultModel> result = response.body();
+                if (result == null) return;
+                if (result.getCode() == 200) {
+                    CheckBindResultModel model = result.getData();
+                    if (model == null) return;
+                    if(model.getIsBind()==1){
+                        ShareTools.putString(MainActivity.this, ShareConstants.STRING_SCHOOL_NAME,model.getSchool());
+                    }else {
+                        openBindSchoolActivity();
+                    }
+                } else {
+                    ToastTools.show(MainActivity.this, result.getMsg());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ObjResult<CheckBindResultModel>> call, Throwable t) {
+            }
+        });
     }
 
     public void getFromClip() {
         ClipboardManager cm = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
         ClipData data = cm.getPrimaryClip();
         if (data != null) {
-            if(data.getItemCount()>0){
+            if (data.getItemCount() > 0) {
                 ClipData.Item item = data.getItemAt(0);
-                if(item.getText()!=null){
+                if (item.getText() != null) {
                     String content = item.getText().toString();
                     if (!TextUtils.isEmpty(content)) {
                         int index = content.indexOf("#");
@@ -332,7 +362,6 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
 
             @Override
             public void onFailure(Call<ObjResult<ValuePair>> call, Throwable t) {
-                Toasty.error(MainActivity.this, "Error:" + t.getMessage()).show();
             }
         });
     }
@@ -367,10 +396,10 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
             if (shareModel != null) {
                 if (shareModel.getType() == ShareModel.TYPE_PER_TABLE) {
                     List<TimetableModel> list = shareModel.getData();
-                    List<TimetableModel> finalList=new ArrayList<>();
+                    List<TimetableModel> finalList = new ArrayList<>();
                     if (list != null) {
                         for (TimetableModel m : list) {
-                            TimetableModel model=new TimetableModel();
+                            TimetableModel model = new TimetableModel();
                             model.setScheduleName(newName);
                             model.setName(m.getName());
                             model.setTeacher(m.getTeacher());
@@ -391,12 +420,12 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
             }
         } catch (Exception e) {
             e.printStackTrace();
-            Toasty.success(this,"Error:"+e.getMessage()).show();
+            Toasty.success(this, "Error:" + e.getMessage()).show();
         }
     }
 
     public void select(int i) {
-        int lightColor=Color.RED;
+        int lightColor = Color.RED;
         titleNavView.setBackgroundColor(lightColor);
         updateTabStatus(i);
         switch (i) {
@@ -411,22 +440,22 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
 
     public void updateTabStatus(int i) {
         initTabs();
-        int lightColor=Color.RED;
+        int lightColor = Color.RED;
         titleNavView.setBackgroundColor(lightColor);
         switch (i) {
             case 0:
                 tabTitle1.setTextSize(highlighTextSize);
-                lp.setMargins((int)leftStart,0,0,0);
+                lp.setMargins((int) leftStart, 0, 0, 0);
                 break;
             case 1:
                 tabTitle2.setTextSize(highlighTextSize);
-                lp.setMargins((int)leftEnd,0,0,0);
+                lp.setMargins((int) leftEnd, 0, 0, 0);
                 break;
         }
     }
 
     private void initTabs() {
-        int defaultColor=Color.BLACK;
+        int defaultColor = Color.BLACK;
         tabTitle1.setTextColor(defaultColor);
         tabTitle2.setTextColor(defaultColor);
 
@@ -451,7 +480,7 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
                             onSwitchTableListener.onSwitchTable(name);
                             mViewPager.setCurrentItem(1);
                         }
-                        if(onNoticeUpdateListener!=null){
+                        if (onNoticeUpdateListener != null) {
                             onNoticeUpdateListener.onUpdateNotice();
                         }
                         BroadcastUtils.refreshAppWidget(MainActivity.this);
@@ -503,8 +532,8 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
         if (fragment instanceof OnUpdateCourseListener) {
             onUpdateCourseListener = (OnUpdateCourseListener) fragment;
         }
-        if(fragment instanceof OnNoticeUpdateListener){
-            onNoticeUpdateListener= (OnNoticeUpdateListener) fragment;
+        if (fragment instanceof OnNoticeUpdateListener) {
+            onNoticeUpdateListener = (OnNoticeUpdateListener) fragment;
         }
     }
 
@@ -531,17 +560,17 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
 
     @Override
     public void onUpdateNotice() {
-        if(onNoticeUpdateListener!=null){
+        if (onNoticeUpdateListener != null) {
             onNoticeUpdateListener.onUpdateNotice();
         }
     }
 
     public void getValue2(String id) {
-        SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd");
-        final String s=sdf.format(new Date())+VersionTools.getVersionName();
-        String store=ShareTools.getString(this,"app_update_info",null);
-        int isIgnoreUpdate=ShareTools.getInt(this,"isIgnoreUpdate",0);
-        if(isIgnoreUpdate==0&&(store==null||!store.equals(s))){
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        final String s = sdf.format(new Date()) + VersionTools.getVersionName();
+        String store = ShareTools.getString(this, "app_update_info", null);
+        int isIgnoreUpdate = ShareTools.getInt(this, "isIgnoreUpdate", 0);
+        if (isIgnoreUpdate == 0 && (store == null || !store.equals(s))) {
             TimetableRequest.getValue(this, id, new Callback<ObjResult<ValuePair>>() {
                 @Override
                 public void onResponse(Call<ObjResult<ValuePair>> call, Response<ObjResult<ValuePair>> response) {
@@ -558,7 +587,7 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
                                         int isIgnoreUpdate = ShareTools.getInt(MainActivity.this, "isIgnoreUpdate", 0);
                                         if (isIgnoreUpdate == 0 && v > VersionTools.getVersionNumber()) {
                                             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this)
-                                                    .setTitle("发现新版本-v"+vals[1])
+                                                    .setTitle("发现新版本-v" + vals[1])
                                                     .setMessage("你可以在 工具箱->自动检查更新 中关闭提醒!\n\n更新日志:\n" + vals[2])
                                                     .setPositiveButton("去看看", new DialogInterface.OnClickListener() {
                                                         @Override
@@ -575,7 +604,7 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
                                                     .setNegativeButton("明天提醒", new DialogInterface.OnClickListener() {
                                                         @Override
                                                         public void onClick(DialogInterface dialogInterface, int i) {
-                                                            ShareTools.putString(MainActivity.this,"app_update_info",s);
+                                                            ShareTools.putString(MainActivity.this, "app_update_info", s);
                                                         }
                                                     });
                                             builder.create().show();
@@ -596,12 +625,12 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
     }
 
     @OnClick(R.id.id_title_tab1)
-    public void onSelectedTab1(){
+    public void onSelectedTab1() {
         select(0);
     }
 
     @OnClick(R.id.id_title_tab2)
-    public void onSelectedTab2(){
+    public void onSelectedTab2() {
         select(1);
     }
 

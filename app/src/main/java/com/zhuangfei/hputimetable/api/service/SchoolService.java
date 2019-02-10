@@ -4,6 +4,7 @@ import com.zhuangfei.hputimetable.api.constants.UrlContacts;
 import com.zhuangfei.hputimetable.api.model.AdapterDebugModel;
 import com.zhuangfei.hputimetable.api.model.AdapterInfo;
 import com.zhuangfei.hputimetable.api.model.BaseResult;
+import com.zhuangfei.hputimetable.api.model.CheckBindResultModel;
 import com.zhuangfei.hputimetable.api.model.CheckModel;
 import com.zhuangfei.hputimetable.api.model.HtmlDetail;
 import com.zhuangfei.hputimetable.api.model.HtmlSummary;
@@ -75,7 +76,7 @@ public interface SchoolService {
     @FormUrlEncoded
     Call<BaseResult> setMessageRead(@Field("id") int messageId);
 
-    @POST(UrlContacts.URL_SET_MESSAGE_READ)
+    @POST(UrlContacts.URL_BIND_SCHOOL)
     @FormUrlEncoded
     Call<BaseResult> bindSchool(@Field("device") String device,
                                 @Field("school") String school);
@@ -83,4 +84,8 @@ public interface SchoolService {
     @POST(UrlContacts.URL_GET_SCHOOL_PERSON_COUNT)
     @FormUrlEncoded
     Call<ObjResult<SchoolPersonModel>> getSchoolPersonCount(@Field("school") String school);
+
+    @POST(UrlContacts.URL_CHECK_IS_BIND_SCHOOL)
+    @FormUrlEncoded
+    Call<ObjResult<CheckBindResultModel>> checkIsBindSchool(@Field("device") String device);
  }

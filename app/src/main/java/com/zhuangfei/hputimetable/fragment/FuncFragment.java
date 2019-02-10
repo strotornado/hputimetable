@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
@@ -23,6 +24,7 @@ import com.zhuangfei.classbox.utils.SuperUtils;
 import com.zhuangfei.hputimetable.MainActivity;
 import com.zhuangfei.hputimetable.activity.MenuActivity;
 import com.zhuangfei.hputimetable.activity.MessageActivity;
+import com.zhuangfei.hputimetable.activity.adapter.SearchSchoolActivity;
 import com.zhuangfei.hputimetable.activity.schedule.MultiScheduleActivity;
 import com.zhuangfei.hputimetable.R;
 import com.zhuangfei.hputimetable.activity.ScanActivity;
@@ -60,7 +62,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -110,6 +114,9 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
 
     boolean qinglvMode=false;
 
+    SharedPreferences messagePreferences;
+    SharedPreferences.Editor messageEditor;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mView = inflater.inflate(R.layout.fragment_func, container, false);
@@ -130,6 +137,8 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
 
     private void inits() {
 //        createDayViewBottom();
+        messagePreferences=getContext().getSharedPreferences("app_message",Context.MODE_PRIVATE);
+        messageEditor=messagePreferences.edit();
         findData();
         getUnreadMessageCount();
     }
@@ -148,13 +157,11 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
         LayoutInflater inflater = LayoutInflater.from(getActivity());
 
         if (models == null) {
-            Toast.makeText(getContext(),"models is null",Toast.LENGTH_SHORT).show();
-            countTextView.setText("0");
-            countTipTextView.setText("你还没有添加数据呀!");
             dayView.setVisibility(View.GONE);
 
             View view = inflater.inflate(R.layout.item_empty, null, false);
             TextView infoText = view.findViewById(R.id.item_empty);
+            TextView infoButtonText = view.findViewById(R.id.item_to_station);
             view.findViewById(R.id.item_empty).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -163,11 +170,18 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
                     }
                 }
             });
+            infoButtonText.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    showImportDialog();
+                }
+            });
+            infoButtonText.setText("导入课程");
             infoText.setText("本地没有数据,去添加!");
             cardLayout.addView(view);
         } else if (models.size() == 0) {
-            Toast.makeText(getContext(),"models size= 0",Toast.LENGTH_SHORT).show();
 			View view=inflater.inflate(R.layout.item_empty,null ,false);
+            TextView infoButtonText = view.findViewById(R.id.item_to_station);
 			TextView infoText=view.findViewById(R.id.item_empty);
 			view.findViewById(R.id.item_empty).setOnClickListener(new View.OnClickListener() {
 				@Override
@@ -177,13 +191,16 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
 					}
 				}
 			});
+			infoButtonText.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    toSearchSchool();
+                }
+            });
+            infoButtonText.setText("逛逛");
 			cardLayout.addView(view);
 
         } else {
-            countTextView.setText("" + models.size());
-            if (models.size() < 3) countTipTextView.setText("今天课程较少，非常轻松~");
-            else if (models.size() < 5) countTipTextView.setText("今天课程适中，加油~");
-            else countTipTextView.setText("好多的课呀，有点慌~");
             dayView.setVisibility(View.VISIBLE);
 
             for (int i = 0; i < models.size(); i++) {
@@ -223,6 +240,10 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
                 cardLayout.addView(view);
             }
         }
+    }
+
+    public void toSearchSchool() {
+        ActivityTools.toActivityWithout(getActivity(), SearchSchoolActivity.class);
     }
 
     /**
@@ -295,6 +316,30 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
                                 break;
                             case 1:
                                 toSimportActivity();
+                                break;
+                        }
+                    }
+                })
+                .setNegativeButton("取消",null);
+        builder.create().show();;
+    }
+
+    public void showImportDialog() {
+        String[] items={"从超表课程码导入","从超表账户导入","从教务系统导入"};
+        android.support.v7.app.AlertDialog.Builder builder=new android.support.v7.app.AlertDialog.Builder(getContext())
+                .setTitle("课程导入")
+                .setItems(items, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        switch (i){
+                            case 0:
+                                ActivityTools.toActivityWithout(getActivity(), ScanActivity.class);
+                                break;
+                            case 1:
+                                toSimportActivity();
+                                break;
+                            case 2:
+                                toSearchSchool();
                                 break;
                         }
                     }
@@ -411,6 +456,10 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
     }
 
 
+    public Set<String> getReadSet() {
+        return messagePreferences.getStringSet("app_message_set",new HashSet<String>());
+    }
+
     public void getUnreadMessageCount(){
         String deviceId= DeviceTools.getDeviceId(getContext());
         if(deviceId==null) return;
@@ -423,7 +472,13 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
                 if(result.getCode()==200){
                     List<MessageModel> models=result.getData();
                     if(models!=null){
-                        int size=models.size();
+                        int size=0;
+                        Set<String> readSet=getReadSet();
+                        for(MessageModel model:models){
+                            if(!readSet.contains(String.valueOf(model.getUnreadId()))){
+                                size++;
+                            }
+                        }
                         if(size>0){
                             messageCountView.setVisibility(View.VISIBLE);
                             messageCountView.setText(String.valueOf(size));

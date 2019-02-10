@@ -34,6 +34,7 @@ import com.zhuangfei.scheduleadapter.UploadHtmlForActivity;
 import com.zhuangfei.timetable.model.ScheduleConfig;
 import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.ShareTools;
+import com.zhuangfei.toolkit.tools.ToastTools;
 
 import org.greenrobot.eventbus.EventBus;
 import org.litepal.crud.DataSupport;
@@ -109,7 +110,11 @@ public class MenuActivity extends AppCompatActivity {
 
         String deviceId= DeviceTools.getDeviceId(this);
         if(deviceId!=null){
-            deviceText.setText(deviceId);
+            if(deviceId.length()>=6){
+                deviceText.setText("UID:"+deviceId.substring(deviceId.length()-6));
+            }else {
+                deviceText.setText("UID:"+deviceId);
+            }
         }else{
             deviceText.setText("设备号获取失败");
         }
@@ -193,7 +198,10 @@ public class MenuActivity extends AppCompatActivity {
                 if(response==null) return;
                 ObjResult<SchoolPersonModel> result=response.body();
                 if(result.getCode()==200){
-
+                    SchoolPersonModel schoolPersonModel=result.getData();
+                    if(schoolPersonModel!=null){
+                        personCountText.setText(schoolPersonModel.getCount()+"名校友");
+                    }
                 }else {
                     Toast.makeText(MenuActivity.this,result.getMsg(),Toast.LENGTH_SHORT).show();
                 }
@@ -305,6 +313,7 @@ public class MenuActivity extends AppCompatActivity {
         super.onDestroy();
         if(changeStatus){
             EventBus.getDefault().post(new ConfigChangeEvent());
+            ToastTools.show(this,"MenuActivity post message");
         }
     }
 }

@@ -48,6 +48,7 @@ import com.zhuangfei.timetable.utils.ScreenUtils;
 import com.zhuangfei.toolkit.model.BundleModel;
 import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.ShareTools;
+import com.zhuangfei.toolkit.tools.ToastTools;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -396,22 +397,8 @@ public class ScheduleFragment extends LazyLoadFragment implements IThemeView,OnS
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onConfigChangeEvent(){
-        ScheduleConfig config=new ScheduleConfig(getContext());
-        config.setConfigName(MenuActivity.defaultConfigName);
-        String value1=config.get(OnGryphonConfigHandler.KEY_HIDE_NOT_CUR);
-        if (value1==null||value1.equals(OnGryphonConfigHandler.VALUE_FALSE)) {
-            mTimetableView.isShowNotCurWeek(true);
-        } else {
-            mTimetableView.isShowNotCurWeek(false);
-        }
-
-        String value2=config.get(OnGryphonConfigHandler.KEY_HIDE_WEEKENDS);
-        if (value2==null||value2.equals(OnGryphonConfigHandler.VALUE_FALSE)) {
-            mTimetableView.isShowWeekends(true);
-        } else {
-            mTimetableView.isShowWeekends(false);
-        }
         mTimetableView.updateView();
+        ToastTools.show(getContext(),"ScheduleFragment received message");
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)

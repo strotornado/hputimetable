@@ -231,9 +231,9 @@ public class SearchSchoolActivity extends AppCompatActivity {
 
     private void showStationResult(List<StationModel> result) {
         if (result == null) return;
-        result.addAll(result);
-        result.addAll(result);
-        result.addAll(result);
+        result.addAll(result);//2
+        result.addAll(result);//4
+        result.addAll(result);//8
         List<SearchResultModel> addList=new ArrayList<>();
         for (int i=0;i<Math.min(result.size(),SearchSchoolAdapter.TYPE_STATION_MAX_SIZE);i++) {
             StationModel model=result.get(i);
@@ -264,15 +264,16 @@ public class SearchSchoolActivity extends AppCompatActivity {
         if (list == null || list.size() == 0) {
             return;
         }
-
+        List<SearchResultModel> addList=new ArrayList<>();
         for (School schoolBean : list) {
             SearchResultModel searchResultModel = new SearchResultModel();
             searchResultModel.setType(SearchResultModel.TYPE_SCHOOL);
             searchResultModel.setObject(schoolBean);
             addModelToList(searchResultModel);
+            addList.add(searchResultModel);
         }
         sortResult();
-        addAllDataToList(models);
+        addAllDataToList(addList);
         sortResultForAllDatas();
         searchAdapter.notifyDataSetChanged();
     }

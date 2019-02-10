@@ -26,12 +26,14 @@ import com.zhuangfei.hputimetable.api.model.TimetableModel;
 import com.zhuangfei.hputimetable.api.model.ValuePair;
 import com.zhuangfei.hputimetable.constants.ExtrasConstants;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
+import com.zhuangfei.hputimetable.event.UpdateScheduleEvent;
 import com.zhuangfei.hputimetable.model.ScheduleDao;
 import com.zhuangfei.hputimetable.tools.BroadcastUtils;
 import com.zhuangfei.toolkit.model.BundleModel;
 import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.ShareTools;
 
+import org.greenrobot.eventbus.EventBus;
 import org.litepal.crud.DataSupport;
 import org.litepal.crud.async.FindMultiExecutor;
 import org.litepal.crud.callback.FindMultiCallback;
@@ -89,15 +91,8 @@ public class MultiScheduleActivity extends Activity {
         ShareTools.put(context, ShareConstants.INT_SCHEDULE_NAME_ID, id);
         BroadcastUtils.refreshAppWidget(MultiScheduleActivity.this);
         ScheduleDao.changeStatus(MultiScheduleActivity.this,true);
+        EventBus.getDefault().post(new UpdateScheduleEvent());
         Toasty.success(context, "切换课表成功").show();
-    }
-
-    public void applyTa(ScheduleName scheduleName) {
-        if (scheduleName == null) return;
-        int id = scheduleName.getId();
-        ShareTools.put(context, ShareConstants.INT_SCHEDULE_NAME_ID2, id);
-        BroadcastUtils.refreshAppWidget(MultiScheduleActivity.this);
-        Toasty.success(context, "已关联课表").show();
     }
 
     private void deleteScheduleName(final ScheduleName scheduleName) {
@@ -125,10 +120,7 @@ public class MultiScheduleActivity extends Activity {
                                 if (newName != null) {
                                     ShareTools.put(context, ShareConstants.INT_SCHEDULE_NAME_ID, newName.getId());
                                 }
-                            }
-                            int bindId=ShareTools.getInt(MultiScheduleActivity.this,ShareConstants.INT_SCHEDULE_NAME_ID2,-1);
-                            if(bindId!=-1&&scheduleName.getId()==bindId){
-                                ShareTools.putInt(MultiScheduleActivity.this,ShareConstants.INT_SCHEDULE_NAME_ID2,-1);
+                                EventBus.getDefault().post(new UpdateScheduleEvent());
                             }
                             getData();
                             Toasty.success(context, "删除成功").show();
@@ -143,7 +135,7 @@ public class MultiScheduleActivity extends Activity {
 
 
     public void showListDialog(final int pos) {
-        final String items[] = {"课程管理", "修改课表名", "删除本课表","分享本课表","这是\"Ta\"的课表","设置为当前课表"};
+        final String items[] = {"课程管理", "修改课表名", "删除本课表","分享本课表","设置为当前课表"};
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("选择操作");
@@ -179,12 +171,6 @@ public class MultiScheduleActivity extends Activity {
                         }
                         break;
                     case 4:
-                        ScheduleDao.changeFuncStatus(MultiScheduleActivity.this,true);
-                        applyTa(nameList.get(pos));
-                        getData();
-                        BroadcastUtils.refreshAppWidget(context);
-                        break;
-                    case 5:
                         ScheduleDao.changeFuncStatus(MultiScheduleActivity.this,true);
                         apply(nameList.get(pos));
                         getData();

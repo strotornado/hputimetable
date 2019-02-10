@@ -2,6 +2,7 @@ package com.zhuangfei.hputimetable.adapter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,8 +34,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -55,11 +58,23 @@ public class MessageAdapter extends BaseAdapter {
     String schoolName="unknow";
     String device;
 
+    SharedPreferences messagePreferences;
+    SharedPreferences.Editor messageEditor;
+    Set<String> readSet;
+
+
     public MessageAdapter(Activity context, List<MessageModel> list) {
         this.mInflater = LayoutInflater.from(context);
         this.context = context;
         this.list = list;
         device=DeviceTools.getDeviceId(context);
+        messagePreferences=context.getSharedPreferences("app_message",Context.MODE_PRIVATE);
+        messageEditor=messagePreferences.edit();
+        readSet=getReadSet();
+    }
+
+    public Set<String> getReadSet() {
+        return messagePreferences.getStringSet("app_message_set",new HashSet<String>());
     }
 
     @Override
@@ -105,7 +120,8 @@ public class MessageAdapter extends BaseAdapter {
                 holder.timeTextView.setText("未知时间");
             }
 
-            if(model.getIsread()==0){
+            if(model.getIsread()==0||(model.getTarget()!=null&&model.getTarget().equals("all")
+                    &&!readSet.contains(String.valueOf(model.getId())))){
                 holder.readTextView.setVisibility(View.VISIBLE);
             }else {
                 holder.readTextView.setVisibility(View.GONE);
@@ -198,7 +214,7 @@ public class MessageAdapter extends BaseAdapter {
         return convertView;
     }
 
-    public void setMessageRead(int id, final TextView readTextView){
+    public void setMessageRead(final int id, final TextView readTextView){
         if(id==0) return;
 
         TimetableRequest.setMessageRead(context, id, new Callback<BaseResult>() {
@@ -211,6 +227,9 @@ public class MessageAdapter extends BaseAdapter {
                     if(readTextView!=null){
                         readTextView.setVisibility(View.GONE);
                     }
+                    readSet=getReadSet();
+                    readSet.add(String.valueOf(id));
+                    messageEditor.putStringSet("app_message_set",readSet);
                     Toast.makeText(context,"已标为已读!",Toast.LENGTH_SHORT).show();
                 }else {
                     Toast.makeText(context,baseResult.getMsg(),Toast.LENGTH_SHORT).show();

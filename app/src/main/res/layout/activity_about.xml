@@ -125,14 +125,6 @@
                 android:textSize="14sp"
                 android:textStyle="bold" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="16dp"
-                android:gravity="center_horizontal"
-                android:text="以下文字均可长按复制"
-                android:textIsSelectable="true"
-                android:textSize="12sp" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -150,16 +142,6 @@
                 android:gravity="center_horizontal"
                 android:text="开发者QQ：1193600556"
                 android:textIsSelectable="true"
-                android:textSize="12sp" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginBottom="50dp"
-                android:layout_marginTop="16dp"
-                android:gravity="center_horizontal"
-                android:lineSpacingExtra="8dp"
-                android:text="对App有任何的建议\n可以在群中交流\n\n感谢WakeUp课程表的开发者\n本软件的[关于软件]界面、[添加课程]界面的UI风格借鉴了WakeUp课程表"
                 android:textSize="12sp" />
 
         </LinearLayout>

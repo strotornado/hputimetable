@@ -78,7 +78,9 @@
         <activity android:name=".specialarea.SpecialAreaActivity" />
         <activity
             android:name=".activity.adapter.SearchSchoolActivity"
-            android:theme="@style/searchTheme" />
+            android:theme="@style/searchTheme"
+            android:windowSoftInputMode="stateHidden"/>
+
         <activity android:name=".activity.adapter.UploadHtmlActivity" />
         <activity android:name=".activity.adapter.AdapterTipActivity" />
         <activity android:name=".activity.adapter.AdapterSchoolActivity" />

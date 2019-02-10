@@ -33,14 +33,12 @@ public class MultiScheduleAdapter extends BaseAdapter {
     List<ScheduleName> list;
     Context context;
     SimpleDateFormat sdf;
-    int bindId=-1;
 
     public MultiScheduleAdapter(Context context, List<ScheduleName> list) {
         this.mInflater = LayoutInflater.from(context);
         this.list = list;
         this.context = context;
         sdf=new SimpleDateFormat("MM/dd HH:mm");
-        bindId=ShareTools.getInt(context,ShareConstants.INT_SCHEDULE_NAME_ID2,-1);
     }
 
     @Override
@@ -77,38 +75,14 @@ public class MultiScheduleAdapter extends BaseAdapter {
         if(position==0){
             holder.lightView.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.border_multi_timeline_light));
             holder.timeTextView.setText("当前课表");
-            if(bindId!=-1&&bindId==scheduleName.getId()){
-                holder.timeTextView.append("&已被关联");
-            }
-            holder.timeTextView.setTextColor(context.getResources().getColor(R.color.app_gold));
+            holder.timeTextView.setTextColor(context.getResources().getColor(R.color.app_white));
         }else{
             holder.lightView.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.border_multi_timeline_gray));
             holder.timeTextView.setText(sdf.format(new Date(scheduleName.getTime())));
-            holder.timeTextView.setTextColor(context.getResources().getColor(R.color.dark));
-
-            if(bindId!=-1&&bindId==scheduleName.getId()){
-                holder.timeTextView.setText("已被关联");
-                holder.timeTextView.setTextColor(context.getResources().getColor(R.color.app_gold));
-            }
         }
 
         holder.nameTextView.setText(scheduleName.getName());
-
-        int cur = ShareTools.getInt(context, ShareConstants.INT_SCHEDULE_NAME_ID, -1);
-//        if(cur!=-1&&cur==scheduleName.getId()){
-//            holder.nameTextView.setTextColor(Color.WHITE);
-//            holder.layout.setBackgroundDrawable(convertView.getResources().getDrawable(R.drawable.border_multi_item_top));
-//        }else{
-//            holder.nameTextView.setTextColor(Color.BLACK);
-//            holder.layout.setBackgroundColor(Color.WHITE);
-//        }
         return convertView;
-    }
-
-    @Override
-    public void notifyDataSetChanged() {
-        bindId=ShareTools.getInt(context,ShareConstants.INT_SCHEDULE_NAME_ID2,-1);
-        super.notifyDataSetChanged();
     }
 
     //ViewHolder静态类
