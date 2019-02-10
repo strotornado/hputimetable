@@ -140,6 +140,7 @@ public class SearchSchoolActivity extends AppCompatActivity {
             String key = charSequence.toString();
             if (TextUtils.isEmpty(key)) {
                 models.clear();
+                allDatas.clear();
                 searchAdapter.notifyDataSetChanged();
             } else {
                 search(charSequence.toString());
@@ -165,7 +166,9 @@ public class SearchSchoolActivity extends AppCompatActivity {
     }
 
     public void search(String key) {
-        if(TextUtils.isEmpty(key)) return;
+        if(TextUtils.isEmpty(key)) {
+            return;
+        }
 
         models.clear();
         allDatas.clear();
@@ -231,7 +234,8 @@ public class SearchSchoolActivity extends AppCompatActivity {
         result.addAll(result);
         result.addAll(result);
         result.addAll(result);
-        for (int i=0;i<Math.min(result.size(),3);i++) {
+        List<SearchResultModel> addList=new ArrayList<>();
+        for (int i=0;i<Math.min(result.size(),SearchSchoolAdapter.TYPE_STATION_MAX_SIZE);i++) {
             StationModel model=result.get(i);
             SearchResultModel searchResultModel = new SearchResultModel();
             searchResultModel.setType(SearchResultModel.TYPE_STATION);
@@ -242,8 +246,16 @@ public class SearchSchoolActivity extends AppCompatActivity {
             addModelToList(searchResultModel);
         }
 
+        for (int i=0;i<result.size();i++) {
+            StationModel model=result.get(i);
+            SearchResultModel searchResultModel = new SearchResultModel();
+            searchResultModel.setType(SearchResultModel.TYPE_STATION);
+            searchResultModel.setObject(model);
+            addList.add(searchResultModel);
+        }
+
         sortResult();
-        allDatas.addAll(models);
+        addAllDataToList(addList);
         sortResultForAllDatas();
         searchAdapter.notifyDataSetChanged();
     }
@@ -260,7 +272,7 @@ public class SearchSchoolActivity extends AppCompatActivity {
             addModelToList(searchResultModel);
         }
         sortResult();
-        allDatas.addAll(models);
+        addAllDataToList(models);
         sortResultForAllDatas();
         searchAdapter.notifyDataSetChanged();
     }
@@ -280,6 +292,14 @@ public class SearchSchoolActivity extends AppCompatActivity {
     public synchronized void addModelToList(SearchResultModel searchResultModel) {
         if (models != null) {
             models.add(searchResultModel);
+        }
+    }
+
+    public synchronized void addAllDataToList(List<SearchResultModel> searchResultModels) {
+        if (allDatas != null) {
+            for(SearchResultModel model:searchResultModels){
+                allDatas.add(model);
+            }
         }
     }
 

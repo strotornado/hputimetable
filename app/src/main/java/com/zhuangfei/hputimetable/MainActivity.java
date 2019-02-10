@@ -136,14 +136,8 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
 //        ViewTools.setTransparent(this);
         ViewTools.setStatusTextGrayColor(this);
         ButterKnife.bind(this);
-        inits();
         shouldcheckPermission();
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                handler.sendEmptyMessage(0x124);
-            }
-        }, 500);
+        inits();
     }
 
     @Override
@@ -191,15 +185,6 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
             super.handleMessage(msg);
             if(msg.what==0x123){
                 getFromClip();
-            }
-            if(msg.what==0x124){
-                try{
-                    UpdateTools.checkUpdate(MainActivity.this,false);
-                }catch (Exception e){}
-                String schoolName=ShareTools.getString(MainActivity.this,ShareConstants.STRING_SCHOOL_NAME,null);
-                if(schoolName==null){
-                    openBindSchoolActivity();
-                }
             }
             if(msg.what==0x125){
                 select(toItem);
@@ -282,6 +267,17 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
         mViewPager.setAdapter(mAdapter);
         int item = (int) BundleTools.getInt(this, "item", 0);
         select(item);
+
+        String schoolName=ShareTools.getString(MainActivity.this,ShareConstants.STRING_SCHOOL_NAME,null);
+        if(schoolName==null){
+            openBindSchoolActivity();
+        }
+
+        try {
+            UpdateTools.checkUpdate(MainActivity.this,false);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void getFromClip() {
@@ -495,7 +491,7 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
     //申请失败
     @PermissionFail(requestCode = SUCCESSCODE)
     public void doFailSomething() {
-        ToastTools.show(this, "权限不足，运行中可能会出现故障!");
+        ToastTools.show(this, "权限不足，运行中可能会出现故障!请务必开启读取设备信息权限，设备号将作为你的账户");
     }
 
     @Override

@@ -32,6 +32,7 @@
                 android:background="@drawable/border_start_end2"
                 android:paddingLeft="5dp"
                 android:paddingRight="5dp"
+                android:layout_marginTop="5dp"
                 android:includeFontPadding="false"
                 android:textColor="@color/app_white"
                 android:textSize="14sp" />
@@ -40,6 +41,7 @@
                 android:layout_toRightOf="@id/id_school_text"
                 android:layout_alignTop="@id/id_school_text"
                 android:layout_marginLeft="10dp"
+                android:layout_marginTop="5dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/border_start_end2"

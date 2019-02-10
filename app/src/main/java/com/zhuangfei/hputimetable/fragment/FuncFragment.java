@@ -33,6 +33,7 @@ import com.zhuangfei.hputimetable.api.model.MessageModel;
 import com.zhuangfei.hputimetable.api.model.ScheduleName;
 import com.zhuangfei.hputimetable.api.model.TimetableModel;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
+import com.zhuangfei.hputimetable.event.UpdateScheduleEvent;
 import com.zhuangfei.hputimetable.listener.OnNoticeUpdateListener;
 import com.zhuangfei.hputimetable.listener.OnSwitchPagerListener;
 import com.zhuangfei.hputimetable.listener.OnUpdateCourseListener;
@@ -48,6 +49,9 @@ import com.zhuangfei.toolkit.model.BundleModel;
 import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.ShareTools;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.litepal.crud.DataSupport;
 import org.litepal.crud.async.FindMultiExecutor;
 import org.litepal.crud.callback.FindMultiCallback;
@@ -115,6 +119,7 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         ButterKnife.bind(this, view);
+        EventBus.getDefault().register(this);
         super.onViewCreated(view, savedInstanceState);
     }
 
@@ -378,12 +383,11 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
 
     @Override
     public void onUpdateNotice() {
-        if (ScheduleDao.isNeedFuncUpdate(getActivity())) {
-            if (todayInfo.getText() != null) {
-                findData();
-            }
-            ScheduleDao.changeFuncStatus(getActivity(), false);
-        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onUpdateScheduleEvent(UpdateScheduleEvent event){
+        findData();
     }
 
     @OnClick(R.id.id_week_view)
@@ -440,5 +444,11 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
 
     public void hideMessageCountView(){
         messageCountView.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 }

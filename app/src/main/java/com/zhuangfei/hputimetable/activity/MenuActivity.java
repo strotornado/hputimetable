@@ -252,14 +252,14 @@ public class MenuActivity extends AppCompatActivity {
     public void onHideNotCurSwitchClicked(boolean b) {
         changeStatus=true;
         String value=b?OnGryphonConfigHandler.VALUE_TRUE:OnGryphonConfigHandler.VALUE_FALSE;
-        scheduleConfig.put(OnGryphonConfigHandler.KEY_HIDE_NOT_CUR,value);
+        scheduleConfig.put(OnGryphonConfigHandler.KEY_HIDE_NOT_CUR,value).commit();
     }
 
     @OnCheckedChanged(R.id.id_switch_hideweekends)
     public void onHideWeekendsSwitchClicked(boolean b) {
         changeStatus=true;
         String value=b?OnGryphonConfigHandler.VALUE_TRUE:OnGryphonConfigHandler.VALUE_FALSE;
-        scheduleConfig.put(OnGryphonConfigHandler.KEY_HIDE_WEEKENDS,value);
+        scheduleConfig.put(OnGryphonConfigHandler.KEY_HIDE_WEEKENDS,value).commit();
     }
 
     @OnCheckedChanged(R.id.id_checkauto)

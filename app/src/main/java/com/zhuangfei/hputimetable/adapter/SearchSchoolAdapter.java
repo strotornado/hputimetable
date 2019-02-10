@@ -46,7 +46,7 @@ public class SearchSchoolAdapter extends BaseAdapter {
     private static final int TYPE_STATION = 0;
     private static final int TYPE_SCHOOL = 1;
     private static final int TYPE_ITEM_COUNT = 2;
-    private static final int TYPE_STATION_MAX_SIZE= 3;
+    public static final int TYPE_STATION_MAX_SIZE= 3;
 
     private LayoutInflater mInflater = null;
 
