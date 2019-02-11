@@ -19,7 +19,7 @@
 			For example:    
     	<version value="1" />
     -->
-    <version value="6" />
+    <version value="7" />
 
     <!--
     	Define your models in the list with mapping tag, LitePal will
@@ -34,6 +34,7 @@
     <list>
         <mapping class="com.zhuangfei.hputimetable.api.model.TimetableModel"/>
         <mapping class="com.zhuangfei.hputimetable.api.model.ScheduleName"/>
+        <mapping class="com.zhuangfei.hputimetable.api.model.StationModel"/>
     </list>
     
     <!--

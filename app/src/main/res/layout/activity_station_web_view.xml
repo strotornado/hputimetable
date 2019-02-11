@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/id_station_root"
     android:orientation="vertical" >
 
     <LinearLayout
@@ -30,6 +31,7 @@
             android:background="@drawable/border_25_gray"
             android:orientation="horizontal">
             <LinearLayout
+                android:id="@+id/id_station_more"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:gravity="center"

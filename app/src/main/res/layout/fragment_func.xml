@@ -14,56 +14,6 @@
         android:paddingRight="10dp">
 
         <LinearLayout
-            android:id="@+id/id_top_bg"
-            android:layout_width="match_parent"
-            android:layout_height="90dp"
-            android:background="@color/colorPrimary"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp"
-                android:layout_marginTop="10dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:id="@+id/id_display_day"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:text="15"
-                    android:textColor="@color/app_white"
-                    android:textSize="35dp" />
-
-                <TextView
-                    android:id="@+id/id_display_month"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="10dp"
-                    android:text="January"
-                    android:textColor="@color/app_white"
-                    android:textSize="23dp" />
-
-                <TextView
-                    android:id="@+id/id_mode_qinglv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="20dp"
-                    android:layout_gravity="center_vertical"
-                    android:background="@drawable/border_qinglv"
-                    android:gravity="center"
-                    android:paddingLeft="6dp"
-                    android:paddingRight="6dp"
-                    android:text="情侣"
-                    android:textColor="@color/app_white"
-                    android:textSize="14sp" />
-            </LinearLayout>
-
-        </LinearLayout>
-
-        <LinearLayout
             android:id="@+id/id_top_nav"
             android:layout_width="match_parent"
             android:layout_height="100dp"
@@ -227,12 +177,27 @@
             </LinearLayout>
         </LinearLayout>
 
+        <com.zhuangfei.hputimetable.CustomGridView
+            android:id="@+id/id_func_gridview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:gravity="center"
+            android:numColumns="5"/>
+
+        <View
+            android:id="@+id/id_line"
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/app_line" />
+
         <!--日视图-->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/app_white"
             android:orientation="vertical"
+            android:layout_marginTop="10dp"
             android:padding="5dp">
 
             <LinearLayout
@@ -247,8 +212,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="第2周 周四"
-                    android:textStyle="bold"
-                    android:textSize="17sp" />
+                    android:textSize="18sp" />
 
                 <TextView
                     android:id="@+id/id_func_schedulename"
@@ -259,14 +223,10 @@
                     android:layout_marginLeft="15dp"
                     android:singleLine="true"
                     android:textColor="@color/app_gray"
-                    android:textSize="14sp"/>
+                    android:textSize="15sp"/>
 
             </LinearLayout>
-            <View
-                android:id="@+id/id_line"
-                android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:background="@color/app_panel_bg" />
+
             <LinearLayout
                 android:id="@+id/id_cardview_layout"
                 android:layout_width="match_parent"

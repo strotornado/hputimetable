@@ -1,1 +1,1 @@
-include ':app', ':toolkit', ':smartalert', ':scheduleadapter'
+include ':app', ':toolkit', ':smartalert'

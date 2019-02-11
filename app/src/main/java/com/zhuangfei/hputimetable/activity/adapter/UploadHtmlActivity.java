@@ -65,7 +65,7 @@ public class UploadHtmlActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_upload_html_for);
+        setContentView(R.layout.activity_upload_html);
         ButterKnife.bind(this);
         initUrl();
         loadWebView();

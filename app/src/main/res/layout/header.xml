@@ -41,6 +41,5 @@
         android:layout_height="45dp"
         android:layout_marginLeft="10dp"
         android:padding="5dp"
-        android:layout_marginRight="10dp"
-        android:src="@drawable/ic_menu"/>
+        android:layout_marginRight="10dp"/>
 </LinearLayout>

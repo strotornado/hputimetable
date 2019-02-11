@@ -3,15 +3,8 @@ package com.zhuangfei.hputimetable.fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.Toast;
-
-import com.zhuangfei.generalpage.BaseFragment;
-
-public abstract class LazyLoadFragment extends BaseFragment {
+public abstract class LazyLoadFragment extends Fragment {
     /**
      * 视图是否已经初初始化
      */

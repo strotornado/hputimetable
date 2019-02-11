@@ -23,6 +23,7 @@ import com.zhuangfei.hputimetable.api.model.BaseResult;
 import com.zhuangfei.hputimetable.api.model.ListResult;
 import com.zhuangfei.hputimetable.api.model.MessageModel;
 import com.zhuangfei.hputimetable.api.model.ScheduleName;
+import com.zhuangfei.hputimetable.api.model.StationModel;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
 import com.zhuangfei.hputimetable.tools.DeviceTools;
 import com.zhuangfei.hputimetable.tools.StationManager;
@@ -151,6 +152,9 @@ public class MessageAdapter extends BaseAdapter {
                         readSet=getReadSet();
                         readSet.add(String.valueOf(id));
                         messageEditor.putStringSet("app_message_set",readSet).commit();
+                        if(finalTextView!=null){
+                            finalTextView.setVisibility(View.GONE);
+                        }
                         Toast.makeText(context,"已标为已读!",Toast.LENGTH_SHORT).show();
                     }else {
                         setMessageRead(model.getId(),finalTextView);
@@ -169,7 +173,7 @@ public class MessageAdapter extends BaseAdapter {
                 boolean isFind = matcher.find();
                 if (isFind) {
                     final Map<String, String> map = new HashMap();
-                    String stationInfo = matcher.group(1);
+                    final String stationInfo = matcher.group(1);
                     String[] array = stationInfo.split("&next;");
                     if (array != null) {
                         for (int i = 0; i < array.length; i++) {
@@ -182,7 +186,16 @@ public class MessageAdapter extends BaseAdapter {
                     holder.stationLayout.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View view) {
-                            StationManager.openStationWithout(context,map.get("url"),map.get("name"));
+                            StationModel stationModel=new StationModel();
+                            stationModel.setImg(map.get("img"));
+                            stationModel.setName(map.get("name"));
+                            stationModel.setUrl(map.get("url"));
+                            int id=-1;
+                            if(map.containsKey("id")){
+                                id=Integer.valueOf(map.get("id"));
+                            }
+                            stationModel.setStationId(id);
+                            StationManager.openStationWithout(context,stationModel);
                         }
                     });
                     Glide.with(context).load(map.get("img")).into(holder.stationImageView);

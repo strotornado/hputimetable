@@ -23,6 +23,8 @@ import com.zhuangfei.hputimetable.api.model.ShareModel;
 import com.zhuangfei.hputimetable.api.model.TimetableModel;
 import com.zhuangfei.hputimetable.api.model.ValuePair;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
+import com.zhuangfei.hputimetable.event.SwitchPagerEvent;
+import com.zhuangfei.hputimetable.event.UpdateScheduleEvent;
 import com.zhuangfei.hputimetable.fragment.FuncFragment;
 import com.zhuangfei.hputimetable.adapter.MyFragmentPagerAdapter;
 import com.zhuangfei.hputimetable.fragment.ScheduleFragment;
@@ -32,6 +34,7 @@ import com.zhuangfei.hputimetable.listener.OnSwitchTableListener;
 import com.zhuangfei.hputimetable.listener.OnUpdateCourseListener;
 import com.zhuangfei.hputimetable.tools.BroadcastUtils;
 import com.zhuangfei.hputimetable.tools.DeviceTools;
+import com.zhuangfei.hputimetable.tools.ImportTools;
 import com.zhuangfei.hputimetable.tools.UpdateTools;
 import com.zhuangfei.hputimetable.tools.VersionTools;
 import com.zhuangfei.hputimetable.tools.ViewTools;
@@ -69,6 +72,9 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.litepal.crud.DataSupport;
 
 import butterknife.BindView;
@@ -82,7 +88,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity implements OnNoticeUpdateListener, OnSwitchPagerListener, OnUpdateCourseListener {
+public class MainActivity extends AppCompatActivity{
 
     private static final String TAG = "MainActivity";
 
@@ -91,10 +97,6 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
     ViewPager mViewPager;
     List<Fragment> mFragmentList;
     MyFragmentPagerAdapter mAdapter;
-
-    OnSwitchTableListener onSwitchTableListener;
-    OnUpdateCourseListener onUpdateCourseListener;
-    OnNoticeUpdateListener onNoticeUpdateListener;
 
     public static final int REQUEST_IMPORT = 1;
 
@@ -137,6 +139,7 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
 //        ViewTools.setTransparent(this);
         ViewTools.setStatusTextGrayColor(this);
         ButterKnife.bind(this);
+        EventBus.getDefault().register(this);
         shouldcheckPermission();
         inits();
     }
@@ -169,9 +172,6 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
     @Override
     protected void onStart() {
         super.onStart();
-        if (onNoticeUpdateListener != null) {
-            onNoticeUpdateListener.onUpdateNotice();
-        }
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
@@ -414,7 +414,7 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
                             finalList.add(model);
                         }
                         DataSupport.saveAll(finalList);
-                        showDialogOnApply(newName);
+                        ImportTools.showDialogOnApply(MainActivity.this,newName);
                     }
                 }
             }
@@ -463,36 +463,6 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
         tabTitle2.setTextSize(normalTextSize);
     }
 
-    private void showDialogOnApply(final ScheduleName name) {
-        if (name == null) return;
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("你导入的数据已存储在多课表[" + name.getName() + "]下!\n是否直接设置为当前课表?")
-                .setTitle("课表导入成功")
-                .setPositiveButton("设为当前课表", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-
-//                        if(onUpdateCourseListener!=null){
-//                            onUpdateCourseListener.onUpdateData();
-//                        }
-
-                        if (onSwitchTableListener != null) {
-                            onSwitchTableListener.onSwitchTable(name);
-                            mViewPager.setCurrentItem(1);
-                        }
-                        if (onNoticeUpdateListener != null) {
-                            onNoticeUpdateListener.onUpdateNotice();
-                        }
-                        BroadcastUtils.refreshAppWidget(MainActivity.this);
-                        if (dialogInterface != null) {
-                            dialogInterface.dismiss();
-                        }
-                    }
-                })
-                .setNegativeButton("稍后设置", null);
-        builder.create().show();
-    }
-
     private void shouldcheckPermission() {
         PermissionGen.with(MainActivity.this)
                 .addRequestCode(SUCCESSCODE)
@@ -523,22 +493,9 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
         ToastTools.show(this, "权限不足，运行中可能会出现故障!请务必开启读取设备信息权限，设备号将作为你的账户");
     }
 
-    @Override
-    public void onAttachFragment(Fragment fragment) {
-        super.onAttachFragment(fragment);
-        if (fragment instanceof OnSwitchTableListener) {
-            onSwitchTableListener = (OnSwitchTableListener) fragment;
-        }
-        if (fragment instanceof OnUpdateCourseListener) {
-            onUpdateCourseListener = (OnUpdateCourseListener) fragment;
-        }
-        if (fragment instanceof OnNoticeUpdateListener) {
-            onNoticeUpdateListener = (OnNoticeUpdateListener) fragment;
-        }
-    }
 
-    @Override
-    public void onPagerSwitch() {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onSwitchPagerEvent(SwitchPagerEvent event) {
         mViewPager.setCurrentItem(1);
     }
 
@@ -548,20 +505,6 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
             mViewPager.setCurrentItem(0);
         } else {
             super.onBackPressed();
-        }
-    }
-
-    @Override
-    public void onUpdateData() {
-        if (onUpdateCourseListener != null) {
-            onUpdateCourseListener.onUpdateData();
-        }
-    }
-
-    @Override
-    public void onUpdateNotice() {
-        if (onNoticeUpdateListener != null) {
-            onNoticeUpdateListener.onUpdateNotice();
         }
     }
 
@@ -637,5 +580,11 @@ public class MainActivity extends AppCompatActivity implements OnNoticeUpdateLis
     @OnClick(R.id.id_search_school)
     public void toSearchSchool() {
         ActivityTools.toActivityWithout(this, SearchSchoolActivity.class);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 }

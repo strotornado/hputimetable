@@ -10,9 +10,13 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.text.TextUtils;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.GridView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -21,6 +25,7 @@ import com.zhuangfei.classbox.activity.AuthActivity;
 import com.zhuangfei.classbox.model.SuperLesson;
 import com.zhuangfei.classbox.model.SuperResult;
 import com.zhuangfei.classbox.utils.SuperUtils;
+import com.zhuangfei.hputimetable.CustomGridView;
 import com.zhuangfei.hputimetable.MainActivity;
 import com.zhuangfei.hputimetable.activity.MenuActivity;
 import com.zhuangfei.hputimetable.activity.MessageActivity;
@@ -29,19 +34,25 @@ import com.zhuangfei.hputimetable.activity.schedule.MultiScheduleActivity;
 import com.zhuangfei.hputimetable.R;
 import com.zhuangfei.hputimetable.activity.ScanActivity;
 import com.zhuangfei.hputimetable.activity.schedule.TimetableDetailActivity;
+import com.zhuangfei.hputimetable.adapter.StationAdapter;
 import com.zhuangfei.hputimetable.api.TimetableRequest;
 import com.zhuangfei.hputimetable.api.model.ListResult;
 import com.zhuangfei.hputimetable.api.model.MessageModel;
 import com.zhuangfei.hputimetable.api.model.ScheduleName;
+import com.zhuangfei.hputimetable.api.model.StationModel;
 import com.zhuangfei.hputimetable.api.model.TimetableModel;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
+import com.zhuangfei.hputimetable.event.SwitchPagerEvent;
 import com.zhuangfei.hputimetable.event.UpdateScheduleEvent;
+import com.zhuangfei.hputimetable.event.UpdateStationHomeEvent;
 import com.zhuangfei.hputimetable.listener.OnNoticeUpdateListener;
 import com.zhuangfei.hputimetable.listener.OnSwitchPagerListener;
 import com.zhuangfei.hputimetable.listener.OnUpdateCourseListener;
 import com.zhuangfei.hputimetable.model.ScheduleDao;
 import com.zhuangfei.hputimetable.tools.BroadcastUtils;
 import com.zhuangfei.hputimetable.tools.DeviceTools;
+import com.zhuangfei.hputimetable.tools.ImportTools;
+import com.zhuangfei.hputimetable.tools.StationManager;
 import com.zhuangfei.hputimetable.tools.TimetableTools;
 import com.zhuangfei.timetable.model.Schedule;
 import com.zhuangfei.timetable.model.ScheduleColorPool;
@@ -50,6 +61,7 @@ import com.zhuangfei.timetable.utils.ScreenUtils;
 import com.zhuangfei.toolkit.model.BundleModel;
 import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.ShareTools;
+import com.zhuangfei.toolkit.tools.ToastTools;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -78,7 +90,7 @@ import retrofit2.Response;
  * @author Administrator 刘壮飞
  */
 @SuppressLint({"NewApi", "ValidFragment"})
-public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateListener {
+public class FuncFragment extends LazyLoadFragment{
 
     private View mView;
 
@@ -87,9 +99,6 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
 
     @BindView(R.id.id_cardview_today)
     TextView todayInfo;
-
-    OnSwitchPagerListener onSwitchPagerListener;
-    OnUpdateCourseListener onUpdateCourseListener;
 
     @BindView(R.id.id_func_schedulename)
     TextView scheduleNameText;
@@ -103,18 +112,18 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
     @BindView(R.id.cv_dayview)
     CardView dayView;
 
-    @BindView(R.id.id_mode_qinglv)
-    TextView qinglvTextView;
-
     @BindView(R.id.id_top_nav)
     LinearLayout topNavLayout;
 
     @BindView(R.id.id_func_message_count)
     TextView messageCountView;
 
-    boolean qinglvMode=false;
-
     SharedPreferences messagePreferences;
+
+    @BindView(R.id.id_func_gridview)
+    CustomGridView stationGridView;
+    List<StationModel> stationModels;
+    StationAdapter stationAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -137,8 +146,43 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
     private void inits() {
 //        createDayViewBottom();
         messagePreferences=getContext().getSharedPreferences("app_message",Context.MODE_PRIVATE);
+        stationModels=new ArrayList<>();
+        stationAdapter=new StationAdapter(getContext(),stationModels);
+        stationGridView.setAdapter(stationAdapter);
+        stationGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                if(stationModels.size()>i){
+                    StationManager.openStationWithout(getActivity(),stationModels.get(i));
+                }
+            }
+        });
+
+
+        registerForContextMenu(stationGridView);
         findData();
+        findStationLocal();
         getUnreadMessageCount();
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        menu.add(1,1,1,"从主页删除");
+        super.onCreateContextMenu(menu, v, menuInfo);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo info= (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        StationModel stationModel=stationModels.get(info.position);
+        switch (item.getItemId()){
+            case 1:
+                DataSupport.delete(StationModel.class,stationModel.getId());
+                findStationLocal();
+                ToastTools.show(getContext(),"已从主页删除");
+                break;
+        }
+        return super.onContextItemSelected(item);
     }
 
     public void createCardView(List<Schedule> models, ScheduleName newName) {
@@ -163,9 +207,7 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
             view.findViewById(R.id.item_empty).setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if (onSwitchPagerListener != null) {
-                        onSwitchPagerListener.onPagerSwitch();
-                    }
+                    EventBus.getDefault().post(new SwitchPagerEvent());
                 }
             });
             infoButtonText.setOnClickListener(new View.OnClickListener() {
@@ -184,9 +226,7 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
 			view.findViewById(R.id.item_empty).setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View view) {
-					if(onSwitchPagerListener!=null){
-						onSwitchPagerListener.onPagerSwitch();
-					}
+                    EventBus.getDefault().post(new SwitchPagerEvent());
 				}
 			});
 			infoButtonText.setOnClickListener(new View.OnClickListener() {
@@ -270,7 +310,7 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
                 List<TimetableModel> models = (List<TimetableModel>) t;
                 if (models != null) {
                     List<Schedule> allModels = ScheduleSupport.transform(models);
-                    if (allModels != null) {
+                    if (allModels != null&&allModels.size()!=0) {
                         int curWeek = TimetableTools.getCurWeek(getActivity());
                         Calendar c = Calendar.getInstance();
                         int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
@@ -284,17 +324,6 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
                 }
             }
         });
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if (context instanceof OnSwitchPagerListener) {
-            onSwitchPagerListener = (OnSwitchPagerListener) context;
-        }
-        if (context instanceof OnUpdateCourseListener) {
-            onUpdateCourseListener = (OnUpdateCourseListener) context;
-        }
     }
 
     /**
@@ -386,7 +415,7 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
                     List<SuperLesson> lessons = result.getLessons();
                     ScheduleName newName = ScheduleDao.saveSuperShareLessons(lessons);
                     if (newName != null) {
-                        showDialogOnApply(newName);
+                        ImportTools.showDialogOnApply(getContext(),newName);
                     } else {
                         Toasty.error(getActivity(), "ScheduleName is null").show();
                     }
@@ -397,60 +426,35 @@ public class FuncFragment extends LazyLoadFragment implements OnNoticeUpdateList
         }
     }
 
-    private void showDialogOnApply(final ScheduleName name) {
-        if (name == null) return;
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage("你导入的数据已存储在多课表[" + name.getName() + "]下!\n是否直接设置为当前课表?")
-                .setTitle("课表导入成功")
-                .setPositiveButton("设为当前课表", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        ScheduleDao.changeFuncStatus(getActivity(), true);
-                        ScheduleDao.applySchedule(getActivity(), name.getId());
-                        BroadcastUtils.refreshAppWidget(getActivity());
-                        if (onSwitchPagerListener != null) {
-                            onSwitchPagerListener.onPagerSwitch();
-                        }
-                        if (onUpdateCourseListener != null) {
-                            onUpdateCourseListener.onUpdateData();
-                        }
-                        findData();
-                        if (dialogInterface != null) {
-                            dialogInterface.dismiss();
-                        }
-                    }
-                })
-                .setNegativeButton("稍后设置", null);
-        builder.create().show();
-    }
-
-    @Override
-    public void onUpdateNotice() {
-    }
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onUpdateScheduleEvent(UpdateScheduleEvent event){
         findData();
     }
 
-    @OnClick(R.id.id_week_view)
-    public void toScheduleFragment() {
-        if (onSwitchPagerListener != null) {
-            onSwitchPagerListener.onPagerSwitch();
-        }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onUpdateStationHomeEvent(UpdateStationHomeEvent event){
+        findStationLocal();
     }
 
-    @OnClick(R.id.id_mode_qinglv)
-    public void changeQinglvMode(){
-        if(!qinglvMode){
-            qinglvTextView.setBackground(getResources().getDrawable(R.drawable.border_qinglv_active));
-            qinglvMode=true;
-            topNavLayout.setVisibility(View.GONE);
-        }else{
-            qinglvTextView.setBackground(getResources().getDrawable(R.drawable.border_qinglv));
-            qinglvMode=false;
-            topNavLayout.setVisibility(View.VISIBLE);
-        }
+    /**
+     * 获取添加到首页的服务站
+     */
+    public void findStationLocal(){
+        FindMultiExecutor findMultiExecutor=DataSupport.findAllAsync(StationModel.class);
+        findMultiExecutor.listen(new FindMultiCallback() {
+            @Override
+            public <T> void onFinish(List<T> t) {
+                List<StationModel> stationModels= (List<StationModel>) t;
+                FuncFragment.this.stationModels.clear();
+                if(stationModels==null||stationModels.size()==0){
+                    stationGridView.setVisibility(View.GONE);
+                }else {
+                    stationGridView.setVisibility(View.VISIBLE);
+                    FuncFragment.this.stationModels.addAll(stationModels);
+                }
+                FuncFragment.this.stationAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
 

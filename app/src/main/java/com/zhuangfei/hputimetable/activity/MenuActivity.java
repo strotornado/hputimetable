@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.tencent.bugly.beta.Beta;
 import com.zhuangfei.hputimetable.MainActivity;
 import com.zhuangfei.hputimetable.R;
+import com.zhuangfei.hputimetable.activity.adapter.UploadHtmlActivity;
 import com.zhuangfei.hputimetable.activity.debug.AdapterDebugTipActivity;
 import com.zhuangfei.hputimetable.activity.hpu.ImportMajorActivity;
 import com.zhuangfei.hputimetable.adapter.OnGryphonConfigHandler;
@@ -30,7 +31,6 @@ import com.zhuangfei.hputimetable.tools.BroadcastUtils;
 import com.zhuangfei.hputimetable.tools.DeviceTools;
 import com.zhuangfei.hputimetable.tools.UpdateTools;
 import com.zhuangfei.hputimetable.tools.WidgetConfig;
-import com.zhuangfei.scheduleadapter.UploadHtmlForActivity;
 import com.zhuangfei.timetable.model.ScheduleConfig;
 import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.ShareTools;
@@ -102,16 +102,19 @@ public class MenuActivity extends AppCompatActivity {
         scheduleConfig=new ScheduleConfig(this);
         scheduleConfig.setConfigName(defaultConfigName);
         Set<String> configSet=scheduleConfig.export();
+        String str="";
         for(String configItem:configSet){
             if(configItem!=null&&configItem.indexOf("=")!=-1){
                 scheduleConfig.put(configItem.split("=")[0],configItem.split("=")[1]);
             }
+            str=configItem+"\n";
         }
+        ToastTools.show(this,str);
 
         String deviceId= DeviceTools.getDeviceId(this);
         if(deviceId!=null){
-            if(deviceId.length()>=6){
-                deviceText.setText("UID:"+deviceId.substring(deviceId.length()-6));
+            if(deviceId.length()>=8){
+                deviceText.setText("UID:"+deviceId.substring(deviceId.length()-8));
             }else {
                 deviceText.setText("UID:"+deviceId);
             }
@@ -260,14 +263,14 @@ public class MenuActivity extends AppCompatActivity {
     public void onHideNotCurSwitchClicked(boolean b) {
         changeStatus=true;
         String value=b?OnGryphonConfigHandler.VALUE_TRUE:OnGryphonConfigHandler.VALUE_FALSE;
-        scheduleConfig.put(OnGryphonConfigHandler.KEY_HIDE_NOT_CUR,value).commit();
+        scheduleConfig.put(OnGryphonConfigHandler.KEY_HIDE_NOT_CUR,value);
     }
 
     @OnCheckedChanged(R.id.id_switch_hideweekends)
     public void onHideWeekendsSwitchClicked(boolean b) {
         changeStatus=true;
         String value=b?OnGryphonConfigHandler.VALUE_TRUE:OnGryphonConfigHandler.VALUE_FALSE;
-        scheduleConfig.put(OnGryphonConfigHandler.KEY_HIDE_WEEKENDS,value).commit();
+        scheduleConfig.put(OnGryphonConfigHandler.KEY_HIDE_WEEKENDS,value);
     }
 
     @OnCheckedChanged(R.id.id_checkauto)
@@ -304,7 +307,7 @@ public class MenuActivity extends AppCompatActivity {
 
     @OnClick(R.id.id_other)
     public void jumpTo(){
-        Intent intent=new Intent(this, UploadHtmlForActivity.class);
+        Intent intent=new Intent(this, UploadHtmlActivity.class);
         startActivity(intent);
     }
 
@@ -312,8 +315,8 @@ public class MenuActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         if(changeStatus){
+            scheduleConfig.commit();
             EventBus.getDefault().post(new ConfigChangeEvent());
-            ToastTools.show(this,"MenuActivity post message");
         }
     }
 }

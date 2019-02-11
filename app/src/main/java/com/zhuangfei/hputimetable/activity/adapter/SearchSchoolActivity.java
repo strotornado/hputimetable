@@ -119,9 +119,7 @@ public class SearchSchoolActivity extends AppCompatActivity {
                             .put("parsejs", school.getParsejs()));
         }else {
             StationModel stationModel= (StationModel) model.getObject();
-            StationManager.openStationWithout(this,
-                    stationModel.getUrl(),
-                    stationModel.getName());
+            StationManager.openStationWithout(this,stationModel);
         }
     }
 
@@ -144,12 +142,6 @@ public class SearchSchoolActivity extends AppCompatActivity {
                 searchAdapter.notifyDataSetChanged();
             } else {
                 search(charSequence.toString());
-
-                if (key.equals("123ZFMAN")) {
-                    StationManager.openStationWithout(SearchSchoolActivity.this,
-                            "http://www.liuzhuangfei.com/apis/area/station/hpu_import/index.html",
-                            "班级课表");
-                }
             }
         }
 
@@ -231,9 +223,6 @@ public class SearchSchoolActivity extends AppCompatActivity {
 
     private void showStationResult(List<StationModel> result) {
         if (result == null) return;
-        result.addAll(result);//2
-        result.addAll(result);//4
-        result.addAll(result);//8
         List<SearchResultModel> addList=new ArrayList<>();
         for (int i=0;i<Math.min(result.size(),SearchSchoolAdapter.TYPE_STATION_MAX_SIZE);i++) {
             StationModel model=result.get(i);

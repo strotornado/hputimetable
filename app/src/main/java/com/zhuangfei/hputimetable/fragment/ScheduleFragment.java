@@ -21,6 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.zhuangfei.hputimetable.activity.schedule.AddTimetableActivity;
+import com.zhuangfei.hputimetable.event.ConfigChangeEvent;
 import com.zhuangfei.hputimetable.timetable_custom.CustomWeekView;
 import com.zhuangfei.hputimetable.activity.MenuActivity;
 import com.zhuangfei.hputimetable.R;
@@ -67,7 +68,7 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import es.dmoral.toasty.Toasty;
 
-public class ScheduleFragment extends LazyLoadFragment implements IThemeView,OnSwitchTableListener,OnUpdateCourseListener {
+public class ScheduleFragment extends LazyLoadFragment implements IThemeView{
 
     private static final String TAG = "MainActivity";
 
@@ -103,8 +104,6 @@ public class ScheduleFragment extends LazyLoadFragment implements IThemeView,OnS
 
     public static final int REQUEST_IMPORT = 1;
 
-    OnNoticeUpdateListener onNoticeUpdateListener;
-
     @BindView(R.id.id_loadlayout)
     LinearLayout loadLayout;
 
@@ -130,47 +129,6 @@ public class ScheduleFragment extends LazyLoadFragment implements IThemeView,OnS
     protected void lazyLoad() {
         inits();
         adjustAndGetData();
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        if(context instanceof OnNoticeUpdateListener){
-            onNoticeUpdateListener= (OnNoticeUpdateListener) context;
-        }
-    }
-
-    /**
-     * 检测课表切换
-     */
-    Handler handler=new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-//            mTimetableView.onDateBuildListener().onHighLight();
-//            int newCurWeek = TimetableTools.getCurWeek(context);
-//            if(newCurWeek != mTimetableView.curWeek()) {
-//                mTimetableView.onDateBuildListener().onUpdateDate(mTimetableView.curWeek(), newCurWeek);
-//                mTimetableView.changeWeekForce(newCurWeek);
-//                mWeekView.curWeek(newCurWeek).updateView();
-//            }
-            if(ScheduleDao.isNeedUpdate(getActivity())){
-                onUpdateData();
-                ScheduleDao.changeStatus(getActivity(),false);
-            }
-        }
-    };
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                handler.sendEmptyMessage(0x123);
-            }
-        },100);
-
     }
 
     private void inits() {
@@ -214,20 +172,6 @@ public class ScheduleFragment extends LazyLoadFragment implements IThemeView,OnS
                 })
                 .isShow(false)
                 .showView();
-
-        int status=ShareTools.getInt(context,"hidenotcur",0);
-        if(status==0){
-            mTimetableView.isShowNotCurWeek(true);
-        }else {
-            mTimetableView.isShowNotCurWeek(false);
-        }
-
-        int status2=ShareTools.getInt(context,"hideweekends",0);
-        if(status2==0){
-            mTimetableView.isShowWeekends(true);
-        }else {
-            mTimetableView.isShowWeekends(false);
-        }
 
         mTimetableView.curWeek(curWeek)
                 .maxSlideItem(10)
@@ -305,9 +249,7 @@ public class ScheduleFragment extends LazyLoadFragment implements IThemeView,OnS
                     mTimetableView.changeWeekForce(target + 1);
                     ShareTools.putString(getContext(), ShareConstants.STRING_START_TIME, TimetableTools.getStartSchoolTime(target + 1));
                     BroadcastUtils.refreshAppWidget(context);
-                    if(onNoticeUpdateListener!=null){
-                        onNoticeUpdateListener.onUpdateNotice();
-                    }
+                    EventBus.getDefault().post(new UpdateScheduleEvent());
                 }
             }
         });
@@ -376,35 +318,16 @@ public class ScheduleFragment extends LazyLoadFragment implements IThemeView,OnS
         }
     }
 
-    @Override
-    public void onSwitchTable(ScheduleName scheduleName) {
-        if (scheduleName == null) return;
-        int id = scheduleName.getId();
-        ShareTools.put(context, ShareConstants.INT_SCHEDULE_NAME_ID, id);
-        mCurScheduleTextView.setText("" + scheduleName.getName());
-        List<TimetableModel> dataModels = ScheduleDao.getAllWithScheduleId(id);
-        if (dataModels != null) {
-            mTimetableView.data(ScheduleSupport.transform(dataModels)).updateView();
-            mWeekView.data(ScheduleSupport.transform(dataModels)).showView();
-        }
-        Toasty.success(context, "切换课表成功").show();
-    }
-
-    @Override
-    public void onUpdateData() {
-
-    }
-
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onConfigChangeEvent(){
+    public void onConfigChangeEvent(ConfigChangeEvent event){
         mTimetableView.updateView();
-        ToastTools.show(getContext(),"ScheduleFragment received message");
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onUpdateScheduleEvent(UpdateScheduleEvent event){
         ScheduleName newName = DataSupport.find(ScheduleName.class, ScheduleDao.getApplyScheduleId(getActivity()));
         if(newName==null) return;
+        final int curWeek = TimetableTools.getCurWeek(context);
         mCurScheduleTextView.setText(newName.getName());
         FindMultiExecutor executor=newName.getModelsAsync();
         executor.listen(new FindMultiCallback() {
@@ -412,8 +335,8 @@ public class ScheduleFragment extends LazyLoadFragment implements IThemeView,OnS
             public <T> void onFinish(List<T> t) {
                 List<TimetableModel> dataModels = (List<TimetableModel>) t;
                 if (dataModels != null) {
-                    mTimetableView.data(ScheduleSupport.transform(dataModels)).updateView();
-                    mWeekView.data(ScheduleSupport.transform(dataModels)).showView();
+                    mTimetableView.curWeek(curWeek).data(ScheduleSupport.transform(dataModels)).updateView();
+                    mWeekView.curWeek(curWeek).data(ScheduleSupport.transform(dataModels)).showView();
                 }
             }
         });

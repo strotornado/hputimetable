@@ -85,11 +85,6 @@
         <activity android:name=".activity.adapter.AdapterTipActivity" />
         <activity android:name=".activity.adapter.AdapterSchoolActivity" />
         <activity android:name=".activity.adapter.AdapterSameTypeActivity" />
-        <activity
-            android:name=".activity.SplashActivity"
-            android:theme="@style/splash">
-
-        </activity>
         <activity android:name=".activity.debug.AdapterDebugListActivity" />
         <activity android:name=".activity.debug.AdapterDebugHtmlActivity" />
         <activity android:name=".activity.debug.DebugActivity" />

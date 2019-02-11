@@ -1,17 +1,28 @@
 package com.zhuangfei.hputimetable.api.model;
 
+import org.litepal.crud.DataSupport;
+
 import java.io.Serializable;
 
 /**
  * Created by Liu ZhuangFei on 2019/2/6.
  */
-public class StationModel implements Serializable{
+public class StationModel extends DataSupport implements Serializable{
     private String tag;
     private String name;
     private String img;
     private String url;
-    private int id;
+    private int stationId;
     private String owner;
+    private int id;
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getId() {
+        return id;
+    }
 
     public String getTag() {
         return tag;
@@ -45,12 +56,12 @@ public class StationModel implements Serializable{
         this.url = url;
     }
 
-    public int getId() {
-        return id;
+    public int getStationId() {
+        return stationId;
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void setStationId(int stationId) {
+        this.stationId = stationId;
     }
 
     public String getOwner() {
