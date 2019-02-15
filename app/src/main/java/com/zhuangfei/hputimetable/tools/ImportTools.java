@@ -8,6 +8,7 @@ import com.zhuangfei.hputimetable.MainActivity;
 import com.zhuangfei.hputimetable.api.model.ScheduleName;
 import com.zhuangfei.hputimetable.event.UpdateScheduleEvent;
 import com.zhuangfei.hputimetable.model.ScheduleDao;
+import com.zhuangfei.toolkit.tools.ToastTools;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -23,6 +24,7 @@ public class ImportTools {
                 .setPositiveButton("设为当前课表", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
+                        ToastTools.show(context,"导入课表成功!");
                         ScheduleDao.applySchedule(context, name.getId());
                         EventBus.getDefault().post(new UpdateScheduleEvent());
                         BroadcastUtils.refreshAppWidget(context);

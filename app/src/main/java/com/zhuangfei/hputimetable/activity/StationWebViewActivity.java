@@ -2,13 +2,19 @@ package com.zhuangfei.hputimetable.activity;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.net.http.SslError;
 import android.os.Bundle;
 import android.support.v4.widget.ContentLoadingProgressBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -21,17 +27,28 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.zhuangfei.hputimetable.MainActivity;
 import com.zhuangfei.hputimetable.R;
+import com.zhuangfei.hputimetable.activity.adapter.SearchSchoolActivity;
 import com.zhuangfei.hputimetable.activity.adapter.UploadHtmlActivity;
+import com.zhuangfei.hputimetable.adapter.SearchSchoolAdapter;
+import com.zhuangfei.hputimetable.api.TimetableRequest;
+import com.zhuangfei.hputimetable.api.model.ListResult;
 import com.zhuangfei.hputimetable.api.model.StationModel;
+import com.zhuangfei.hputimetable.event.ReloadStationEvent;
 import com.zhuangfei.hputimetable.event.UpdateStationHomeEvent;
 import com.zhuangfei.hputimetable.fragment.FuncFragment;
+import com.zhuangfei.hputimetable.model.SearchResultModel;
 import com.zhuangfei.hputimetable.station.StationSdk;
+import com.zhuangfei.hputimetable.tools.StationManager;
+import com.zhuangfei.hputimetable.tools.ViewTools;
+import com.zhuangfei.timetable.utils.ScreenUtils;
 import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.BundleTools;
 import com.zhuangfei.toolkit.tools.ToastTools;
@@ -43,10 +60,14 @@ import org.litepal.crud.callback.FindMultiCallback;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 /**
  * 服务站加载引擎
@@ -85,15 +106,118 @@ public class StationWebViewActivity extends AppCompatActivity {
     boolean haveLocal=false;
     int deleteId=-1;
 
+    @BindView(R.id.id_station_action_bg)
+    LinearLayout actionbarLayout;
+
+    Map<String,String> configMap;
+
+    @BindView(R.id.iv_station_more)
+    ImageView moreImageView;
+
+    @BindView(R.id.iv_station_close)
+    ImageView closeImageView;
+
+    @BindView(R.id.id_station_buttongroup)
+    LinearLayout buttonGroupLayout;
+
+    @BindView(R.id.id_station_diver)
+    View diverView;//分隔竖线
+
+    int needUpdate=0;
+    String[] textArray=null,linkArray=null;
+    String tipText=null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        beforeSetContentView();
         setContentView(R.layout.activity_station_web_view);
         ButterKnife.bind(this);
         initUrl();
         initView();
         loadWebView();
         findStationLocal();
+        getStationById();
+    }
+
+    private void beforeSetContentView() {
+        stationModel= (StationModel) BundleTools.getObject(this,EXTRAS_STATION_MODEL,null);
+        if(stationModel==null){
+            ToastTools.show(this,"传参异常");
+            finish();
+        }
+        configMap= StationManager.getStationConfig(stationModel.getUrl());
+        if(configMap!=null&&!configMap.isEmpty()){
+            try{
+                ViewTools.setStatusBarColor(this, Color.parseColor(configMap.get("statusColor")));
+            }catch (Exception e){}
+        }
+    }
+
+    public void getStationById(){
+        if(needUpdate==0) return;
+        TimetableRequest.getStationById(this, stationModel.getStationId(), new Callback<ListResult<StationModel>>() {
+            @Override
+            public void onResponse(Call<ListResult<StationModel>> call, Response<ListResult<StationModel>> response) {
+                ListResult<StationModel> result = response.body();
+                if (result != null) {
+                    if (result.getCode() == 200) {
+                        showStationResult(result.getData());
+                    } else {
+                        Toast.makeText(StationWebViewActivity.this, result.getMsg(), Toast.LENGTH_SHORT).show();
+                    }
+                } else {
+                    Toast.makeText(StationWebViewActivity.this, "station response is null!", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<ListResult<StationModel>> call, Throwable t) {
+
+            }
+        });
+    }
+
+    private void showStationResult(List<StationModel> result) {
+        if (result == null||result.size()==0) return;
+        final StationModel model=result.get(0);
+        if(model!=null){
+            boolean update=false;
+            if(model.getName()!=null&&!model.getName().equals(stationModel.getName())){
+                update=true;
+            }
+            if(model.getUrl()!=null&&!model.getUrl().equals(stationModel.getUrl())){
+                update=true;
+            }
+            if(model.getImg()!=null&&!model.getImg().equals(stationModel.getImg())){
+                update=true;
+            }
+
+            if(update){
+                final StationModel local=DataSupport.find(StationModel.class,stationModel.getId());
+                if(local!=null){
+                    local.setName(model.getName());
+                    local.setUrl(model.getUrl());
+                    local.setImg(model.getImg());
+                    local.update(stationModel.getId());
+                }
+
+                AlertDialog.Builder builder=new AlertDialog.Builder(this)
+                        .setTitle("服务站更新")
+                        .setMessage("本地保存的服务站已过期，需要重新加载")
+                        .setPositiveButton("重新加载", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                ReloadStationEvent event=new ReloadStationEvent();
+                                event.setStationModel(local);
+                                EventBus.getDefault().post(new UpdateStationHomeEvent());
+                                EventBus.getDefault().post(event);
+                                finish();
+                            }
+                        });
+                builder.create().show();
+            }
+        }
     }
 
     /**
@@ -128,17 +252,34 @@ public class StationWebViewActivity extends AppCompatActivity {
 
     private void initUrl() {
         returnClass = BundleTools.getFromClass(this, MainActivity.class);
-        stationModel= (StationModel) BundleTools.getObject(this,EXTRAS_STATION_MODEL,null);
-        if(stationModel==null){
-            ToastTools.show(this,"传参异常");
-            finish();
-        }
-        url=stationModel.getUrl();
+        url=StationManager.getRealUrl(stationModel.getUrl());
         title=stationModel.getName();
+        if(returnClass==MainActivity.class){
+            needUpdate=1;
+        }else {
+            needUpdate=0;
+        }
     }
 
     private void initView() {
         titleTextView.setText(title);
+        if(configMap!=null&&!configMap.isEmpty()){
+            try{
+                actionbarLayout.setBackgroundColor(Color.parseColor(configMap.get("actionColor")));
+            }catch (Exception e){}
+
+            try{
+                int textcolor=Color.parseColor(configMap.get("actionTextColor"));
+                titleTextView.setTextColor(textcolor);
+                moreImageView.setColorFilter(textcolor);
+                closeImageView.setColorFilter(textcolor);
+                GradientDrawable gd=new GradientDrawable();
+                gd.setCornerRadius(ScreenUtils.dip2px(this,25));
+                gd.setStroke(2,textcolor);
+                diverView.setBackgroundColor(textcolor);
+                buttonGroupLayout.setBackgroundDrawable(gd);
+            }catch (Exception e){}
+        }
     }
 
     //为弹出窗口实现监听类
@@ -163,10 +304,10 @@ public class StationWebViewActivity extends AppCompatActivity {
                     findStationLocal();
                     break;
                 case R.id.pop_about:
-                    if(stationModel!=null&&stationModel.getTag()!=null){
-                        ToastTools.show(StationWebViewActivity.this,stationModel.getTag());
+                    if(stationModel!=null&&stationModel.getOwner()!=null){
+                        ToastTools.show(StationWebViewActivity.this,stationModel.getOwner());
                     }else {
-                        ToastTools.show(StationWebViewActivity.this,"标签未知!");
+                        ToastTools.show(StationWebViewActivity.this,"所有者未知!");
                     }
                     break;
                 case R.id.pop_to_home:
@@ -258,9 +399,12 @@ public class StationWebViewActivity extends AppCompatActivity {
         super.onDestroy();
     }
 
-    public void setButtonSettings(String text,String[] linkArray){
-        functionButton.setText(text);
+    public void setButtonSettings(String btnText,String[] textArray,String[] linkArray){
+        if(TextUtils.isEmpty(btnText)) return;
+        functionButton.setText(btnText);
         functionButton.setVisibility(View.VISIBLE);
+        this.textArray=textArray;
+        this.linkArray=linkArray;
     }
 
     @Override
@@ -304,5 +448,29 @@ public class StationWebViewActivity extends AppCompatActivity {
 
     public String getStationSpace(){
         return "station_space_"+stationModel.getStationId();
+    }
+
+    public void setTitle(String title){
+        titleTextView.setText(title);
+    }
+
+    @OnClick(R.id.id_btn_function)
+    public void onButtonClicked(){
+        if(textArray==null||linkArray==null) return;
+        if(textArray.length!=linkArray.length) return;
+        AlertDialog.Builder builder=new AlertDialog.Builder(this)
+                .setTitle("请选择功能")
+                .setItems(textArray, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if(i<linkArray.length){
+                            webView.loadUrl(linkArray[i]);
+                        }
+                        if(dialogInterface!=null){
+                            dialogInterface.dismiss();
+                        }
+                    }
+                });
+        builder.create().show();
     }
 }

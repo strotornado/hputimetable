@@ -15,11 +15,11 @@
             android:layout_width="match_parent"
             android:layout_height="80dp"
             android:paddingLeft="15dp"
-            android:gravity="center_vertical"
             android:background="@color/app_white"
             android:paddingRight="15dp">
             <TextView
                 android:id="@+id/id_device_text"
+                android:layout_marginTop="15dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="17sp"
@@ -50,6 +50,17 @@
                 android:includeFontPadding="false"
                 android:textColor="@color/app_white"
                 android:textSize="14sp" />
+
+            <TextView
+                android:id="@+id/id_menu_modify_school"
+                android:layout_width="80dp"
+                android:gravity="center"
+                android:layout_height="match_parent"
+                android:text="修改学校"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:textColor="@color/theme_red"/>
+
         </RelativeLayout>
 
         <TextView

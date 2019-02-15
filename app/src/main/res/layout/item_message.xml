@@ -65,15 +65,22 @@
         android:layout_width="match_parent"
         android:layout_height="58dp"
         android:gravity="center_vertical"
-        android:background="@color/app_tipcolor"
+        android:background="@color/app_gray_f0f0f0"
         android:orientation="horizontal">
-        <ImageView
-            android:id="@+id/item_message_station_img"
+        <LinearLayout
+            android:id="@+id/id_layout"
             android:layout_width="45dp"
             android:layout_height="45dp"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:src="@drawable/ic_launcher_background"/>
+            android:background="@drawable/border_25dp"
+            android:gravity="center"
+            android:orientation="vertical">
+            <ImageView
+                android:id="@+id/item_message_station_img"
+                android:layout_width="30dp"
+                android:layout_height="30dp"/>
+        </LinearLayout>
 
         <TextView
             android:id="@+id/item_message_station_name"
@@ -91,7 +98,7 @@
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
         android:gravity="center_vertical"
-        android:background="@color/app_tipcolor"
+        android:background="@color/app_gray_f0f0f0"
         android:orientation="horizontal">
 
         <ImageView

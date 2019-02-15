@@ -28,6 +28,14 @@
             android:textSize="16sp"
             android:textStyle="bold" />
 
+        <TextView
+            android:id="@+id/id_zanzhu"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="赞助作者"
+            android:textColor="@color/app_blue2"
+            android:textSize="16sp"/>
     </LinearLayout>
 
     <View
@@ -47,102 +55,142 @@
             android:gravity="center_horizontal"
             android:orientation="vertical">
 
-            <ImageView
-                android:layout_width="72dp"
-                android:layout_height="72dp"
-                android:layout_marginTop="24dp"
-                android:src="@mipmap/ic_app" />
-
-            <TextView
-                android:id="@+id/tv_version"
+            <LinearLayout
+                android:visibility="gone"
+                android:id="@+id/id_pay_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:lineSpacingExtra="8dp"
-                android:paddingLeft="48dp"
-                android:paddingRight="48dp"
-                android:paddingTop="16dp"
-                android:textSize="12sp" />
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center_vertical"
+                    android:text="支付宝、微信两种方式任选其一，感谢您的支持"
+                    android:textSize="16sp" />
 
-            <TextView
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/alipay"/>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/wxpay"/>
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/id_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:autoLink="web"
-                android:gravity="center_horizontal"
-                android:lineSpacingExtra="8dp"
-                android:paddingBottom="16dp"
-                android:paddingLeft="48dp"
-                android:paddingRight="48dp"
-                android:text="怪兽课表\n由我个人开发\n本项目开源  欢迎star和fork\nhttps://github.com/zfman/hputimetable"
-                android:textSize="12sp" />
+                android:paddingBottom="30dp"
+                android:orientation="vertical">
+                <ImageView
+                    android:layout_width="72dp"
+                    android:layout_height="72dp"
+                    android:layout_marginTop="24dp"
+                    android:src="@mipmap/ic_app" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:autoLink="web"
-                android:gravity="center_horizontal"
-                android:lineSpacingExtra="8dp"
-                android:paddingBottom="16dp"
-                android:paddingLeft="48dp"
-                android:paddingRight="48dp"
-                android:text="课表控件库\nhttps://github.com/zfman/TimetableView"
-                android:textSize="12sp" />
+                <TextView
+                    android:id="@+id/tv_version"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:lineSpacingExtra="8dp"
+                    android:paddingLeft="48dp"
+                    android:paddingRight="48dp"
+                    android:paddingTop="16dp"
+                    android:textSize="12sp" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:autoLink="web"
-                android:gravity="center_horizontal"
-                android:lineSpacingExtra="8dp"
-                android:paddingBottom="16dp"
-                android:paddingLeft="48dp"
-                android:paddingRight="48dp"
-                android:text="超表授权库\nhttps://github.com/zfman/SuperBox"
-                android:textSize="12sp" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:autoLink="web"
+                    android:gravity="center_horizontal"
+                    android:lineSpacingExtra="8dp"
+                    android:paddingBottom="16dp"
+                    android:paddingLeft="48dp"
+                    android:paddingRight="48dp"
+                    android:text="怪兽课表\n由我个人开发\n本项目开源  欢迎star和fork\nhttps://github.com/zfman/hputimetable"
+                    android:textSize="12sp" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:autoLink="web"
-                android:gravity="center_horizontal"
-                android:lineSpacingExtra="8dp"
-                android:paddingBottom="16dp"
-                android:paddingLeft="48dp"
-                android:paddingRight="48dp"
-                android:text="全国大学生课程适配平台-已授权\nhttps://github.com/zfman/CourseAdapter\n如需使用该功能请务必先向开发者申请授权\n违者必究!"
-                android:textSize="12sp" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:autoLink="web"
+                    android:gravity="center_horizontal"
+                    android:lineSpacingExtra="8dp"
+                    android:paddingBottom="16dp"
+                    android:paddingLeft="48dp"
+                    android:paddingRight="48dp"
+                    android:text="课表控件库\nhttps://github.com/zfman/TimetableView"
+                    android:textSize="12sp" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="32dp"
-                android:gravity="center_horizontal"
-                android:text="关于刘壮飞"
-                android:textSize="14sp"
-                android:textStyle="bold" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:autoLink="web"
+                    android:gravity="center_horizontal"
+                    android:lineSpacingExtra="8dp"
+                    android:paddingBottom="16dp"
+                    android:paddingLeft="48dp"
+                    android:paddingRight="48dp"
+                    android:text="超表授权库\nhttps://github.com/zfman/SuperBox"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:autoLink="web"
+                    android:gravity="center_horizontal"
+                    android:lineSpacingExtra="8dp"
+                    android:paddingBottom="16dp"
+                    android:paddingLeft="48dp"
+                    android:paddingRight="48dp"
+                    android:text="全国大学生课程适配平台-已授权\nhttps://github.com/zfman/CourseAdapter\n如需使用该功能请务必先向开发者申请授权\n违者必究!"
+                    android:textSize="12sp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="32dp"
+                    android:gravity="center_horizontal"
+                    android:text="当校友数达到1000\n可以向我申请服务站"
+                    android:textSize="14sp"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="32dp"
+                    android:gravity="center_horizontal"
+                    android:text="关于刘壮飞"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
 
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="16dp"
-                android:gravity="center_horizontal"
-                android:text="怪兽课表交流群：684993074"
-                android:textIsSelectable="true"
-                android:textSize="12sp" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center_horizontal"
+                    android:text="怪兽课表交流群：684993074"
+                    android:textIsSelectable="true"
+                    android:textSize="12sp" />
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="16dp"
-                android:gravity="center_horizontal"
-                android:text="开发者QQ：1193600556"
-                android:textIsSelectable="true"
-                android:textSize="12sp" />
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="16dp"
+                    android:gravity="center_horizontal"
+                    android:text="开发者QQ：1193600556"
+                    android:textIsSelectable="true"
+                    android:textSize="12sp" />
+            </LinearLayout>
 
         </LinearLayout>
 

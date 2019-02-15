@@ -99,8 +99,13 @@ public class MessageActivity extends AppCompatActivity {
         adapter.notifyDataSetChanged();
     }
 
+    @OnClick(R.id.id_back)
+    public void goBack(){
+        ActivityTools.toBackActivityAnim(this, MainActivity.class);
+    }
+
     @Override
     public void onBackPressed() {
-        ActivityTools.toBackActivityAnim(this, MainActivity.class);
+        goBack();
     }
 }

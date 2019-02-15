@@ -15,7 +15,9 @@ import java.util.List;
 public class SearchResultModel implements Comparable<SearchResultModel>{
     public static final int TYPE_STATION=1;
     public static final int TYPE_STATION_MORE=0;
-    public static final int TYPE_SCHOOL=2;
+    public static final int TYPE_COMMON=3;//通用解析算法
+    public static final int TYPE_COMMON_UPLOAD=2;//通用解析算法
+    public static final int TYPE_SCHOOL=4;
     private int type=TYPE_SCHOOL;
 
     private Object object;

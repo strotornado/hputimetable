@@ -4,7 +4,9 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.webkit.JavascriptInterface;
 import android.widget.SimpleCursorTreeAdapter;
 
@@ -12,8 +14,10 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.zhuangfei.hputimetable.activity.StationWebViewActivity;
 import com.zhuangfei.hputimetable.adapter_apis.JsSupport;
+import com.zhuangfei.hputimetable.api.model.ObjResult;
 import com.zhuangfei.hputimetable.api.model.ScheduleName;
 import com.zhuangfei.hputimetable.api.model.TimetableModel;
+import com.zhuangfei.hputimetable.api.model.TimetableResultModel;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
 import com.zhuangfei.hputimetable.event.UpdateScheduleEvent;
 import com.zhuangfei.hputimetable.model.ScheduleDao;
@@ -87,29 +91,75 @@ public class StationSdk {
 
     @JavascriptInterface
     @SuppressLint("SetJavaScriptEnabled")
-    public void addButton(String btnText,String[] linkArray){
-        stationView.setButtonSettings(btnText,linkArray);
+    /**
+     * @params firstUrl 重定向的地址
+     */
+    public void addButton(final String btnText, final String[] textArray, final String[] linkArray){
+        stationView.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                stationView.setButtonSettings(btnText,textArray,linkArray);
+            }
+        });
     }
 
     @JavascriptInterface
     @SuppressLint("SetJavaScriptEnabled")
     public void saveSchedules(String name,String json){
-        Type type = new TypeToken<List<TimetableModel>>(){}.getType();
-        List<TimetableModel> modelList=new Gson().fromJson(json,type);
-        if(modelList!=null){
-            ScheduleName newName=new ScheduleName();
-            newName.setName(name);
-            newName.setTime(System.currentTimeMillis());
-            newName.save();
-            for(TimetableModel model:modelList){
-                model.setScheduleName(newName);
+        Type type=new TypeToken<ObjResult<TimetableResultModel>>(){}.getType();
+        ObjResult<TimetableResultModel> objResult=new Gson().fromJson(json,type);
+        if(objResult!=null){
+            if(objResult.getCode()==200){
+                TimetableResultModel resultModel=objResult.getData();
+                if(resultModel==null) return;
+                List<TimetableModel> haveList=resultModel.getHaveList();
+                List<TimetableModel> notimeList=resultModel.getNotimeList();
+                if(haveList!=null){
+                    ScheduleName newName=new ScheduleName();
+                    newName.setName(name);
+                    newName.setTime(System.currentTimeMillis());
+                    newName.save();
+                    for(TimetableModel model:haveList){
+                        model.setScheduleName(newName);
+                    }
+                    if(notimeList!=null){
+                        for(TimetableModel model:notimeList){
+                            if(TextUtils.isEmpty(model.getName())){
+                                model.setName("无时间课程,请自行修改");
+                            }else{
+                                model.setName(model.getName()+"(无时间课程,请自行修改)");
+                            }
+                            if(model.getDay()<1){
+                                model.setDay(7);
+                            }
+                            if(model.getStart()<1){
+                                model.setStart(1);
+                            }
+                            if(model.getStep()<1){
+                                model.setStep(4);
+                            }
+                            if(model.getWeekList()==null||model.getWeekList().size()==0){
+                                List<Integer> list=new ArrayList<>();
+                                for(int i=1;i<=20;i++){
+                                    list.add(i);
+                                }
+                                model.setWeekList(list);
+                            }
+                            model.setScheduleName(newName);
+                        }
+                    }
+
+                    DataSupport.saveAll(haveList);
+                    DataSupport.saveAll(notimeList);
+                    ImportTools.showDialogOnApply(stationView.getStationContext(),newName);
+                }else {
+                    stationView.showMessage("haveList is null");
+                }
+            }else{
+                toast("Error:"+objResult.getMsg());
             }
-            DataSupport.saveAllAsync(modelList);
-            ImportTools.showDialogOnApply(stationView.getStationContext(),newName);
-            EventBus.getDefault().post(new UpdateScheduleEvent());
-            stationView.showMessage("已保存至本地");
-        }else {
-            stationView.showMessage("解析错误");
+        }else{
+            toast("Error:objResult is null");
         }
     }
 
@@ -121,7 +171,7 @@ public class StationSdk {
 
     @JavascriptInterface
     @SuppressLint("SetJavaScriptEnabled")
-    public void messageDialog(String tag, final String title,
+    public void messageDialog(final String tag, final String title,
                               final String content, final String confirmText){
         stationView.runOnUiThread(new Runnable() {
             @Override
@@ -135,10 +185,21 @@ public class StationSdk {
                                 if(dialogInterface!=null){
                                     dialogInterface.dismiss();
                                 }
-                                jsSupport.callJs("onMessageDialogCallback()");
+                                jsSupport.callJs("onMessageDialogCallback('$0')",new String[]{tag});
                             }
                         });
                 builder.create().show();
+            }
+        });
+    }
+
+    @JavascriptInterface
+    @SuppressLint("SetJavaScriptEnabled")
+    public void setTitle(final String title){
+        stationView.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                stationView.setTitle(title);
             }
         });
     }
@@ -156,8 +217,15 @@ public class StationSdk {
 
     @JavascriptInterface
     @SuppressLint("SetJavaScriptEnabled")
-    public String getString(String key, String defVal){
-        return preferences.getString(key,defVal);
+    public String getString(final String key, final String defVal){
+        final String[] result = {null};
+        stationView.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                result[0] =preferences.getString(key,defVal);
+            }
+        });
+        return result[0];
     }
 
     @JavascriptInterface
@@ -194,18 +262,12 @@ public class StationSdk {
                         List<TimetableModel> models = (List<TimetableModel>) t;
                         if (models != null) {
                             List<Schedule> allModels = ScheduleSupport.transform(models);
-                            if (allModels != null&&allModels.size()!=0) {
-                                int curWeek = getCurWeek();
-                                Calendar c = Calendar.getInstance();
-                                int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
-                                dayOfWeek = dayOfWeek - 2;
-                                if (dayOfWeek == -1) dayOfWeek = 6;
-                                List<Schedule> list = ScheduleSupport.getHaveSubjectsWithDay(allModels, curWeek, dayOfWeek);
-                                list=ScheduleSupport.getColorReflect(list);
-                                if(list==null) list=new ArrayList<>();
-                                String json=new Gson().toJson(list);
-                                jsSupport.callJs("onGetCurrentScheduleCallback('$0')",json);
-                            }
+                            String json=new Gson().toJson(allModels);
+                            json=json.replaceAll("\"","&quot;");
+                            messageDialog("tag","Title",json,"我知道了");
+                            jsSupport.callJs("onGetCurrentScheduleCallback('$0')",new String[]{json});
+                        }else{
+                            jsSupport.callJs("onGetCurrentScheduleCallback('')",null);
                         }
                     }
                 });

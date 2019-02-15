@@ -26,6 +26,7 @@ import com.zhuangfei.hputimetable.api.model.ScheduleName;
 import com.zhuangfei.hputimetable.api.model.TimetableModel;
 import com.zhuangfei.hputimetable.model.ScheduleDao;
 import com.zhuangfei.hputimetable.tools.BroadcastUtils;
+import com.zhuangfei.hputimetable.tools.ImportTools;
 import com.zhuangfei.toolkit.model.BundleModel;
 import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.BundleTools;
@@ -236,36 +237,7 @@ public class AdapterSchoolActivity extends AppCompatActivity {
         }
         DataSupport.saveAll(models);
         Toasty.success(this, "保存成功！").show();
-        showDialogOnApply(newName);
-    }
-
-    private void showDialogOnApply(final ScheduleName name) {
-        if (name == null) return;
-        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
-        builder.setMessage("你导入的数据已存储在多课表[" + name.getName() + "]下!\n是否直接设置为当前课表?")
-                .setTitle("课表导入成功")
-                .setPositiveButton("设为当前课表", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        ScheduleDao.changeFuncStatus(AdapterSchoolActivity.this,true);
-                        ScheduleDao.applySchedule(AdapterSchoolActivity.this, name.getId());
-                        BroadcastUtils.refreshAppWidget(AdapterSchoolActivity.this);
-                        if (dialogInterface != null) {
-                            dialogInterface.dismiss();
-                        }
-                        ActivityTools.toBackActivityAnim(AdapterSchoolActivity.this, MainActivity.class, new BundleModel().put("item", 1));
-                    }
-                })
-                .setNegativeButton("稍后设置", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        if (dialogInterface != null) {
-                            dialogInterface.dismiss();
-                        }
-                        ActivityTools.toBackActivityAnim(AdapterSchoolActivity.this, MainActivity.class, new BundleModel().put("item", 1));
-                    }
-                });
-        builder.create().show();
+        ImportTools.showDialogOnApply(this,newName);
     }
 
     @OnClick(R.id.cv_webview_parse)

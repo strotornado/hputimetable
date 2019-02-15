@@ -7,6 +7,7 @@ import com.zhuangfei.hputimetable.R;
 import com.zhuangfei.hputimetable.api.model.ScheduleName;
 import com.zhuangfei.hputimetable.api.model.TimetableModel;
 import com.zhuangfei.hputimetable.constants.ExtrasConstants;
+import com.zhuangfei.hputimetable.event.UpdateScheduleEvent;
 import com.zhuangfei.hputimetable.model.ScheduleDao;
 import com.zhuangfei.hputimetable.tools.BroadcastUtils;
 import com.zhuangfei.hputimetable.tools.TimetableTools;
@@ -27,6 +28,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.greenrobot.eventbus.EventBus;
 import org.litepal.crud.DataSupport;
 import org.litepal.crud.async.FindMultiExecutor;
 import org.litepal.crud.callback.FindMultiCallback;
@@ -193,7 +195,6 @@ public class TimetableManagerActivity extends Activity implements OnClickListene
 								@Override
 								public void onConfirm(MessageAlert messageAlert) {
 									allDelete();
-
 									messageAlert.hide();
 								}
 							}).show();
@@ -215,6 +216,7 @@ public class TimetableManagerActivity extends Activity implements OnClickListene
 		Toasty.success(this, "删除成功!", Toast.LENGTH_SHORT).show();
 		ScheduleDao.changeFuncStatus(this,true);
 		ScheduleDao.changeStatus(this,true);
+		EventBus.getDefault().post(new UpdateScheduleEvent());
 		addCourseItemView();
 		BroadcastUtils.refreshAppWidget(this);
 	}

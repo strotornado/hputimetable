@@ -20,6 +20,7 @@ import com.zhuangfei.hputimetable.constants.ShareConstants;
 import com.zhuangfei.hputimetable.tools.DeviceTools;
 import com.zhuangfei.hputimetable.tools.VersionTools;
 import com.zhuangfei.toolkit.tools.ActivityTools;
+import com.zhuangfei.toolkit.tools.BundleTools;
 import com.zhuangfei.toolkit.tools.ShareTools;
 
 import butterknife.BindView;
@@ -34,14 +35,17 @@ public class BindSchoolActivity extends AppCompatActivity {
     @BindView(R.id.id_school_edit)
     EditText schoolEdit;
 
+    public static final String FINISH_WHEN_NON_NULL="finish_when_non_null";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bind_school);
         ButterKnife.bind(this);
 
+        int finishWhenNonNull= getIntent().getIntExtra(FINISH_WHEN_NON_NULL,1);
         String schoolName=ShareTools.getString(BindSchoolActivity.this,ShareConstants.STRING_SCHOOL_NAME,null);
-        if(!TextUtils.isEmpty(schoolName)){
+        if(finishWhenNonNull==1&&!TextUtils.isEmpty(schoolName)){
             finish();
         }
     }
@@ -71,7 +75,7 @@ public class BindSchoolActivity extends AppCompatActivity {
                 if(result.getCode()==200){
                     ShareTools.putString(BindSchoolActivity.this, ShareConstants.STRING_SCHOOL_NAME,school);
                     Toast.makeText(BindSchoolActivity.this,"关联成功",Toast.LENGTH_SHORT).show();
-                    ActivityTools.toActivity(BindSchoolActivity.this,MainActivity.class);
+                    finish();
                 }else {
                     Toast.makeText(BindSchoolActivity.this,result.getMsg(),Toast.LENGTH_SHORT).show();
                 }

@@ -3,6 +3,8 @@ package com.zhuangfei.hputimetable.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +29,7 @@ import com.zhuangfei.hputimetable.api.model.StationModel;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
 import com.zhuangfei.hputimetable.tools.DeviceTools;
 import com.zhuangfei.hputimetable.tools.StationManager;
+import com.zhuangfei.timetable.utils.ScreenUtils;
 import com.zhuangfei.toolkit.model.BundleModel;
 import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.ShareTools;
@@ -142,6 +145,7 @@ public class MessageAdapter extends BaseAdapter {
             }else {
                 holder.targetTextView.setVisibility(View.GONE);
             }
+
             final String target=model.getTarget();
             final int id=model.getId();
             final TextView finalTextView=holder.readTextView;
@@ -198,6 +202,7 @@ public class MessageAdapter extends BaseAdapter {
                             StationManager.openStationWithout(context,stationModel);
                         }
                     });
+
                     Glide.with(context).load(map.get("img")).into(holder.stationImageView);
                 } else {
                     holder.stationLayout.setVisibility(View.GONE);

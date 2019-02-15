@@ -26,7 +26,7 @@ public class StationJsSupport {
         }
     }
 
-    public void callJs(String method,String... realdatas) {
+    public void callJs(String method,String[] realdatas) {
         if(realdatas==null) callJs(method);
         else {
             for(int i=0;i<realdatas.length;i++){

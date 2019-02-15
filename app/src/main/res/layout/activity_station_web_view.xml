@@ -3,9 +3,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/id_station_root"
+    android:fitsSystemWindows="true"
     android:orientation="vertical" >
 
     <LinearLayout
+        android:id="@+id/id_station_action_bg"
         android:layout_width="match_parent"
         android:layout_height="45dp"
         android:paddingLeft="10dp"
@@ -26,7 +28,8 @@
             android:textSize="18sp" />
 
         <LinearLayout
-            android:layout_width="100dp"
+            android:id="@+id/id_station_buttongroup"
+            android:layout_width="95dp"
             android:layout_height="30dp"
             android:background="@drawable/border_25_gray"
             android:orientation="horizontal">
@@ -37,11 +40,13 @@
                 android:gravity="center"
                 android:layout_weight="1">
                 <ImageView
+                    android:id="@+id/iv_station_more"
                     android:layout_width="25dp"
                     android:layout_height="25dp"
                     android:src="@drawable/ic_station_about"/>
             </LinearLayout>
             <View
+                android:id="@+id/id_station_diver"
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
                 android:layout_marginTop="5dp"
@@ -55,6 +60,7 @@
                 android:gravity="center"
                 android:layout_weight="1">
                 <ImageView
+                    android:id="@+id/iv_station_close"
                     android:layout_width="25dp"
                     android:layout_height="25dp"
                     android:src="@drawable/ic_station_back"/>
@@ -63,12 +69,13 @@
     </LinearLayout>
 
     <android.support.v4.widget.ContentLoadingProgressBar
+        android:visibility="gone"
         android:id="@+id/id_loadingbar"
         style="?android:attr/android:progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:max="100"
         android:progress="0"
-        android:layout_height="4dp" />
+        android:layout_height="3dp" />
 
     <FrameLayout
         android:layout_width="match_parent"
@@ -79,6 +86,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
         <TextView
+            android:visibility="gone"
             android:id="@+id/id_btn_function"
             android:paddingLeft="15dp"
             android:paddingRight="15dp"

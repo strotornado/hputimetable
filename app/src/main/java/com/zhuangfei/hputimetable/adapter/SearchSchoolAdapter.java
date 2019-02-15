@@ -1,6 +1,8 @@
 package com.zhuangfei.hputimetable.adapter;
 
 import android.app.Activity;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,16 +21,20 @@ import com.zhuangfei.hputimetable.api.model.BaseResult;
 import com.zhuangfei.hputimetable.api.model.MessageModel;
 import com.zhuangfei.hputimetable.api.model.School;
 import com.zhuangfei.hputimetable.api.model.StationModel;
+import com.zhuangfei.hputimetable.api.model.TemplateModel;
 import com.zhuangfei.hputimetable.model.SearchResultModel;
 import com.zhuangfei.hputimetable.tools.DeviceTools;
 import com.zhuangfei.hputimetable.tools.StationManager;
+import com.zhuangfei.timetable.utils.ScreenUtils;
 import com.zhuangfei.toolkit.model.BundleModel;
 import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.ToastTools;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -45,8 +51,9 @@ import retrofit2.Response;
 public class SearchSchoolAdapter extends BaseAdapter {
 
     private static final int TYPE_STATION = 0;
-    private static final int TYPE_SCHOOL = 1;
-    private static final int TYPE_ITEM_COUNT = 2;
+    private static final int TYPE_SCHOOL = 2;
+    private static final int TYPE_COMMON = 1;
+    private static final int TYPE_ITEM_COUNT = 3;
     public static final int TYPE_STATION_MAX_SIZE= 3;
 
     private LayoutInflater mInflater = null;
@@ -98,6 +105,7 @@ public class SearchSchoolAdapter extends BaseAdapter {
                     holder.stationTagView=convertView.findViewById(R.id.id_station_tag1);
                     holder.moreLayout=convertView.findViewById(R.id.item_search_station_more);
                     holder.moreTextView=convertView.findViewById(R.id.item_search_station_more_text);
+                    holder.layout = (LinearLayout) convertView.findViewById(R.id.id_layout);
                     convertView.setTag(holder);
                 } else {
                     holder = (ViewHolder) convertView.getTag();
@@ -105,8 +113,14 @@ public class SearchSchoolAdapter extends BaseAdapter {
                 holder.moreLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        list.clear();
-                        list.addAll(allData);
+                        List<SearchResultModel> tmp=new ArrayList<>();
+                        for(SearchResultModel model:list){
+                            if(model!=null&&model.getType()==SearchResultModel.TYPE_STATION_MORE){
+                                tmp.add(model);
+                            }
+                        }
+                        list.removeAll(tmp);
+                        list.addAll(0,allData);
                         notifyDataSetChanged();
                     }
                 });
@@ -114,7 +128,25 @@ public class SearchSchoolAdapter extends BaseAdapter {
                     holder.searchTitleView.setText("服务站");
                     StationModel stationModel= (StationModel) model.getObject();
                     if(stationModel!=null){
-                        Glide.with(context).load(stationModel.getImg()).into(holder.stationImageView);
+                        Map<String,String> map= StationManager.getStationConfig(stationModel.getUrl());
+                        if(map!=null&&!map.isEmpty()){
+                            try {
+                                GradientDrawable drawable=new GradientDrawable();
+                                drawable.setCornerRadius(ScreenUtils.dip2px(context,25));
+                                drawable.setColor(Color.parseColor(map.get("statusColor")));
+                                holder.layout.setBackgroundDrawable(drawable);
+
+                                GradientDrawable drawable2=new GradientDrawable();
+                                drawable2.setCornerRadius(ScreenUtils.dip2px(context,3));
+                                drawable2.setColor(Color.parseColor(map.get("statusColor")));
+                                holder.stationTagView.setTextColor(Color.parseColor(map.get("statusColor")));
+                            }catch (Exception e){}
+                        }
+
+                        Glide.with(context).load(stationModel.getImg())
+                                .placeholder(R.drawable.ic_station_placeholder)
+                                .error(R.drawable.ic_station_placeholder)
+                                .into(holder.stationImageView);
                         holder.stationNameView.setText(stationModel.getName());
                         String tags=stationModel.getTag();
                         if(!TextUtils.isEmpty(tags)){
@@ -139,13 +171,57 @@ public class SearchSchoolAdapter extends BaseAdapter {
                             model.getType()!=list.get(position+1).getType())&&
                             model.getType()==SearchResultModel.TYPE_STATION_MORE){
                         holder.moreLayout.setVisibility(View.VISIBLE);
-                        if(allData.size()-list.size()<=0){
+                        if(allData.size()-TYPE_STATION_MAX_SIZE<=0){
                             holder.moreTextView.setText("查看更多");
                         }else{
-                            holder.moreTextView.setText("查看更多("+(allData.size()-list.size())+")");
+                            holder.moreTextView.setText("查看更多("+(allData.size()-TYPE_STATION_MAX_SIZE)+")");
                         }
                     }else {
                         holder.moreLayout.setVisibility(View.GONE);
+                    }
+                }
+                break;
+
+            case TYPE_COMMON:
+                if (convertView == null) {
+                    schoolViewHolder = new SchoolViewHolder();
+                    convertView = mInflater.inflate(R.layout.item_search_school, null);
+                    schoolViewHolder.searchTitleView=convertView.findViewById(R.id.id_search_title);
+                    schoolViewHolder.lineTextView2=convertView.findViewById(R.id.item_search_line2);
+                    schoolViewHolder.schoolLayout=convertView.findViewById(R.id.id_search_school_layout);
+                    schoolViewHolder.schoolTextView=convertView.findViewById(R.id.item_school_val);
+                    schoolViewHolder.schoolTypeTextView=convertView.findViewById(R.id.id_search_school_type);
+                    convertView.setTag(schoolViewHolder);
+                } else {
+                    schoolViewHolder = (SchoolViewHolder) convertView.getTag();
+                }
+
+                if (model != null) {
+                    TemplateModel templateModel= (TemplateModel) model.getObject();
+                    if(templateModel!=null){
+                        if(templateModel.getTemplateTag().startsWith("custom/")){
+                            schoolViewHolder.searchTitleView.setText("通用功能");
+                            schoolViewHolder.schoolLayout.setVisibility(View.VISIBLE);
+                            schoolViewHolder.schoolTextView.setText("添加学校适配");
+                            schoolViewHolder.schoolTypeTextView.setText("上传");
+                        }else{
+                            schoolViewHolder.searchTitleView.setText("通用功能");
+                            schoolViewHolder.schoolLayout.setVisibility(View.VISIBLE);
+                            schoolViewHolder.schoolTextView.setText(templateModel.getTemplateName());
+                            schoolViewHolder.schoolTypeTextView.setText("通用");
+                        }
+                    }
+
+                    if(position==0||model.getType()!=list.get(position-1).getType()){
+                        schoolViewHolder.searchTitleView.setVisibility(View.VISIBLE);
+                        schoolViewHolder.lineTextView2.setVisibility(View.VISIBLE);
+                    }else {
+                        schoolViewHolder.searchTitleView.setVisibility(View.GONE);
+                        schoolViewHolder.lineTextView2.setVisibility(View.GONE);
+                    }
+
+                    if(position==0){
+                        schoolViewHolder.lineTextView2.setVisibility(View.GONE);
                     }
                 }
                 break;
@@ -204,8 +280,10 @@ public class SearchSchoolAdapter extends BaseAdapter {
         if(list.get(position).getType()==SearchResultModel.TYPE_STATION||
                 list.get(position).getType()==SearchResultModel.TYPE_STATION_MORE){
             return TYPE_STATION;
-        }else{
+        }else if(list.get(position).getType()==SearchResultModel.TYPE_SCHOOL){
             return TYPE_SCHOOL;
+        }else {
+            return TYPE_COMMON;
         }
     }
 
@@ -223,6 +301,7 @@ public class SearchSchoolAdapter extends BaseAdapter {
         public TextView stationNameView;
         public TextView moreTextView;
         public LinearLayout moreLayout;
+        public LinearLayout layout;
     }
 
     //ViewHolder静态类

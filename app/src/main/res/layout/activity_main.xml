@@ -36,10 +36,21 @@
             android:layout_height="2dp"
             android:background="@color/app_red"/>
 
+        <TextView
+            android:id="@+id/id_title"
+            android:layout_width="60dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_toRightOf="@id/id_title_tab2"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:textColor="@color/app_blue2"
+            android:textSize="16sp" />
+
         <LinearLayout
             android:id="@+id/id_search_school"
             android:layout_toRightOf="@id/id_title_tab2"
-            android:layout_marginLeft="20dp"
+            android:layout_marginLeft="10dp"
             android:layout_width="match_parent"
             android:layout_height="35dp"
             android:gravity="center"
@@ -48,7 +59,7 @@
             android:background="@drawable/border_f5f5f5"
             android:orientation="horizontal">
             <TextView
-                android:text="河南理工大学"
+                android:id="@+id/id_main_school_text"
                 android:textColor="@color/app_gray"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"

@@ -82,7 +82,7 @@
         android:layout_marginRight="15dp"
         android:textColor="@color/app_gray"
         android:lineSpacingExtra="4dp"
-        android:text="本控制台适用于参与适配平台开发的人员使用，如需加入，请发送邮件至1193600556@qq.com，邮件主题为：申请课程适配账户-你的姓名(这里替换为自己的姓名,没有括号),如：申请课程适配账户-刘壮飞"
+        android:text="本控制台适用于参与适配平台开发的人员使用，如需加入，请联系1193600556@qq.com"
         android:gravity="center_vertical"/>
 
 </LinearLayout>

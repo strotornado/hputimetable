@@ -22,8 +22,8 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".MainActivity"
-            android:launchMode="singleTask"
-            android:theme="@style/mainTheme" >
+            android:theme="@style/mainTheme"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -75,7 +75,6 @@
         <activity android:name=".activity.ScanActivity" />
         <activity android:name=".activity.schedule.CreateScheduleNameActivity" />
         <activity android:name=".activity.schedule.ModifyScheduleNameActivity" />
-        <activity android:name=".specialarea.SpecialAreaActivity" />
         <activity
             android:name=".activity.adapter.SearchSchoolActivity"
             android:theme="@style/searchTheme"

@@ -22,6 +22,8 @@ import android.widget.TextView;
 
 import com.zhuangfei.hputimetable.activity.schedule.AddTimetableActivity;
 import com.zhuangfei.hputimetable.event.ConfigChangeEvent;
+import com.zhuangfei.hputimetable.event.ToggleWeekViewEvent;
+import com.zhuangfei.hputimetable.event.UpdateTabTextEvent;
 import com.zhuangfei.hputimetable.timetable_custom.CustomWeekView;
 import com.zhuangfei.hputimetable.activity.MenuActivity;
 import com.zhuangfei.hputimetable.R;
@@ -131,6 +133,35 @@ public class ScheduleFragment extends LazyLoadFragment implements IThemeView{
         adjustAndGetData();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                handler.sendEmptyMessage(0x123);
+            }
+        }, 300);
+    }
+
+    Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == 0x123) {
+                try{
+                    mTimetableView.onDateBuildListener().onHighLight();
+                    int newCurWeek = TimetableTools.getCurWeek(context);
+                    if(newCurWeek != mTimetableView.curWeek()) {
+                        mTimetableView.onDateBuildListener().onUpdateDate(mTimetableView.curWeek(), newCurWeek);
+                        mTimetableView.changeWeekForce(newCurWeek);
+                        mWeekView.curWeek(newCurWeek).updateView();
+                    }
+                }catch (Exception e){}
+            }
+        }
+    };
+
     private void inits() {
         menuImageView.setColorFilter(Color.WHITE);
         menuImageView.setVisibility(View.VISIBLE);
@@ -149,6 +180,7 @@ public class ScheduleFragment extends LazyLoadFragment implements IThemeView{
         int curWeek = TimetableTools.getCurWeek(context);
         tmp=curWeek;
 
+
         //设置周次选择属性
         mWeekView.data(schedules)
                 .curWeek(curWeek)
@@ -158,6 +190,7 @@ public class ScheduleFragment extends LazyLoadFragment implements IThemeView{
                     public void onWeekClicked(int week) {
                         int cur = mTimetableView.curWeek();
                         tmp=week;
+                        EventBus.getDefault().post(new UpdateTabTextEvent("第"+week+"周"));
                         //更新切换后的日期，从当前周cur->切换的周week
                         mTimetableView.onDateBuildListener()
                                 .onUpdateDate(cur, week);
@@ -174,11 +207,9 @@ public class ScheduleFragment extends LazyLoadFragment implements IThemeView{
                 .showView();
 
         mTimetableView.curWeek(curWeek)
-                .maxSlideItem(10)
-                .configName(MenuActivity.defaultConfigName)
+                .maxSlideItem(12)
                 .itemHeight(ScreenUtils.dip2px(context,50))
 //                .callback(new CalenderDateBuildAdapter(context))
-                .callback(new OnGryphonConfigHandler())
                 .callback(new ISchedule.OnItemClickListener() {
                     @Override
                     public void onItemClick(View v, List<Schedule> scheduleList) {
@@ -192,6 +223,7 @@ public class ScheduleFragment extends LazyLoadFragment implements IThemeView{
                 .callback(new ISchedule.OnWeekChangedListener() {
                     @Override
                     public void onWeekChanged(int curWeek) {
+                        EventBus.getDefault().post(new UpdateTabTextEvent("第"+curWeek+"周"));
                         mTitleTextView.setText("第"+curWeek+"周");
                         tmp=curWeek;
                     }
@@ -250,6 +282,7 @@ public class ScheduleFragment extends LazyLoadFragment implements IThemeView{
                     ShareTools.putString(getContext(), ShareConstants.STRING_START_TIME, TimetableTools.getStartSchoolTime(target + 1));
                     BroadcastUtils.refreshAppWidget(context);
                     EventBus.getDefault().post(new UpdateScheduleEvent());
+                    ToastTools.show(getContext(),"当前周:"+(target+1)+"\n开学时间:"+TimetableTools.getStartSchoolTime(target + 1));
                 }
             }
         });
@@ -306,20 +339,21 @@ public class ScheduleFragment extends LazyLoadFragment implements IThemeView{
         popup.show(); //这一行代码不要忘记了
     }
 
-    @OnClick(R.id.id_layout)
-    public void onTitleClick() {
-        if (mWeekView.isShowing()) {
-            mWeekView.isShow(false);
-            mTimetableView.changeWeekForce(mTimetableView.curWeek());
-            mTimetableView.onDateBuildListener().onUpdateDate(tmp,mTimetableView.curWeek());
-        } else {
-            mWeekView.isShow(true);
-            mWeekView.scrollToIndex(mTimetableView.curWeek() - 1);
-        }
-    }
-
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onConfigChangeEvent(ConfigChangeEvent event){
+        int status=ShareTools.getInt(context,"hidenotcur",0);
+        if(status==0){
+            mTimetableView.isShowNotCurWeek(true);
+        }else {
+            mTimetableView.isShowNotCurWeek(false);
+        }
+
+        int status2=ShareTools.getInt(context,"hideweekends",0);
+        if(status2==0){
+            mTimetableView.isShowWeekends(true);
+        }else {
+            mTimetableView.isShowWeekends(false);
+        }
         mTimetableView.updateView();
     }
 
@@ -328,6 +362,9 @@ public class ScheduleFragment extends LazyLoadFragment implements IThemeView{
         ScheduleName newName = DataSupport.find(ScheduleName.class, ScheduleDao.getApplyScheduleId(getActivity()));
         if(newName==null) return;
         final int curWeek = TimetableTools.getCurWeek(context);
+        UpdateTabTextEvent updateTabTextEvent=new UpdateTabTextEvent();
+        updateTabTextEvent.setText("第"+curWeek+"周");
+        EventBus.getDefault().post(updateTabTextEvent);
         mCurScheduleTextView.setText(newName.getName());
         FindMultiExecutor executor=newName.getModelsAsync();
         executor.listen(new FindMultiCallback() {
@@ -340,6 +377,18 @@ public class ScheduleFragment extends LazyLoadFragment implements IThemeView{
                 }
             }
         });
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onToggleWeekViewEvent(ToggleWeekViewEvent event){
+        if(mWeekView.isShowing()){
+            mWeekView.isShow(false);
+            mTimetableView.changeWeekForce(mTimetableView.curWeek());
+            mTimetableView.onDateBuildListener().onUpdateDate(tmp,mTimetableView.curWeek());
+        }else{
+            mWeekView.isShow(true);
+            mWeekView.scrollToIndex(mTimetableView.curWeek() - 1);
+        }
     }
 
     @Override

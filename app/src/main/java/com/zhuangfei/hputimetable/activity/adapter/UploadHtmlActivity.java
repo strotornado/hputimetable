@@ -20,6 +20,7 @@ import com.zhuangfei.hputimetable.adapter_apis.IArea;
 import com.zhuangfei.hputimetable.adapter_apis.JsSupport;
 import com.zhuangfei.hputimetable.api.TimetableRequest;
 import com.zhuangfei.hputimetable.api.model.BaseResult;
+import com.zhuangfei.hputimetable.tools.VersionTools;
 import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.BundleTools;
 
@@ -136,7 +137,12 @@ public class UploadHtmlActivity extends AppCompatActivity {
         @JavascriptInterface
         public void showHtml(final String content) {
             if (TextUtils.isEmpty(content)) return;
-            putHtml(content);
+            String finalContent="";
+            finalContent+="VersionName:"+ VersionTools.getVersionName()+"<br/>";
+            finalContent+="VersionNumber:"+ VersionTools.getVersionNumber()+"<br/>";
+            finalContent+="url:"+ webView.getUrl()+"<br/>";
+            finalContent+=content;
+            putHtml(finalContent);
         }
     }
 

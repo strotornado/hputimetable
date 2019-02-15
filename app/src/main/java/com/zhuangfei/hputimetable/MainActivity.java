@@ -24,7 +24,9 @@ import com.zhuangfei.hputimetable.api.model.TimetableModel;
 import com.zhuangfei.hputimetable.api.model.ValuePair;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
 import com.zhuangfei.hputimetable.event.SwitchPagerEvent;
+import com.zhuangfei.hputimetable.event.ToggleWeekViewEvent;
 import com.zhuangfei.hputimetable.event.UpdateScheduleEvent;
+import com.zhuangfei.hputimetable.event.UpdateTabTextEvent;
 import com.zhuangfei.hputimetable.fragment.FuncFragment;
 import com.zhuangfei.hputimetable.adapter.MyFragmentPagerAdapter;
 import com.zhuangfei.hputimetable.fragment.ScheduleFragment;
@@ -88,7 +90,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
 
@@ -124,13 +126,19 @@ public class MainActivity extends AppCompatActivity{
     int marLeftDip = 10;//边距
 
     //搜索框的边距dp
-    int searchViewStartMarDp = 20;
-    int searchViewEndMarDp = 60;
+    int searchViewStartMarDp = 10;
+    int searchViewEndMarDp = 80;
     int searchViewStartMar = 0;
     int searchViewEndMar = 0;
     RelativeLayout.LayoutParams searchLayoutParams;
     int searchViewStartMarRightDp = 10;
     int searchViewStartMarRight = 0;
+
+    @BindView(R.id.id_main_school_text)
+    TextView schoolTextView;
+
+    @BindView(R.id.id_title)
+    TextView curWeekText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,11 +150,6 @@ public class MainActivity extends AppCompatActivity{
         EventBus.getDefault().register(this);
         shouldcheckPermission();
         inits();
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-//        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -193,6 +196,12 @@ public class MainActivity extends AppCompatActivity{
         }
     };
 
+    public void updateSchoolText(String schoolName) {
+        if (schoolName != null) {
+            schoolTextView.setText(schoolName);
+        }
+    }
+
     public void openBindSchoolActivity() {
         Intent intent = new Intent(this, BindSchoolActivity.class);
         startActivity(intent);
@@ -214,7 +223,8 @@ public class MainActivity extends AppCompatActivity{
         String schoolName = ShareTools.getString(MainActivity.this, ShareConstants.STRING_SCHOOL_NAME, null);
         if (schoolName == null) {
             checkIsBindSchool();
-            return;
+        } else {
+            updateSchoolText(schoolName);
         }
 
         searchLayoutParams = (RelativeLayout.LayoutParams) searchLayout.getLayoutParams();
@@ -229,6 +239,12 @@ public class MainActivity extends AppCompatActivity{
             scheduleName.save();
             ShareTools.put(this, ShareConstants.INT_SCHEDULE_NAME_ID, scheduleName.getId());
         }
+
+        lp = (RelativeLayout.LayoutParams) titleNavView.getLayoutParams();
+        lp.width = ScreenUtils.dip2px(this, navWidthDip);
+        lp.height = ScreenUtils.dip2px(this, 3);
+        leftStart = ScreenUtils.dip2px(MainActivity.this, titleWidthDip / 2 - navWidthDip / 2);
+        leftEnd = ScreenUtils.dip2px(MainActivity.this, titleWidthDip + marLeftDip + titleWidthDip / 2 - navWidthDip / 2);
 
         mViewPager = findViewById(R.id.id_viewpager);
         mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -262,12 +278,6 @@ public class MainActivity extends AppCompatActivity{
             }
         });
 
-        lp = (RelativeLayout.LayoutParams) titleNavView.getLayoutParams();
-        lp.width = ScreenUtils.dip2px(this, navWidthDip);
-        lp.height = ScreenUtils.dip2px(this, 3);
-        leftStart = ScreenUtils.dip2px(MainActivity.this, titleWidthDip / 2 - navWidthDip / 2);
-        leftEnd = ScreenUtils.dip2px(MainActivity.this, titleWidthDip + marLeftDip + titleWidthDip / 2 - navWidthDip / 2);
-
         mFragmentList = new ArrayList<>();
         mFragmentList.add(new FuncFragment());
         mFragmentList.add(new ScheduleFragment());
@@ -285,6 +295,7 @@ public class MainActivity extends AppCompatActivity{
 
     private void checkIsBindSchool() {
         String deviceId = DeviceTools.getDeviceId(this);
+        if (deviceId == null) return;
         TimetableRequest.checkIsBindSchool(this, deviceId, new Callback<ObjResult<CheckBindResultModel>>() {
             @Override
             public void onResponse(Call<ObjResult<CheckBindResultModel>> call, Response<ObjResult<CheckBindResultModel>> response) {
@@ -294,9 +305,10 @@ public class MainActivity extends AppCompatActivity{
                 if (result.getCode() == 200) {
                     CheckBindResultModel model = result.getData();
                     if (model == null) return;
-                    if(model.getIsBind()==1){
-                        ShareTools.putString(MainActivity.this, ShareConstants.STRING_SCHOOL_NAME,model.getSchool());
-                    }else {
+                    if (model.getIsBind() == 1) {
+                        ShareTools.putString(MainActivity.this, ShareConstants.STRING_SCHOOL_NAME, model.getSchool());
+                        updateSchoolText(model.getSchool());
+                    } else {
                         openBindSchoolActivity();
                     }
                 } else {
@@ -414,7 +426,7 @@ public class MainActivity extends AppCompatActivity{
                             finalList.add(model);
                         }
                         DataSupport.saveAll(finalList);
-                        ImportTools.showDialogOnApply(MainActivity.this,newName);
+                        ImportTools.showDialogOnApply(MainActivity.this, newName);
                     }
                 }
             }
@@ -448,6 +460,7 @@ public class MainActivity extends AppCompatActivity{
                 lp.setMargins((int) leftStart, 0, 0, 0);
                 break;
             case 1:
+                curWeekText.setVisibility(View.VISIBLE);
                 tabTitle2.setTextSize(highlighTextSize);
                 lp.setMargins((int) leftEnd, 0, 0, 0);
                 break;
@@ -461,6 +474,8 @@ public class MainActivity extends AppCompatActivity{
 
         tabTitle1.setTextSize(normalTextSize);
         tabTitle2.setTextSize(normalTextSize);
+
+        curWeekText.setVisibility(View.GONE);
     }
 
     private void shouldcheckPermission() {
@@ -484,7 +499,10 @@ public class MainActivity extends AppCompatActivity{
     @PermissionSuccess(requestCode = SUCCESSCODE)
     public void doSomething() {
         //在这个方法中做一些权限申请成功的事情
-
+        String schoolName = ShareTools.getString(MainActivity.this, ShareConstants.STRING_SCHOOL_NAME, null);
+        if (schoolName == null) {
+            checkIsBindSchool();
+        }
     }
 
     //申请失败
@@ -508,65 +526,6 @@ public class MainActivity extends AppCompatActivity{
         }
     }
 
-    public void getValue2(String id) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        final String s = sdf.format(new Date()) + VersionTools.getVersionName();
-        String store = ShareTools.getString(this, "app_update_info", null);
-        int isIgnoreUpdate = ShareTools.getInt(this, "isIgnoreUpdate", 0);
-        if (isIgnoreUpdate == 0 && (store == null || !store.equals(s))) {
-            TimetableRequest.getValue(this, id, new Callback<ObjResult<ValuePair>>() {
-                @Override
-                public void onResponse(Call<ObjResult<ValuePair>> call, Response<ObjResult<ValuePair>> response) {
-                    ObjResult<ValuePair> result = response.body();
-                    if (result != null) {
-                        if (result.getCode() == 200) {
-                            ValuePair pair = result.getData();
-                            if (pair != null) {
-                                try {
-                                    String value = pair.getValue();
-                                    String[] vals = value.split("#");
-                                    if (vals.length >= 3) {
-                                        int v = Integer.parseInt(vals[0]);
-                                        int isIgnoreUpdate = ShareTools.getInt(MainActivity.this, "isIgnoreUpdate", 0);
-                                        if (isIgnoreUpdate == 0 && v > VersionTools.getVersionNumber()) {
-                                            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this)
-                                                    .setTitle("发现新版本-v" + vals[1])
-                                                    .setMessage("你可以在 工具箱->自动检查更新 中关闭提醒!\n\n更新日志:\n" + vals[2])
-                                                    .setPositiveButton("去看看", new DialogInterface.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                                            Intent intent = new Intent();
-                                                            intent.setAction("android.intent.action.VIEW");
-                                                            intent.setData(Uri.parse("https://www.coolapk.com/apk/com.zhuangfei.hputimetable"));
-                                                            startActivity(intent);
-                                                            if (dialogInterface != null) {
-                                                                dialogInterface.dismiss();
-                                                            }
-                                                        }
-                                                    })
-                                                    .setNegativeButton("明天提醒", new DialogInterface.OnClickListener() {
-                                                        @Override
-                                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                                            ShareTools.putString(MainActivity.this, "app_update_info", s);
-                                                        }
-                                                    });
-                                            builder.create().show();
-                                        }
-                                    }
-                                } catch (Exception e) {
-                                }
-                            }
-                        }
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<ObjResult<ValuePair>> call, Throwable t) {
-                }
-            });
-        }
-    }
-
     @OnClick(R.id.id_title_tab1)
     public void onSelectedTab1() {
         select(0);
@@ -575,6 +534,13 @@ public class MainActivity extends AppCompatActivity{
     @OnClick(R.id.id_title_tab2)
     public void onSelectedTab2() {
         select(1);
+    }
+
+    @OnClick(R.id.id_title)
+    public void onCurWeekTextClicked(){
+        if (mViewPager.getCurrentItem() == 1) {
+            EventBus.getDefault().post(new ToggleWeekViewEvent());
+        }
     }
 
     @OnClick(R.id.id_search_school)
@@ -586,5 +552,13 @@ public class MainActivity extends AppCompatActivity{
     protected void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onUpdateTabTextEvent(UpdateTabTextEvent event) {
+        if (event == null) return;
+        if (!TextUtils.isEmpty(event.getText())) {
+            curWeekText.setText(event.getText());
+        }
     }
 }

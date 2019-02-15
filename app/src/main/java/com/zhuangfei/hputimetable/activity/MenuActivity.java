@@ -76,9 +76,7 @@ public class MenuActivity extends AppCompatActivity {
     @BindView(R.id.id_widget_hidedate)
     SwitchCompat hideDateSwitch;
 
-    ScheduleConfig scheduleConfig;
     boolean changeStatus=false;
-    public static final String defaultConfigName="default_config";
 
     @BindView(R.id.id_device_text)
     TextView deviceText;
@@ -99,17 +97,6 @@ public class MenuActivity extends AppCompatActivity {
 
     private void inits() {
         context = this;
-        scheduleConfig=new ScheduleConfig(this);
-        scheduleConfig.setConfigName(defaultConfigName);
-        Set<String> configSet=scheduleConfig.export();
-        String str="";
-        for(String configItem:configSet){
-            if(configItem!=null&&configItem.indexOf("=")!=-1){
-                scheduleConfig.put(configItem.split("=")[0],configItem.split("=")[1]);
-            }
-            str=configItem+"\n";
-        }
-        ToastTools.show(this,str);
 
         String deviceId= DeviceTools.getDeviceId(this);
         if(deviceId!=null){
@@ -130,15 +117,15 @@ public class MenuActivity extends AppCompatActivity {
             }
         });
 
-        String value1=scheduleConfig.get(OnGryphonConfigHandler.KEY_HIDE_NOT_CUR);
-        if (value1==null||value1.equals(OnGryphonConfigHandler.VALUE_FALSE)) {
+        int hide = ShareTools.getInt(this, "hidenotcur", 0);
+        if (hide == 0) {
             hideNotCurSwitch.setChecked(false);
         } else {
             hideNotCurSwitch.setChecked(true);
         }
 
-        String value2=scheduleConfig.get(OnGryphonConfigHandler.KEY_HIDE_WEEKENDS);
-        if (value2==null||value2.equals(OnGryphonConfigHandler.VALUE_FALSE)) {
+        int alpha = ShareTools.getInt(this, "hideweekends", 0);
+        if (alpha == 0) {
             hideWeekendsSwitch.setChecked(false);
         } else {
             hideWeekendsSwitch.setChecked(true);
@@ -262,15 +249,21 @@ public class MenuActivity extends AppCompatActivity {
     @OnCheckedChanged(R.id.id_switch_hidenotcur)
     public void onHideNotCurSwitchClicked(boolean b) {
         changeStatus=true;
-        String value=b?OnGryphonConfigHandler.VALUE_TRUE:OnGryphonConfigHandler.VALUE_FALSE;
-        scheduleConfig.put(OnGryphonConfigHandler.KEY_HIDE_NOT_CUR,value);
+        if (b) {
+            ShareTools.putInt(this, "hidenotcur", 1);
+        } else {
+            ShareTools.putInt(this, "hidenotcur", 0);
+        }
     }
 
     @OnCheckedChanged(R.id.id_switch_hideweekends)
     public void onHideWeekendsSwitchClicked(boolean b) {
         changeStatus=true;
-        String value=b?OnGryphonConfigHandler.VALUE_TRUE:OnGryphonConfigHandler.VALUE_FALSE;
-        scheduleConfig.put(OnGryphonConfigHandler.KEY_HIDE_WEEKENDS,value);
+        if (b) {
+            ShareTools.putInt(this, "hideweekends", 1);
+        } else {
+            ShareTools.putInt(this, "hideweekends", 0);
+        }
     }
 
     @OnCheckedChanged(R.id.id_checkauto)
@@ -315,8 +308,33 @@ public class MenuActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         if(changeStatus){
-            scheduleConfig.commit();
             EventBus.getDefault().post(new ConfigChangeEvent());
         }
+    }
+
+    @OnClick(R.id.id_menu_modify_school)
+    public void onModifyButtonClicked(){
+        android.support.v7.app.AlertDialog.Builder builder=new android.support.v7.app.AlertDialog.Builder(this)
+                .setTitle("修改学校")
+                .setMessage("你可以修改本设备关联的学校，学校信息将作为筛选服务的重要依据")
+                .setPositiveButton("修改学校", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        openBindSchoolActivity();
+                        if(dialogInterface!=null){
+                            dialogInterface.dismiss();
+                        }
+                    }
+                })
+                .setNegativeButton("取消",null);
+        builder.create().show();
+    }
+
+    public void openBindSchoolActivity() {
+        Intent intent = new Intent(this, BindSchoolActivity.class);
+        intent.putExtra(BindSchoolActivity.FINISH_WHEN_NON_NULL,0);
+        startActivity(intent);
+        overridePendingTransition(R.anim.anim_station_open_activity, R.anim.anim_station_static);//动画
+        finish();
     }
 }

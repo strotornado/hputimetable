@@ -3,6 +3,7 @@ package com.zhuangfei.hputimetable.api;
 import android.content.Context;
 
 import com.zhuangfei.hputimetable.api.model.AdapterInfo;
+import com.zhuangfei.hputimetable.api.model.AdapterResultV2;
 import com.zhuangfei.hputimetable.api.model.BaseResult;
 import com.zhuangfei.hputimetable.api.model.CheckBindResultModel;
 import com.zhuangfei.hputimetable.api.model.CheckModel;
@@ -148,4 +149,17 @@ public class TimetableRequest {
         Call<ObjResult<CheckBindResultModel>> call=schoolService.checkIsBindSchool(device);
         call.enqueue(callback);
     }
+
+    public static void getStationById(Context context,int id,Callback<ListResult<StationModel>> callback) {
+        SchoolService schoolService=ApiUtils.getRetrofitForSchool(context).create(SchoolService.class);
+        Call<ListResult<StationModel>> call=schoolService.getStationById(id);
+        call.enqueue(callback);
+    }
+
+    public static void getAdapterSchoolsV2(Context context,String key,Callback<ObjResult<AdapterResultV2>> callback) {
+        SchoolService schoolService=ApiUtils.getRetrofitForSchool(context).create(SchoolService.class);
+        Call<ObjResult<AdapterResultV2>> call=schoolService.getAdapterSchoolsV2(key);
+        call.enqueue(callback);
+    }
+
 }

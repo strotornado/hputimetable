@@ -24,15 +24,20 @@ import com.zhuangfei.hputimetable.activity.hpu.HpuRepertoryActivity;
 import com.zhuangfei.hputimetable.activity.hpu.ImportMajorActivity;
 import com.zhuangfei.hputimetable.adapter.SearchSchoolAdapter;
 import com.zhuangfei.hputimetable.api.TimetableRequest;
+import com.zhuangfei.hputimetable.api.model.AdapterResultV2;
 import com.zhuangfei.hputimetable.api.model.ListResult;
+import com.zhuangfei.hputimetable.api.model.ObjResult;
 import com.zhuangfei.hputimetable.api.model.School;
 import com.zhuangfei.hputimetable.api.model.StationModel;
+import com.zhuangfei.hputimetable.api.model.TemplateModel;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
 import com.zhuangfei.hputimetable.model.SearchResultModel;
 import com.zhuangfei.hputimetable.tools.StationManager;
+import com.zhuangfei.hputimetable.tools.ViewTools;
 import com.zhuangfei.toolkit.model.BundleModel;
 import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.ShareTools;
+import com.zhuangfei.toolkit.tools.ToastTools;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -58,6 +63,8 @@ public class SearchSchoolActivity extends AppCompatActivity {
     List<SearchResultModel> models;
     List<SearchResultModel> allDatas;
     SearchSchoolAdapter searchAdapter;
+    List<TemplateModel> templateModels;
+    String baseJs;
 
     @BindView(R.id.id_search_edittext)
     EditText searchEditText;
@@ -65,10 +72,13 @@ public class SearchSchoolActivity extends AppCompatActivity {
     @BindView(R.id.id_loadlayout)
     LinearLayout loadLayout;
 
+    boolean firstStatus=true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_school);
+        ViewTools.setStatusTextGrayColor(this);
         ButterKnife.bind(this);
         inits();
     }
@@ -79,10 +89,6 @@ public class SearchSchoolActivity extends AppCompatActivity {
         } else {
             loadLayout.setVisibility(View.GONE);
         }
-    }
-
-    public void toAdapter() {
-        ActivityTools.toActivity(this, AdapterTipActivity.class);
     }
 
     private void inits() {
@@ -109,18 +115,72 @@ public class SearchSchoolActivity extends AppCompatActivity {
     @OnItemClick(R.id.id_search_listview)
     public void onItemClick(int i) {
         SearchResultModel model=models.get(i);
-        if(model.getType()==SearchResultModel.TYPE_SCHOOL){
+        if(model==null) return;
+        //通用算法解析
+        if(model.getType()==SearchResultModel.TYPE_COMMON){
+            TemplateModel templateModel = (TemplateModel) model.getObject();
+            if (templateModel!=null){
+                if(baseJs==null){
+                    ToastTools.show(this,"基础函数库发生异常，请联系qq:1193600556");
+                }else if(templateModel.getTemplateTag().startsWith("custom/")){
+                    ActivityTools.toActivityWithout(this, AdapterTipActivity.class); ActivityTools.toActivity(this, AdapterTipActivity.class);
+                }
+                else {
+                    ActivityTools.toActivityWithout(this,
+                            AdapterSameTypeActivity.class, new BundleModel()
+                                    .put("type", templateModel.getTemplateName())
+                                    .put("js", templateModel.getTemplateJs()+baseJs));
+                }
+            }
+        }
+        //学校教务导入
+        else if(model.getType()==SearchResultModel.TYPE_SCHOOL){
             School school = (School) model.getObject();
-            ActivityTools.toActivity(this, AdapterSchoolActivity.class,
-                    new BundleModel().setFromClass(SearchSchoolActivity.class)
-                            .put("school", school.getSchoolName())
-                            .put("url", school.getUrl())
-                            .put("type", school.getType())
-                            .put("parsejs", school.getParsejs()));
-        }else {
+            if(school!=null){
+                if(school.getParsejs()!=null&&school.getParsejs().startsWith("template/")){
+                    TemplateModel searchModel=searchInTemplate(templateModels,school.getParsejs());
+                    if(baseJs==null){
+                        ToastTools.show(this,"基础函数库发生异常，请联系qq:1193600556");
+                        return;
+                    }
+                    if(searchModel!=null){
+                        ActivityTools.toActivityWithout(this, AdapterSchoolActivity.class,
+                                new BundleModel().setFromClass(SearchSchoolActivity.class)
+                                        .put("school", school.getSchoolName())
+                                        .put("url", school.getUrl())
+                                        .put("type", school.getType())
+                                        .put("parsejs",searchModel.getTemplateJs()+baseJs));
+                    }else {
+                        ToastTools.show(this,"通用解析模板发生异常，请联系qq:1193600556");
+                    }
+                }else{
+                    ActivityTools.toActivityWithout(this, AdapterSchoolActivity.class,
+                            new BundleModel().setFromClass(SearchSchoolActivity.class)
+                                    .put("school", school.getSchoolName())
+                                    .put("url", school.getUrl())
+                                    .put("type", school.getType())
+                                    .put("parsejs",school.getParsejs()));
+                }
+
+            }
+        }
+        //服务站
+        else{
             StationModel stationModel= (StationModel) model.getObject();
             StationManager.openStationWithout(this,stationModel);
         }
+    }
+
+    public TemplateModel searchInTemplate(List<TemplateModel> models,String tag){
+        if(models==null||tag==null) return null;
+        for(TemplateModel model:models){
+            if(model!=null){
+                if(tag.equals(model.getTemplateTag())){
+                    return model;
+                }
+            }
+        }
+        return null;
     }
 
     public Activity getContext() {
@@ -136,6 +196,7 @@ public class SearchSchoolActivity extends AppCompatActivity {
         @Override
         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
             String key = charSequence.toString();
+            firstStatus=false;
             if (TextUtils.isEmpty(key)) {
                 models.clear();
                 allDatas.clear();
@@ -157,7 +218,7 @@ public class SearchSchoolActivity extends AppCompatActivity {
         search(key);
     }
 
-    public void search(String key) {
+    public void search(final String key) {
         if(TextUtils.isEmpty(key)) {
             return;
         }
@@ -168,13 +229,13 @@ public class SearchSchoolActivity extends AppCompatActivity {
 
         if (!TextUtils.isEmpty(key)) {
             setLoadLayout(true);
-            TimetableRequest.getAdapterSchools(this, key, new Callback<ListResult<School>>() {
+            TimetableRequest.getAdapterSchoolsV2(this, key, new Callback<ObjResult<AdapterResultV2>>() {
                 @Override
-                public void onResponse(Call<ListResult<School>> call, Response<ListResult<School>> response) {
-                    ListResult<School> result = response.body();
+                public void onResponse(Call<ObjResult<AdapterResultV2>> call, Response<ObjResult<AdapterResultV2>> response) {
+                    ObjResult<AdapterResultV2> result = response.body();
                     if (result != null) {
                         if (result.getCode() == 200) {
-                            showResult(result.getData());
+                            showResult(result.getData(),key);
                         } else {
                             Toast.makeText(SearchSchoolActivity.this, result.getMsg(), Toast.LENGTH_SHORT).show();
                         }
@@ -185,7 +246,7 @@ public class SearchSchoolActivity extends AppCompatActivity {
                 }
 
                 @Override
-                public void onFailure(Call<ListResult<School>> call, Throwable t) {
+                public void onFailure(Call<ObjResult<AdapterResultV2>> call, Throwable t) {
                     Toast.makeText(SearchSchoolActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
                     setLoadLayout(false);
                 }
@@ -193,7 +254,7 @@ public class SearchSchoolActivity extends AppCompatActivity {
         }
     }
 
-    public void searchStation(String key) {
+    public void searchStation(final String key) {
         if (!TextUtils.isEmpty(key)) {
             setLoadLayout(true);
             TimetableRequest.getStations(this, key, new Callback<ListResult<StationModel>>() {
@@ -203,7 +264,7 @@ public class SearchSchoolActivity extends AppCompatActivity {
                     ListResult<StationModel> result = response.body();
                     if (result != null) {
                         if (result.getCode() == 200) {
-                            showStationResult(result.getData());
+                            showStationResult(result.getData(),key);
                         } else {
                             Toast.makeText(SearchSchoolActivity.this, result.getMsg(), Toast.LENGTH_SHORT).show();
                         }
@@ -221,7 +282,10 @@ public class SearchSchoolActivity extends AppCompatActivity {
         }
     }
 
-    private void showStationResult(List<StationModel> result) {
+    private void showStationResult(List<StationModel> result,String key) {
+        if(!firstStatus&&searchEditText.getText()!=null&&key!=null&&!searchEditText.getText().toString().equals(key)){
+            return;
+        }
         if (result == null) return;
         List<SearchResultModel> addList=new ArrayList<>();
         for (int i=0;i<Math.min(result.size(),SearchSchoolAdapter.TYPE_STATION_MAX_SIZE);i++) {
@@ -245,37 +309,56 @@ public class SearchSchoolActivity extends AppCompatActivity {
 
         sortResult();
         addAllDataToList(addList);
-        sortResultForAllDatas();
         searchAdapter.notifyDataSetChanged();
     }
 
-    private void showResult(List<School> list) {
+    /**
+     *
+     * @param result
+     * @param key 用于校验输入框是否发生了变化，如果变化，则忽略
+     */
+    private void showResult(AdapterResultV2 result,String key) {
+        if(!firstStatus&&searchEditText.getText()!=null&&key!=null&&!searchEditText.getText().toString().equals(key)){
+            return;
+        }
+        if(result==null) return;
+        baseJs=result.getBase();
+        templateModels=result.getTemplate();
+        List<School> list=result.getSchoolList();
         if (list == null || list.size() == 0) {
             return;
         }
-        List<SearchResultModel> addList=new ArrayList<>();
+        if(templateModels!=null){
+            for (TemplateModel model : templateModels) {
+                SearchResultModel searchResultModel = new SearchResultModel();
+                searchResultModel.setType(SearchResultModel.TYPE_COMMON);
+                searchResultModel.setObject(model);
+                addModelToList(searchResultModel);
+            }
+        }
+
         for (School schoolBean : list) {
             SearchResultModel searchResultModel = new SearchResultModel();
             searchResultModel.setType(SearchResultModel.TYPE_SCHOOL);
             searchResultModel.setObject(schoolBean);
             addModelToList(searchResultModel);
-            addList.add(searchResultModel);
         }
+
+        SearchResultModel searchResultModel = new SearchResultModel();
+        searchResultModel.setType(SearchResultModel.TYPE_COMMON);
+        TemplateModel addAdapterModel=new TemplateModel();
+        addAdapterModel.setTemplateName("添加学校适配");
+        addAdapterModel.setTemplateTag("custom/upload");
+        searchResultModel.setObject(addAdapterModel);
+        addModelToList(searchResultModel);
+
         sortResult();
-        addAllDataToList(addList);
-        sortResultForAllDatas();
         searchAdapter.notifyDataSetChanged();
     }
 
     public void sortResult() {
         if (models != null) {
             Collections.sort(models);
-        }
-    }
-
-    public void sortResultForAllDatas() {
-        if (allDatas != null) {
-            Collections.sort(allDatas);
         }
     }
 

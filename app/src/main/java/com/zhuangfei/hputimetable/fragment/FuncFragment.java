@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.widget.CardView;
 import android.text.TextUtils;
 import android.view.ContextMenu;
@@ -42,6 +44,7 @@ import com.zhuangfei.hputimetable.api.model.ScheduleName;
 import com.zhuangfei.hputimetable.api.model.StationModel;
 import com.zhuangfei.hputimetable.api.model.TimetableModel;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
+import com.zhuangfei.hputimetable.event.ReloadStationEvent;
 import com.zhuangfei.hputimetable.event.SwitchPagerEvent;
 import com.zhuangfei.hputimetable.event.UpdateScheduleEvent;
 import com.zhuangfei.hputimetable.event.UpdateStationHomeEvent;
@@ -77,6 +80,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -103,15 +108,6 @@ public class FuncFragment extends LazyLoadFragment{
     @BindView(R.id.id_func_schedulename)
     TextView scheduleNameText;
 
-    @BindView(R.id.tv_count)
-    TextView countTextView;
-
-    @BindView(R.id.tv_counttip)
-    TextView countTipTextView;
-
-    @BindView(R.id.cv_dayview)
-    CardView dayView;
-
     @BindView(R.id.id_top_nav)
     LinearLayout topNavLayout;
 
@@ -124,6 +120,9 @@ public class FuncFragment extends LazyLoadFragment{
     CustomGridView stationGridView;
     List<StationModel> stationModels;
     StationAdapter stationAdapter;
+
+    int curWeek=1;
+    int dayOfWeek=-1;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -142,6 +141,33 @@ public class FuncFragment extends LazyLoadFragment{
     protected void lazyLoad() {
         inits();
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                handler.sendEmptyMessage(0x123);
+            }
+        }, 300);
+    }
+
+    Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == 0x123) {
+                try{
+                    int newCurWeek = TimetableTools.getCurWeek(getContext());
+                    int newDayOfWeek=getDayOfWeek();
+                    if(newCurWeek!=curWeek||newDayOfWeek!=dayOfWeek){
+                        findData();
+                    }
+                }catch (Exception e){}
+            }
+        }
+    };
 
     private void inits() {
 //        createDayViewBottom();
@@ -199,8 +225,6 @@ public class FuncFragment extends LazyLoadFragment{
         LayoutInflater inflater = LayoutInflater.from(getActivity());
 
         if (models == null) {
-            dayView.setVisibility(View.GONE);
-
             View view = inflater.inflate(R.layout.item_empty, null, false);
             TextView infoText = view.findViewById(R.id.item_empty);
             TextView infoButtonText = view.findViewById(R.id.item_to_station);
@@ -239,8 +263,6 @@ public class FuncFragment extends LazyLoadFragment{
 			cardLayout.addView(view);
 
         } else {
-            dayView.setVisibility(View.VISIBLE);
-
             for (int i = 0; i < models.size(); i++) {
                 final Schedule schedule = models.get(i);
                 if (schedule == null) continue;
@@ -311,11 +333,8 @@ public class FuncFragment extends LazyLoadFragment{
                 if (models != null) {
                     List<Schedule> allModels = ScheduleSupport.transform(models);
                     if (allModels != null&&allModels.size()!=0) {
-                        int curWeek = TimetableTools.getCurWeek(getActivity());
-                        Calendar c = Calendar.getInstance();
-                        int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
-                        dayOfWeek = dayOfWeek - 2;
-                        if (dayOfWeek == -1) dayOfWeek = 6;
+                        curWeek = TimetableTools.getCurWeek(getActivity());
+                        dayOfWeek=getDayOfWeek();
                         List<Schedule> list = ScheduleSupport.getHaveSubjectsWithDay(allModels, curWeek, dayOfWeek);
                         list=ScheduleSupport.getColorReflect(list);
                         if(list==null) list=new ArrayList<>();
@@ -326,29 +345,43 @@ public class FuncFragment extends LazyLoadFragment{
         });
     }
 
+    public int getDayOfWeek(){
+        Calendar c = Calendar.getInstance();
+        int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
+        dayOfWeek = dayOfWeek - 2;
+        if (dayOfWeek == -1) dayOfWeek = 6;
+        return dayOfWeek;
+    }
+
     /**
      * 扫码、从超表导入
      */
     @OnClick(R.id.id_func_scan)
     public void toScanActivity() {
-        String[] items={"从课程码导入","从超表账户导入"};
-        android.support.v7.app.AlertDialog.Builder builder=new android.support.v7.app.AlertDialog.Builder(getContext())
-                .setTitle("从超级课程表导入")
-                .setItems(items, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        switch (i){
-                            case 0:
-                                ActivityTools.toActivityWithout(getActivity(), ScanActivity.class);
-                                break;
-                            case 1:
-                                toSimportActivity();
-                                break;
-                        }
-                    }
-                })
-                .setNegativeButton("取消",null);
-        builder.create().show();;
+        ActivityTools.toActivityWithout(getActivity(), ScanActivity.class);
+//        String[] items={"从课程码导入","从超表账户导入"};
+//        android.support.v7.app.AlertDialog.Builder builder=new android.support.v7.app.AlertDialog.Builder(getContext())
+//                .setTitle("从超级课程表导入")
+//                .setItems(items, new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialogInterface, int i) {
+//                        switch (i){
+//                            case 0:
+//                                ActivityTools.toActivityWithout(getActivity(), ScanActivity.class);
+//                                break;
+//                            case 1:
+//                                toSimportActivity();
+//                                break;
+//                        }
+//                    }
+//                })
+//                .setNegativeButton("取消",null);
+//        builder.create().show();;
+    }
+
+    @OnClick(R.id.id_func_theme)
+    public void onThemeClicked(){
+        toSimportActivity();
     }
 
     public void showImportDialog() {
@@ -425,6 +458,14 @@ public class FuncFragment extends LazyLoadFragment{
             }
         }
     }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onReloadStationEvent(ReloadStationEvent event){
+        if(event!=null&&event.getStationModel()!=null){
+            StationManager.openStationWithout(getActivity(),event.getStationModel());
+        }
+    }
+
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onUpdateScheduleEvent(UpdateScheduleEvent event){
