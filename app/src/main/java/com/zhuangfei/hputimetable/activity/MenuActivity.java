@@ -235,7 +235,7 @@ public class MenuActivity extends AppCompatActivity {
 
     @OnClick(R.id.id_menu_share)
     public void onShareLayoutClick() {
-        String content = "怪兽课表是一款免费、开源的通用型课表软件，可以无缝从超级课程表的账户以及课程码中导入数据，并且有桌面小部件和学校专区，快来体验吧，感觉好用就分享给你的朋友吧~\n下载地址：https://www.coolapk.com/apk/com.zhuangfei.hputimetable";
+        String content = "怪兽课表是一款免费的通用型课表软件，可以无缝从超级课程表的账户以及课程码中导入数据，并且有桌面小部件和服务站功能，快来体验吧，感觉好用就分享给你的朋友吧~\n下载地址：https://www.coolapk.com/apk/com.zhuangfei.hputimetable";
         Intent share_intent = new Intent();
         share_intent.setAction(Intent.ACTION_SEND);//设置分享行为
         share_intent.setType("text/plain");//设置分享内容的类型

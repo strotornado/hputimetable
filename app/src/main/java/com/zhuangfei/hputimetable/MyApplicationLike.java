@@ -66,7 +66,6 @@ public class MyApplicationLike extends DefaultApplicationLike {
     @Override
     public void onBaseContextAttached(Context base) {
         super.onBaseContextAttached(base);
-        long t1=System.currentTimeMillis();
         // you must install multiDex whatever tinker is installed!
         MultiDex.install(base);
 
@@ -113,7 +112,6 @@ public class MyApplicationLike extends DefaultApplicationLike {
         };
 
         long t2=System.currentTimeMillis();
-        ToastTools.show(base,"application:"+(t2-t1));
     }
 
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)

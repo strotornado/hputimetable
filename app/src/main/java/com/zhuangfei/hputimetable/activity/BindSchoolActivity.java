@@ -17,11 +17,15 @@ import com.zhuangfei.hputimetable.api.model.BaseResult;
 import com.zhuangfei.hputimetable.api.model.ListResult;
 import com.zhuangfei.hputimetable.api.model.MessageModel;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
+import com.zhuangfei.hputimetable.event.UpdateScheduleEvent;
+import com.zhuangfei.hputimetable.event.UpdateSchoolEvent;
 import com.zhuangfei.hputimetable.tools.DeviceTools;
 import com.zhuangfei.hputimetable.tools.VersionTools;
 import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.BundleTools;
 import com.zhuangfei.toolkit.tools.ShareTools;
+
+import org.greenrobot.eventbus.EventBus;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -75,6 +79,8 @@ public class BindSchoolActivity extends AppCompatActivity {
                 if(result.getCode()==200){
                     ShareTools.putString(BindSchoolActivity.this, ShareConstants.STRING_SCHOOL_NAME,school);
                     Toast.makeText(BindSchoolActivity.this,"关联成功",Toast.LENGTH_SHORT).show();
+                    EventBus.getDefault().post(new UpdateSchoolEvent(school));
+                    ActivityTools.toActivityWithout(BindSchoolActivity.this,MainActivity.class);
                     finish();
                 }else {
                     Toast.makeText(BindSchoolActivity.this,result.getMsg(),Toast.LENGTH_SHORT).show();

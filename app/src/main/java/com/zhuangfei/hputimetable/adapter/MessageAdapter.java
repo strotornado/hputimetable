@@ -33,6 +33,7 @@ import com.zhuangfei.timetable.utils.ScreenUtils;
 import com.zhuangfei.toolkit.model.BundleModel;
 import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.ShareTools;
+import com.zhuangfei.toolkit.tools.ToastTools;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -59,13 +60,13 @@ public class MessageAdapter extends BaseAdapter {
 
     List<MessageModel> list;
     Activity context;
-    String schoolName="unknow";
+    String schoolName;
     String device;
 
     SharedPreferences messagePreferences;
     SharedPreferences.Editor messageEditor;
-    Set<String> readSet;
 
+    Set<String> readSet;
 
     public MessageAdapter(Activity context, List<MessageModel> list) {
         this.mInflater = LayoutInflater.from(context);
@@ -75,10 +76,13 @@ public class MessageAdapter extends BaseAdapter {
         messagePreferences=context.getSharedPreferences("app_message",Context.MODE_PRIVATE);
         messageEditor=messagePreferences.edit();
         readSet=getReadSet();
+        schoolName=ShareTools.getString(context,ShareConstants.STRING_SCHOOL_NAME,"unknow");
     }
 
-    public Set<String> getReadSet() {
-        return messagePreferences.getStringSet("app_message_set",new HashSet<String>());
+    public synchronized Set<String> getReadSet() {
+        Set<String> r=messagePreferences.getStringSet("app_message_set",new HashSet<String>());
+        Set<String> newSet=new HashSet<>(r);
+        return newSet;
     }
 
     @Override
@@ -124,8 +128,7 @@ public class MessageAdapter extends BaseAdapter {
                 holder.timeTextView.setText("未知时间");
             }
 
-            if(model.getIsread()==0||(model.getTarget()!=null&&model.getTarget().equals("all")
-                    &&!readSet.contains(String.valueOf(model.getId())))){
+            if(model.getIsread()==0&&(model.getTarget()!=null&&!readSet.contains(String.valueOf(model.getId())))){
                 holder.readTextView.setVisibility(View.VISIBLE);
             }else {
                 holder.readTextView.setVisibility(View.GONE);
@@ -149,12 +152,14 @@ public class MessageAdapter extends BaseAdapter {
             final String target=model.getTarget();
             final int id=model.getId();
             final TextView finalTextView=holder.readTextView;
+
             holder.readTextView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(target!=null&&target.equals("all")){
+                    if(target!=null&&(target.equals("all")||target.equals(schoolName))){
                         readSet=getReadSet();
                         readSet.add(String.valueOf(id));
+                        messageEditor.clear();
                         messageEditor.putStringSet("app_message_set",readSet).commit();
                         if(finalTextView!=null){
                             finalTextView.setVisibility(View.GONE);
@@ -253,8 +258,10 @@ public class MessageAdapter extends BaseAdapter {
                     if(readTextView!=null){
                         readTextView.setVisibility(View.GONE);
                     }
+
                     readSet=getReadSet();
                     readSet.add(String.valueOf(id));
+                    messageEditor.clear();
                     messageEditor.putStringSet("app_message_set",readSet).commit();
                     Toast.makeText(context,"已标为已读!",Toast.LENGTH_SHORT).show();
                 }else {

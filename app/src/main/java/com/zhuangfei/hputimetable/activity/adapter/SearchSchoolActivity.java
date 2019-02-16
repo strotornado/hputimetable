@@ -123,7 +123,7 @@ public class SearchSchoolActivity extends AppCompatActivity {
                 if(baseJs==null){
                     ToastTools.show(this,"基础函数库发生异常，请联系qq:1193600556");
                 }else if(templateModel.getTemplateTag().startsWith("custom/")){
-                    ActivityTools.toActivityWithout(this, AdapterTipActivity.class); ActivityTools.toActivity(this, AdapterTipActivity.class);
+                    ActivityTools.toActivityWithout(this, AdapterTipActivity.class);
                 }
                 else {
                     ActivityTools.toActivityWithout(this,
@@ -325,15 +325,18 @@ public class SearchSchoolActivity extends AppCompatActivity {
         baseJs=result.getBase();
         templateModels=result.getTemplate();
         List<School> list=result.getSchoolList();
-        if (list == null || list.size() == 0) {
+        if (list == null) {
             return;
         }
+
         if(templateModels!=null){
             for (TemplateModel model : templateModels) {
-                SearchResultModel searchResultModel = new SearchResultModel();
-                searchResultModel.setType(SearchResultModel.TYPE_COMMON);
-                searchResultModel.setObject(model);
-                addModelToList(searchResultModel);
+                if(firstStatus||(model.getTemplateName()!=null&&model.getTemplateName().indexOf(key)!=-1)){
+                    SearchResultModel searchResultModel = new SearchResultModel();
+                    searchResultModel.setType(SearchResultModel.TYPE_COMMON);
+                    searchResultModel.setObject(model);
+                    addModelToList(searchResultModel);
+                }
             }
         }
 
@@ -350,8 +353,10 @@ public class SearchSchoolActivity extends AppCompatActivity {
         addAdapterModel.setTemplateName("添加学校适配");
         addAdapterModel.setTemplateTag("custom/upload");
         searchResultModel.setObject(addAdapterModel);
-        addModelToList(searchResultModel);
 
+        if(firstStatus||addAdapterModel.getTemplateName().indexOf(key)!=-1){
+            addModelToList(searchResultModel);
+        }
         sortResult();
         searchAdapter.notifyDataSetChanged();
     }

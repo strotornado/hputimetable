@@ -70,13 +70,13 @@
                     android:textSize="16sp" />
 
                 <ImageView
+                    android:id="@+id/id_ali_pay"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/alipay"/>
+                    android:layout_height="wrap_content"/>
                 <ImageView
+                    android:id="@+id/id_wx_pay"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/wxpay"/>
+                    android:layout_height="wrap_content"/>
             </LinearLayout>
 
 
@@ -85,6 +85,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="30dp"
+                android:gravity="center_horizontal"
                 android:orientation="vertical">
                 <ImageView
                     android:layout_width="72dp"

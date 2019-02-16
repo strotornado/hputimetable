@@ -49,7 +49,7 @@ public class AdapterSameTypeActivity extends AppCompatActivity {
             Toasty.error(this,"js或者教务类型未知，结果不可预期！").show();
             goBack();
         }else{
-            titleTextView.setText(type+"教务系统");
+            titleTextView.setText(type);
         }
     }
 
@@ -66,10 +66,11 @@ public class AdapterSameTypeActivity extends AppCompatActivity {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
                             ActivityTools.toActivity(AdapterSameTypeActivity.this,AdapterSchoolActivity.class,
-                                    new BundleModel().setFromClass(MainActivity.class)
+                                    new BundleModel().setFromClass(AdapterSameTypeActivity.class)
                                             .put("school",name)
                                             .put("url","https://www.baidu.com/s?ie=UTF-8&wd="+name+" 教务处")
                                             .put("parsejs",js));
+                            AdapterSameTypeActivity.this.finish();
                             if(dialogInterface!=null) dialogInterface.dismiss();
                         }
                     }).setNegativeButton("取消",null);

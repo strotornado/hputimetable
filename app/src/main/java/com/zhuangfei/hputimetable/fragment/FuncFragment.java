@@ -124,6 +124,8 @@ public class FuncFragment extends LazyLoadFragment{
     int curWeek=1;
     int dayOfWeek=-1;
 
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mView = inflater.inflate(R.layout.fragment_func, container, false);
@@ -164,6 +166,7 @@ public class FuncFragment extends LazyLoadFragment{
                     if(newCurWeek!=curWeek||newDayOfWeek!=dayOfWeek){
                         findData();
                     }
+                    getUnreadMessageCount();
                 }catch (Exception e){}
             }
         }
@@ -188,7 +191,6 @@ public class FuncFragment extends LazyLoadFragment{
         registerForContextMenu(stationGridView);
         findData();
         findStationLocal();
-        getUnreadMessageCount();
     }
 
     @Override
@@ -499,15 +501,17 @@ public class FuncFragment extends LazyLoadFragment{
     }
 
 
-    public Set<String> getReadSet() {
-        return messagePreferences.getStringSet("app_message_set",new HashSet<String>());
+    public synchronized Set<String> getReadSet() {
+        Set<String> r=messagePreferences.getStringSet("app_message_set",new HashSet<String>());
+        Set<String> newSet=new HashSet<>(r);
+        return newSet;
     }
 
     public void getUnreadMessageCount(){
         String deviceId= DeviceTools.getDeviceId(getContext());
         if(deviceId==null) return;
-        String school="unknow";
-        TimetableRequest.getMessages(getContext(), deviceId,school,"only_unread_count", new Callback<ListResult<MessageModel>>() {
+        String schoolName=ShareTools.getString(getContext(),ShareConstants.STRING_SCHOOL_NAME,"unknow");
+        TimetableRequest.getMessages(getContext(), deviceId,schoolName,"only_unread_count", new Callback<ListResult<MessageModel>>() {
             @Override
             public void onResponse(Call<ListResult<MessageModel>> call, Response<ListResult<MessageModel>> response) {
                 if(response==null) return;

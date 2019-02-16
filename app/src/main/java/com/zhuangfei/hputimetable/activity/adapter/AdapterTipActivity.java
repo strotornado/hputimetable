@@ -86,6 +86,7 @@ public class AdapterTipActivity extends AppCompatActivity {
                                         new BundleModel()
                                                 .put("url", url)
                                                 .put("school", school));
+                                AdapterTipActivity.this.finish();
                             }
                         })
                         .setNegativeButton("取消",null);
@@ -95,6 +96,7 @@ public class AdapterTipActivity extends AppCompatActivity {
                         new BundleModel()
                                 .put("url", url)
                                 .put("school", school));
+                AdapterTipActivity.this.finish();
             }
 
         }

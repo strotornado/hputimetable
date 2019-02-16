@@ -22,7 +22,6 @@
             android:paddingTop="2dp"
             android:paddingBottom="2dp"
             android:includeFontPadding="false"
-            android:textColor="@color/app_white"
             android:textSize="15sp" />
 
         <TextView

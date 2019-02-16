@@ -26,6 +26,7 @@ import com.zhuangfei.hputimetable.constants.ShareConstants;
 import com.zhuangfei.hputimetable.event.SwitchPagerEvent;
 import com.zhuangfei.hputimetable.event.ToggleWeekViewEvent;
 import com.zhuangfei.hputimetable.event.UpdateScheduleEvent;
+import com.zhuangfei.hputimetable.event.UpdateSchoolEvent;
 import com.zhuangfei.hputimetable.event.UpdateTabTextEvent;
 import com.zhuangfei.hputimetable.fragment.FuncFragment;
 import com.zhuangfei.hputimetable.adapter.MyFragmentPagerAdapter;
@@ -196,12 +197,6 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    public void updateSchoolText(String schoolName) {
-        if (schoolName != null) {
-            schoolTextView.setText(schoolName);
-        }
-    }
-
     public void openBindSchoolActivity() {
         Intent intent = new Intent(this, BindSchoolActivity.class);
         startActivity(intent);
@@ -224,7 +219,7 @@ public class MainActivity extends AppCompatActivity {
         if (schoolName == null) {
             checkIsBindSchool();
         } else {
-            updateSchoolText(schoolName);
+            EventBus.getDefault().post(new UpdateSchoolEvent(schoolName));
         }
 
         searchLayoutParams = (RelativeLayout.LayoutParams) searchLayout.getLayoutParams();
@@ -307,7 +302,7 @@ public class MainActivity extends AppCompatActivity {
                     if (model == null) return;
                     if (model.getIsBind() == 1) {
                         ShareTools.putString(MainActivity.this, ShareConstants.STRING_SCHOOL_NAME, model.getSchool());
-                        updateSchoolText(model.getSchool());
+                        EventBus.getDefault().post(new UpdateSchoolEvent(model.getSchool()));
                     } else {
                         openBindSchoolActivity();
                     }
@@ -515,6 +510,13 @@ public class MainActivity extends AppCompatActivity {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onSwitchPagerEvent(SwitchPagerEvent event) {
         mViewPager.setCurrentItem(1);
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onUpdateSchoolEvent(UpdateSchoolEvent event){
+        if(event!=null&&event.getSchool()!=null){
+            schoolTextView.setText(event.getSchool());
+        }
     }
 
     @Override

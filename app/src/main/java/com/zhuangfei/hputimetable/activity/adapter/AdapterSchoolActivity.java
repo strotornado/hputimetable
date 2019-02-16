@@ -237,7 +237,7 @@ public class AdapterSchoolActivity extends AppCompatActivity {
         }
         DataSupport.saveAll(models);
         Toasty.success(this, "保存成功！").show();
-        ImportTools.showDialogOnApply(this,newName);
+        ImportTools.showDialogOnApply(this,newName,true);
     }
 
     @OnClick(R.id.cv_webview_parse)

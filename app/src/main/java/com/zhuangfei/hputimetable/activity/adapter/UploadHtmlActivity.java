@@ -23,6 +23,7 @@ import com.zhuangfei.hputimetable.api.model.BaseResult;
 import com.zhuangfei.hputimetable.tools.VersionTools;
 import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.BundleTools;
+import com.zhuangfei.toolkit.tools.ToastTools;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -118,7 +119,6 @@ public class UploadHtmlActivity extends AppCompatActivity {
         jsSupport=new JsSupport(webView);
         jsSupport.applyConfig(this,new MyWebViewCallback());
         webView.addJavascriptInterface(new ShowSourceJs(), "source");
-
         webView.loadUrl(url);
     }
 
@@ -137,12 +137,17 @@ public class UploadHtmlActivity extends AppCompatActivity {
         @JavascriptInterface
         public void showHtml(final String content) {
             if (TextUtils.isEmpty(content)) return;
-            String finalContent="";
-            finalContent+="VersionName:"+ VersionTools.getVersionName()+"<br/>";
-            finalContent+="VersionNumber:"+ VersionTools.getVersionNumber()+"<br/>";
-            finalContent+="url:"+ webView.getUrl()+"<br/>";
-            finalContent+=content;
-            putHtml(finalContent);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    String finalContent="";
+                    finalContent+="VersionName:"+ VersionTools.getVersionName()+"<br/>";
+                    finalContent+="VersionNumber:"+ VersionTools.getVersionNumber()+"<br/>";
+                    finalContent+="url:"+ webView.getUrl()+"<br/>";
+                    finalContent+=content;
+                    putHtml(finalContent);
+                }
+            });
         }
     }
 
@@ -152,8 +157,9 @@ public class UploadHtmlActivity extends AppCompatActivity {
             public void onResponse(Call<BaseResult> call, Response<BaseResult> response) {
                 BaseResult result=response.body();
                 if(result!=null){
+                    ToastTools.show(UploadHtmlActivity.this,"response:"+result.getMsg());
                     if(result.getCode()==200){
-                        Toasty.success(UploadHtmlActivity.this,"上传源码成功，请等待开发者适配").show();
+                        Toasty.success(UploadHtmlActivity.this,"上传源码成功，适配完成后你会收到一条消息").show();
                     }else{
                         Toasty.error(UploadHtmlActivity.this,result.getMsg()).show();
                     }
@@ -191,6 +197,6 @@ public class UploadHtmlActivity extends AppCompatActivity {
     public void onBackPressed() {
         if (webView.canGoBack()&&!isNeedLoad)
             webView.goBack();
-        goBack();
+       else goBack();
     }
 }
