@@ -63,9 +63,26 @@ bugly {
 
 ## Images
 
+### v1.1.2
+
+<img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.2/img1.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.2/img3.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.2/img6.jpg" width="30%"/>
+
+
 ### v1.1.1
 
 <img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.1/img1.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.1/img2.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.1/img3.jpg" width="30%"/>
+
+### v1.1.2 `2019/02/16`
+
+- 增加服务站功能，用户可申请学校专有的服务站，可以将服务站添加到首页
+- 河南理工大学成绩查询、网上选课、网上报修、班级课表等四个服务使用服务站形式实现
+- 工具箱增加校友数统计，校友数达到500可以申请服务站
+- 新增学校、设备的绑定，以此作为推送消息、服务站的依据
+- 新增153所强智教务的适配，其他类型教务需要再等等，每种教务我都需要统一写模板然后测试，花费的时间周期比较长
+- 删除适配公告，增加消息页面，可以筛选学校的消息以及设备的消息
+- 暂时删除情侣模式
+- 优化搜索页面，操作流程更简洁、友好
+
 
 ### v1.1.1 `2018/11/14`
 

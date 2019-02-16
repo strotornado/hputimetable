@@ -525,6 +525,7 @@ public class MainActivity extends AppCompatActivity {
             mViewPager.setCurrentItem(0);
         } else {
             super.onBackPressed();
+            finish();
         }
     }
 
