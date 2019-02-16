@@ -16,7 +16,7 @@
             android:id="@+id/item_message_target"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/border_25_station_btn"
+            android:background="@drawable/border_20_message"
             android:paddingLeft="5dp"
             android:paddingRight="5dp"
             android:paddingTop="2dp"
