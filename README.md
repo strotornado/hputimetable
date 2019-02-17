@@ -72,6 +72,14 @@ bugly {
 
 <img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.1/img1.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.1/img2.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.1/img3.jpg" width="30%"/>
 
+### v1.1.3 `2019/02/17`
+
+紧急修复两个问题：
+
+- 断网下搜索界面、工具箱界面删除错误信息的Toast
+- 修复绑定学校时崩溃问题
+
+
 ### v1.1.2 `2019/02/16`
 
 - 增加服务站功能，用户可申请学校专有的服务站，可以将服务站添加到首页

@@ -247,7 +247,6 @@ public class SearchSchoolActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Call<ObjResult<AdapterResultV2>> call, Throwable t) {
-                    Toast.makeText(SearchSchoolActivity.this, t.getMessage(), Toast.LENGTH_SHORT).show();
                     setLoadLayout(false);
                 }
             });

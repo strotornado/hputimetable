@@ -199,7 +199,6 @@ public class MenuActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<ObjResult<SchoolPersonModel>> call, Throwable t) {
-                Toast.makeText(MenuActivity.this,t.getMessage(),Toast.LENGTH_SHORT).show();
             }
         });
     }

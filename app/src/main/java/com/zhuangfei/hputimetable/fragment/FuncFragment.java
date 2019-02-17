@@ -214,6 +214,7 @@ public class FuncFragment extends LazyLoadFragment{
     }
 
     public void createCardView(List<Schedule> models, ScheduleName newName) {
+        if(getContext()==null) return;
         ScheduleColorPool colorPool=new ScheduleColorPool(getContext());
         cardLayout.removeAllViews();
         SimpleDateFormat sdf2 = new SimpleDateFormat("EEEE");
@@ -514,7 +515,7 @@ public class FuncFragment extends LazyLoadFragment{
         TimetableRequest.getMessages(getContext(), deviceId,schoolName,"only_unread_count", new Callback<ListResult<MessageModel>>() {
             @Override
             public void onResponse(Call<ListResult<MessageModel>> call, Response<ListResult<MessageModel>> response) {
-                if(response==null) return;
+                if(response==null||getContext()==null) return;
                 ListResult<MessageModel> result=response.body();
                 if(result.getCode()==200){
                     List<MessageModel> models=result.getData();

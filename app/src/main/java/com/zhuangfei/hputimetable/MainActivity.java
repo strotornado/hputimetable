@@ -201,7 +201,6 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, BindSchoolActivity.class);
         startActivity(intent);
         overridePendingTransition(R.anim.anim_station_open_activity, R.anim.anim_station_static);//动画
-        finish();
     }
 
 //    @Override
