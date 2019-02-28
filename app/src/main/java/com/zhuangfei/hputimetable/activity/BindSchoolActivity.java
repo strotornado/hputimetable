@@ -80,7 +80,7 @@ public class BindSchoolActivity extends AppCompatActivity {
                     ShareTools.putString(BindSchoolActivity.this, ShareConstants.STRING_SCHOOL_NAME,school);
                     Toast.makeText(BindSchoolActivity.this,"关联成功",Toast.LENGTH_SHORT).show();
                     EventBus.getDefault().post(new UpdateSchoolEvent(school));
-                    ActivityTools.toActivityWithout(BindSchoolActivity.this,MainActivity.class);
+//                    ActivityTools.toActivityWithout(BindSchoolActivity.this,MainActivity.class);
                     finish();
                 }else {
                     Toast.makeText(BindSchoolActivity.this,result.getMsg(),Toast.LENGTH_SHORT).show();
