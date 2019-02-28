@@ -206,6 +206,20 @@ public class ScheduleFragment extends LazyLoadFragment implements IThemeView{
                 .isShow(false)
                 .showView();
 
+        int status=ShareTools.getInt(context,"hidenotcur",0);
+        if(status==0){
+            mTimetableView.isShowNotCurWeek(true);
+        }else {
+            mTimetableView.isShowNotCurWeek(false);
+        }
+
+        int status2=ShareTools.getInt(context,"hideweekends",0);
+        if(status2==0){
+            mTimetableView.isShowWeekends(true);
+        }else {
+            mTimetableView.isShowWeekends(false);
+        }
+
         mTimetableView.curWeek(curWeek)
                 .maxSlideItem(12)
                 .itemHeight(ScreenUtils.dip2px(context,50))

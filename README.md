@@ -72,6 +72,11 @@ bugly {
 
 <img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.1/img1.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.1/img2.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.1/img3.jpg" width="30%"/>
 
+### v1.1.4 `2019/02/26`
+
+- 修复导入分享的口令时失败问题
+- 修复设置非本周后课表页面无效问题
+
 ### v1.1.3 `2019/02/17`
 
 紧急修复两个问题：

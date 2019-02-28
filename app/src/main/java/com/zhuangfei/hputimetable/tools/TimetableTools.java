@@ -93,15 +93,15 @@ public class TimetableTools {
 
     public static List<Integer> getWeekList(String weeksString) {
         List<Integer> weekList = new ArrayList<>();
-        //兼容 全周有课这种情况
+
+        if (weeksString == null || weeksString.length() == 0) return weekList;
+//兼容 全周有课这种情况
         if(weeksString.startsWith("全周")){
             for(int i=1;i<=25;i++){
                 weekList.add(i);
             }
             return weekList;
         }
-        if (weeksString == null || weeksString.length() == 0) return weekList;
-
         try{
             weeksString = weeksString.replaceAll("[^\\d\\-\\,]", "");
             if (weeksString.indexOf(",") != -1) {
