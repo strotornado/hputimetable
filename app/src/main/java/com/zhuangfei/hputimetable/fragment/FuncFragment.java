@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,6 +48,7 @@ import com.zhuangfei.hputimetable.api.model.TimetableModel;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
 import com.zhuangfei.hputimetable.event.ReloadStationEvent;
 import com.zhuangfei.hputimetable.event.SwitchPagerEvent;
+import com.zhuangfei.hputimetable.event.UpdateBindDataEvent;
 import com.zhuangfei.hputimetable.event.UpdateScheduleEvent;
 import com.zhuangfei.hputimetable.event.UpdateStationHomeEvent;
 import com.zhuangfei.hputimetable.listener.OnNoticeUpdateListener;
@@ -75,7 +78,9 @@ import org.litepal.crud.callback.FindMultiCallback;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -95,7 +100,7 @@ import retrofit2.Response;
  * @author Administrator 刘壮飞
  */
 @SuppressLint({"NewApi", "ValidFragment"})
-public class FuncFragment extends LazyLoadFragment{
+public class FuncFragment extends LazyLoadFragment {
 
     private View mView;
 
@@ -107,6 +112,9 @@ public class FuncFragment extends LazyLoadFragment{
 
     @BindView(R.id.id_func_schedulename)
     TextView scheduleNameText;
+
+    @BindView(R.id.id_cardview_layout2)
+    LinearLayout cardLayout2;
 
     @BindView(R.id.id_top_nav)
     LinearLayout topNavLayout;
@@ -121,10 +129,19 @@ public class FuncFragment extends LazyLoadFragment{
     List<StationModel> stationModels;
     StationAdapter stationAdapter;
 
-    int curWeek=1;
-    int dayOfWeek=-1;
+    @BindView(R.id.id_bind_course)
+    LinearLayout isBindLayout;
 
-    boolean isInit=false;
+    @BindView(R.id.id_ta_layout)
+    LinearLayout bindContainer;
+
+    @BindView(R.id.id_func_setting_img)
+    ImageView settingsImageView;
+
+    int curWeek = 1;
+    int dayOfWeek = -1;
+
+    boolean isInit = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -141,7 +158,7 @@ public class FuncFragment extends LazyLoadFragment{
 
     @Override
     protected void lazyLoad() {
-        isInit=true;
+        isInit = true;
         inits();
     }
 
@@ -160,30 +177,32 @@ public class FuncFragment extends LazyLoadFragment{
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            if (msg.what == 0x123&&isInit) {
-                try{
+            if (msg.what == 0x123 && isInit) {
+                try {
                     int newCurWeek = TimetableTools.getCurWeek(getContext());
-                    int newDayOfWeek=getDayOfWeek();
-                    if(newCurWeek!=curWeek||newDayOfWeek!=dayOfWeek){
+                    int newDayOfWeek = getDayOfWeek();
+                    if (newCurWeek != curWeek || newDayOfWeek != dayOfWeek) {
                         findData();
                     }
                     getUnreadMessageCount();
-                }catch (Exception e){}
+                } catch (Exception e) {
+                }
             }
         }
     };
 
     private void inits() {
 //        createDayViewBottom();
-        messagePreferences=getContext().getSharedPreferences("app_message",Context.MODE_PRIVATE);
-        stationModels=new ArrayList<>();
-        stationAdapter=new StationAdapter(getContext(),stationModels);
+        settingsImageView.setColorFilter(getResources().getColor(R.color.app_gray));
+        messagePreferences = getContext().getSharedPreferences("app_message", Context.MODE_PRIVATE);
+        stationModels = new ArrayList<>();
+        stationAdapter = new StationAdapter(getContext(), stationModels);
         stationGridView.setAdapter(stationAdapter);
         stationGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                if(stationModels.size()>i){
-                    StationManager.openStationWithout(getActivity(),stationModels.get(i));
+                if (stationModels.size() > i) {
+                    StationManager.openStationWithout(getActivity(), stationModels.get(i));
                 }
             }
         });
@@ -197,27 +216,27 @@ public class FuncFragment extends LazyLoadFragment{
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        menu.add(1,1,1,"从主页删除");
+        menu.add(1, 1, 1, "从主页删除");
         super.onCreateContextMenu(menu, v, menuInfo);
     }
 
     @Override
     public boolean onContextItemSelected(MenuItem item) {
-        AdapterView.AdapterContextMenuInfo info= (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        StationModel stationModel=stationModels.get(info.position);
-        switch (item.getItemId()){
+        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+        StationModel stationModel = stationModels.get(info.position);
+        switch (item.getItemId()) {
             case 1:
-                DataSupport.delete(StationModel.class,stationModel.getId());
+                DataSupport.delete(StationModel.class, stationModel.getId());
                 findStationLocal();
-                ToastTools.show(getContext(),"已从主页删除");
+                ToastTools.show(getContext(), "已从主页删除");
                 break;
         }
         return super.onContextItemSelected(item);
     }
 
     public void createCardView(List<Schedule> models, ScheduleName newName) {
-        if(getContext()==null) return;
-        ScheduleColorPool colorPool=new ScheduleColorPool(getContext());
+        if (getContext() == null) return;
+        ScheduleColorPool colorPool = new ScheduleColorPool(getContext());
         cardLayout.removeAllViews();
         SimpleDateFormat sdf2 = new SimpleDateFormat("EEEE");
         int curWeek = TimetableTools.getCurWeek(getActivity());
@@ -249,23 +268,23 @@ public class FuncFragment extends LazyLoadFragment{
             infoText.setText("本地没有数据,去添加!");
             cardLayout.addView(view);
         } else if (models.size() == 0) {
-			View view=inflater.inflate(R.layout.item_empty,null ,false);
+            View view = inflater.inflate(R.layout.item_empty, null, false);
             TextView infoButtonText = view.findViewById(R.id.item_to_station);
-			TextView infoText=view.findViewById(R.id.item_empty);
-			view.findViewById(R.id.item_empty).setOnClickListener(new View.OnClickListener() {
-				@Override
-				public void onClick(View view) {
+            TextView infoText = view.findViewById(R.id.item_empty);
+            view.findViewById(R.id.item_empty).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
                     EventBus.getDefault().post(new SwitchPagerEvent());
-				}
-			});
-			infoButtonText.setOnClickListener(new View.OnClickListener() {
+                }
+            });
+            infoButtonText.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     toSearchSchool();
                 }
             });
             infoButtonText.setText("逛逛");
-			cardLayout.addView(view);
+            cardLayout.addView(view);
 
         } else {
             for (int i = 0; i < models.size(); i++) {
@@ -280,7 +299,7 @@ public class FuncFragment extends LazyLoadFragment{
 
                 GradientDrawable gd = new GradientDrawable();
                 gd.setColor(colorPool.getColorAuto(schedule.getColorRandom()));
-                gd.setCornerRadius(ScreenUtils.dip2px(getContext(),3));
+                gd.setCornerRadius(ScreenUtils.dip2px(getContext(), 3));
                 startText.setBackgroundDrawable(gd);
 
                 String name = schedule.getName();
@@ -289,7 +308,7 @@ public class FuncFragment extends LazyLoadFragment{
                 if (TextUtils.isEmpty(room)) room = "上课地点未知";
                 nameText.setText(name);
                 roomText.setText(room);
-                startText.setText(schedule.getStart() + "-" + (schedule.getStart() + schedule.getStep() - 1)+"节");
+                startText.setText(schedule.getStart() + "-" + (schedule.getStart() + schedule.getStep() - 1) + "节");
                 view.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
@@ -303,6 +322,64 @@ public class FuncFragment extends LazyLoadFragment{
                     }
                 });
                 cardLayout.addView(view);
+            }
+        }
+    }
+
+    public void createCardView2(List<Schedule> models, ScheduleName newName) {
+        if (getContext() == null) return;
+        ScheduleColorPool colorPool = new ScheduleColorPool(getContext());
+        cardLayout2.removeAllViews();
+
+        LayoutInflater inflater = LayoutInflater.from(getActivity());
+
+        if (models == null || models.size() == 0) {
+            View view = inflater.inflate(R.layout.item_empty, null, false);
+            TextView infoButtonText = view.findViewById(R.id.item_to_station);
+            TextView infoText = view.findViewById(R.id.item_empty);
+            infoButtonText.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    toSearchSchool();
+                }
+            });
+            cardLayout2.addView(view);
+        } else {
+            for (int i = 0; i < models.size(); i++) {
+                final Schedule schedule = models.get(i);
+                if (schedule == null) continue;
+                View view = inflater.inflate(R.layout.item_cardview, null, false);
+                TextView startText = view.findViewById(R.id.id_item_start);
+                TextView nameText = view.findViewById(R.id.id_item_name);
+                TextView roomText = view.findViewById(R.id.id_item_room);
+                View colorView = view.findViewById(R.id.id_item_color);
+                colorView.setBackgroundColor(colorPool.getColorAuto(schedule.getColorRandom()));
+
+                GradientDrawable gd = new GradientDrawable();
+                gd.setColor(colorPool.getColorAuto(schedule.getColorRandom()));
+                gd.setCornerRadius(ScreenUtils.dip2px(getContext(), 3));
+                startText.setBackgroundDrawable(gd);
+
+                String name = schedule.getName();
+                String room = schedule.getRoom();
+                if (TextUtils.isEmpty(name)) name = "课程名未知";
+                if (TextUtils.isEmpty(room)) room = "上课地点未知";
+                nameText.setText(name);
+                roomText.setText(room);
+                startText.setText(schedule.getStart() + "-" + (schedule.getStart() + schedule.getStep() - 1) + "节");
+                view.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        List<Schedule> list = new ArrayList<>();
+                        list.add(schedule);
+                        BundleModel model = new BundleModel();
+                        model.put("timetable", list);
+                        model.setFromClass(getActivity().getClass());
+                        model.put("item", 0);
+                        ActivityTools.toActivityWithout(getActivity(), TimetableDetailActivity.class, model);
+                    }
+                });
+                cardLayout2.addView(view);
             }
         }
     }
@@ -337,20 +414,71 @@ public class FuncFragment extends LazyLoadFragment{
                 List<TimetableModel> models = (List<TimetableModel>) t;
                 if (models != null) {
                     List<Schedule> allModels = ScheduleSupport.transform(models);
-                    if (allModels != null&&allModels.size()!=0) {
+                    if (allModels != null && allModels.size() != 0) {
                         curWeek = TimetableTools.getCurWeek(getActivity());
-                        dayOfWeek=getDayOfWeek();
+                        dayOfWeek = getDayOfWeek();
                         List<Schedule> list = ScheduleSupport.getHaveSubjectsWithDay(allModels, curWeek, dayOfWeek);
-                        list=ScheduleSupport.getColorReflect(list);
-                        if(list==null) list=new ArrayList<>();
+                        list = ScheduleSupport.getColorReflect(list);
+                        if (list == null) list = new ArrayList<>();
                         createCardView(list, newName);
                     } else createCardView(null, newName);
                 }
             }
         });
+        findData2();
     }
 
-    public int getDayOfWeek(){
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onUpdateBindDataEvent(UpdateBindDataEvent event){
+        findData2();
+    }
+
+    public void findData2() {
+        int id2 = ShareTools.getInt(getActivity(), ShareConstants.INT_SCHEDULE_NAME_ID2, 0);
+        int guanlian=ShareTools.getInt(getActivity(), ShareConstants.INT_GUANLIAN, 1);
+
+        if(guanlian==1){
+            isBindLayout.setVisibility(View.VISIBLE);
+            bindContainer.setVisibility(View.VISIBLE);
+        }else {
+            isBindLayout.setVisibility(View.GONE);
+            bindContainer.setVisibility(View.GONE);
+            return;
+        }
+        if (id2 == 0) {
+            bindContainer.setVisibility(View.GONE);
+            return;
+        }else {
+            bindContainer.setVisibility(View.VISIBLE);
+        }
+        final ScheduleName newName = DataSupport.find(ScheduleName.class, id2);
+        if (newName == null) {
+            isBindLayout.setVisibility(View.VISIBLE);
+            return;
+        }
+        isBindLayout.setVisibility(View.GONE);
+
+        FindMultiExecutor executor = newName.getModelsAsync();
+        executor.listen(new FindMultiCallback() {
+            @Override
+            public <T> void onFinish(List<T> t) {
+                List<TimetableModel> models = (List<TimetableModel>) t;
+                if (models != null) {
+                    List<Schedule> allModels = ScheduleSupport.transform(models);
+                    if (allModels != null && allModels.size() != 0) {
+                        curWeek = TimetableTools.getCurWeek(getActivity());
+                        dayOfWeek = getDayOfWeek();
+                        List<Schedule> list = ScheduleSupport.getHaveSubjectsWithDay(allModels, curWeek, dayOfWeek);
+                        list = ScheduleSupport.getColorReflect(list);
+                        if (list == null) list = new ArrayList<>();
+                        createCardView2(list, newName);
+                    } else createCardView2(null, newName);
+                }
+            }
+        });
+    }
+
+    public int getDayOfWeek() {
         Calendar c = Calendar.getInstance();
         int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
         dayOfWeek = dayOfWeek - 2;
@@ -385,18 +513,18 @@ public class FuncFragment extends LazyLoadFragment{
     }
 
     @OnClick(R.id.id_func_theme)
-    public void onThemeClicked(){
+    public void onThemeClicked() {
         toSimportActivity();
     }
 
     public void showImportDialog() {
-        String[] items={"从超表课程码导入","从超表账户导入","从教务系统导入"};
-        android.support.v7.app.AlertDialog.Builder builder=new android.support.v7.app.AlertDialog.Builder(getContext())
+        String[] items = {"从超表课程码导入", "从超表账户导入", "从教务系统导入"};
+        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getContext())
                 .setTitle("课程导入")
                 .setItems(items, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        switch (i){
+                        switch (i) {
                             case 0:
                                 ActivityTools.toActivityWithout(getActivity(), ScanActivity.class);
                                 break;
@@ -409,8 +537,9 @@ public class FuncFragment extends LazyLoadFragment{
                         }
                     }
                 })
-                .setNegativeButton("取消",null);
-        builder.create().show();;
+                .setNegativeButton("取消", null);
+        builder.create().show();
+        ;
     }
 
     @OnClick(R.id.id_func_multi)
@@ -453,7 +582,7 @@ public class FuncFragment extends LazyLoadFragment{
                     List<SuperLesson> lessons = result.getLessons();
                     ScheduleName newName = ScheduleDao.saveSuperShareLessons(lessons);
                     if (newName != null) {
-                        ImportTools.showDialogOnApply(getContext(),newName);
+                        ImportTools.showDialogOnApply(getContext(), newName);
                     } else {
                         Toasty.error(getActivity(), "ScheduleName is null").show();
                     }
@@ -465,36 +594,36 @@ public class FuncFragment extends LazyLoadFragment{
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onReloadStationEvent(ReloadStationEvent event){
-        if(event!=null&&event.getStationModel()!=null){
-            StationManager.openStationWithout(getActivity(),event.getStationModel());
+    public void onReloadStationEvent(ReloadStationEvent event) {
+        if (event != null && event.getStationModel() != null) {
+            StationManager.openStationWithout(getActivity(), event.getStationModel());
         }
     }
 
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onUpdateScheduleEvent(UpdateScheduleEvent event){
+    public void onUpdateScheduleEvent(UpdateScheduleEvent event) {
         findData();
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onUpdateStationHomeEvent(UpdateStationHomeEvent event){
+    public void onUpdateStationHomeEvent(UpdateStationHomeEvent event) {
         findStationLocal();
     }
 
     /**
      * 获取添加到首页的服务站
      */
-    public void findStationLocal(){
-        FindMultiExecutor findMultiExecutor=DataSupport.findAllAsync(StationModel.class);
+    public void findStationLocal() {
+        FindMultiExecutor findMultiExecutor = DataSupport.findAllAsync(StationModel.class);
         findMultiExecutor.listen(new FindMultiCallback() {
             @Override
             public <T> void onFinish(List<T> t) {
-                List<StationModel> stationModels= (List<StationModel>) t;
+                List<StationModel> stationModels = (List<StationModel>) t;
                 FuncFragment.this.stationModels.clear();
-                if(stationModels==null||stationModels.size()==0){
+                if (stationModels == null || stationModels.size() == 0) {
                     stationGridView.setVisibility(View.GONE);
-                }else {
+                } else {
                     stationGridView.setVisibility(View.VISIBLE);
                     FuncFragment.this.stationModels.addAll(stationModels);
                 }
@@ -505,39 +634,39 @@ public class FuncFragment extends LazyLoadFragment{
 
 
     public synchronized Set<String> getReadSet() {
-        if(messagePreferences==null) return new HashSet<>();
-        Set<String> r=messagePreferences.getStringSet("app_message_set",new HashSet<String>());
-        Set<String> newSet=new HashSet<>(r);
+        if (messagePreferences == null) return new HashSet<>();
+        Set<String> r = messagePreferences.getStringSet("app_message_set", new HashSet<String>());
+        Set<String> newSet = new HashSet<>(r);
         return newSet;
     }
 
-    public void getUnreadMessageCount(){
-        String deviceId= DeviceTools.getDeviceId(getContext());
-        if(deviceId==null) return;
-        String schoolName=ShareTools.getString(getContext(),ShareConstants.STRING_SCHOOL_NAME,"unknow");
-        TimetableRequest.getMessages(getContext(), deviceId,schoolName,"only_unread_count", new Callback<ListResult<MessageModel>>() {
+    public void getUnreadMessageCount() {
+        String deviceId = DeviceTools.getDeviceId(getContext());
+        if (deviceId == null) return;
+        String schoolName = ShareTools.getString(getContext(), ShareConstants.STRING_SCHOOL_NAME, "unknow");
+        TimetableRequest.getMessages(getContext(), deviceId, schoolName, "only_unread_count", new Callback<ListResult<MessageModel>>() {
             @Override
             public void onResponse(Call<ListResult<MessageModel>> call, Response<ListResult<MessageModel>> response) {
-                if(response==null||getContext()==null) return;
-                ListResult<MessageModel> result=response.body();
-                if(result.getCode()==200){
-                    List<MessageModel> models=result.getData();
-                    if(models!=null){
-                        int size=0;
-                        Set<String> readSet=getReadSet();
-                        for(MessageModel model:models){
-                            if(!readSet.contains(String.valueOf(model.getUnreadId()))){
+                if (response == null || getContext() == null) return;
+                ListResult<MessageModel> result = response.body();
+                if (result.getCode() == 200) {
+                    List<MessageModel> models = result.getData();
+                    if (models != null) {
+                        int size = 0;
+                        Set<String> readSet = getReadSet();
+                        for (MessageModel model : models) {
+                            if (!readSet.contains(String.valueOf(model.getUnreadId()))) {
                                 size++;
                             }
                         }
-                        if(size>0){
+                        if (size > 0) {
                             messageCountView.setVisibility(View.VISIBLE);
                             messageCountView.setText(String.valueOf(size));
-                        }else hideMessageCountView();
-                    }else hideMessageCountView();
-                }else {
+                        } else hideMessageCountView();
+                    } else hideMessageCountView();
+                } else {
                     hideMessageCountView();
-                    Toast.makeText(getContext(),result.getMsg(),Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), result.getMsg(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -548,7 +677,7 @@ public class FuncFragment extends LazyLoadFragment{
         });
     }
 
-    public void hideMessageCountView(){
+    public void hideMessageCountView() {
         messageCountView.setVisibility(View.GONE);
     }
 
@@ -556,5 +685,68 @@ public class FuncFragment extends LazyLoadFragment{
     public void onDestroy() {
         super.onDestroy();
         EventBus.getDefault().unregister(this);
+    }
+
+    @OnClick(R.id.id_bind_course)
+    public void onBindLayoutClicked() {
+
+        FindMultiExecutor executor = DataSupport.order("time desc").findAsync(ScheduleName.class);
+        executor.listen(new FindMultiCallback() {
+            @Override
+            public <T> void onFinish(final List<T> t) {
+                final List<ScheduleName> models= (List<ScheduleName>) t;
+                if (t == null||models==null) return;
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String[] items = new String[t.size()];
+                        for(int i=0;i<models.size();i++){
+                            items[i]=models.get(i).getName();
+                        }
+                        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getActivity())
+                                .setTitle("选择一个课表以绑定")
+                                .setItems(items, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        ShareTools.putInt(getActivity(),ShareConstants.INT_SCHEDULE_NAME_ID2,models.get(i).getId());
+                                        findData2();
+                                    }
+                                });
+                        builder.create().show();
+                    }
+                });
+            }
+        });
+    }
+
+    @OnClick(R.id.id_func_setting_img)
+    public void onSettingLayoutClicked() {
+        FindMultiExecutor executor = DataSupport.order("time desc").findAsync(ScheduleName.class);
+        executor.listen(new FindMultiCallback() {
+            @Override
+            public <T> void onFinish(final List<T> t) {
+                final List<ScheduleName> models= (List<ScheduleName>) t;
+                if (t == null||models==null) return;
+                getActivity().runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        String[] items = new String[t.size()];
+                        for(int i=0;i<models.size();i++){
+                            items[i]=models.get(i).getName();
+                        }
+                        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getActivity())
+                                .setTitle("选择一个课表以绑定")
+                                .setItems(items, new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        ShareTools.putInt(getActivity(),ShareConstants.INT_SCHEDULE_NAME_ID2,models.get(i).getId());
+                                        findData2();
+                                    }
+                                });
+                        builder.create().show();
+                    }
+                });
+            }
+        });
     }
 }

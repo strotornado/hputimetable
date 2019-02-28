@@ -27,6 +27,7 @@ import com.zhuangfei.hputimetable.api.model.SchoolPersonModel;
 import com.zhuangfei.hputimetable.api.model.TimetableModel;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
 import com.zhuangfei.hputimetable.event.ConfigChangeEvent;
+import com.zhuangfei.hputimetable.event.UpdateBindDataEvent;
 import com.zhuangfei.hputimetable.tools.BroadcastUtils;
 import com.zhuangfei.hputimetable.tools.DeviceTools;
 import com.zhuangfei.hputimetable.tools.UpdateTools;
@@ -76,7 +77,11 @@ public class MenuActivity extends AppCompatActivity {
     @BindView(R.id.id_widget_hidedate)
     SwitchCompat hideDateSwitch;
 
+    @BindView(R.id.id_show_qinglv)
+    SwitchCompat showQinglvSwitch;
+
     boolean changeStatus=false;
+    boolean changeStatus2=false;
 
     @BindView(R.id.id_device_text)
     TextView deviceText;
@@ -122,6 +127,13 @@ public class MenuActivity extends AppCompatActivity {
             hideNotCurSwitch.setChecked(false);
         } else {
             hideNotCurSwitch.setChecked(true);
+        }
+
+        int show = ShareTools.getInt(this, ShareConstants.INT_GUANLIAN, 1);
+        if (show == 1) {
+            showQinglvSwitch.setChecked(true);
+        } else {
+            showQinglvSwitch.setChecked(false);
         }
 
         int alpha = ShareTools.getInt(this, "hideweekends", 0);
@@ -265,6 +277,16 @@ public class MenuActivity extends AppCompatActivity {
         }
     }
 
+    @OnCheckedChanged(R.id.id_show_qinglv)
+    public void onShowQinglvSwitchClicked(boolean b) {
+        changeStatus2=true;
+        if (b) {
+            ShareTools.putInt(this, ShareConstants.INT_GUANLIAN, 1);
+        } else {
+            ShareTools.putInt(this,  ShareConstants.INT_GUANLIAN, 0);
+        }
+    }
+
     @OnCheckedChanged(R.id.id_checkauto)
     public void onCheckedAutoSwitchClicked(boolean b) {
         if (b) {
@@ -308,6 +330,9 @@ public class MenuActivity extends AppCompatActivity {
         super.onDestroy();
         if(changeStatus){
             EventBus.getDefault().post(new ConfigChangeEvent());
+        }
+        if(changeStatus2){
+            EventBus.getDefault().post(new UpdateBindDataEvent());
         }
     }
 

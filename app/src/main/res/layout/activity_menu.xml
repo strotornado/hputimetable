@@ -230,6 +230,29 @@
                 android:checked="true"
                 android:gravity="center_vertical" />
         </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@color/app_white"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="15dp"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="显示情侣模式" />
+
+            <android.support.v7.widget.SwitchCompat
+                android:id="@+id/id_show_qinglv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="15dp"
+                android:checked="true"
+                android:gravity="center_vertical" />
+        </LinearLayout>
 
         <TextView
             android:layout_width="match_parent"
