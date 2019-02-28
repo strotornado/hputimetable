@@ -124,7 +124,7 @@ public class FuncFragment extends LazyLoadFragment{
     int curWeek=1;
     int dayOfWeek=-1;
 
-
+    boolean isInit=false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -141,6 +141,7 @@ public class FuncFragment extends LazyLoadFragment{
 
     @Override
     protected void lazyLoad() {
+        isInit=true;
         inits();
     }
 
@@ -159,7 +160,7 @@ public class FuncFragment extends LazyLoadFragment{
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            if (msg.what == 0x123) {
+            if (msg.what == 0x123&&isInit) {
                 try{
                     int newCurWeek = TimetableTools.getCurWeek(getContext());
                     int newDayOfWeek=getDayOfWeek();
@@ -191,6 +192,7 @@ public class FuncFragment extends LazyLoadFragment{
         registerForContextMenu(stationGridView);
         findData();
         findStationLocal();
+        getUnreadMessageCount();
     }
 
     @Override
@@ -503,6 +505,7 @@ public class FuncFragment extends LazyLoadFragment{
 
 
     public synchronized Set<String> getReadSet() {
+        if(messagePreferences==null) return new HashSet<>();
         Set<String> r=messagePreferences.getStringSet("app_message_set",new HashSet<String>());
         Set<String> newSet=new HashSet<>(r);
         return newSet;
