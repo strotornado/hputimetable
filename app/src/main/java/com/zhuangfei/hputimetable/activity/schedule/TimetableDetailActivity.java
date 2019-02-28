@@ -205,5 +205,6 @@ public class TimetableDetailActivity extends AppCompatActivity {
                         .put(AddTimetableActivity.KEY_DAY, schedule.getDay())
                         .put(AddTimetableActivity.KEY_STEP, schedule.getStep())
                         .put(AddTimetableActivity.KEY_WEEKS,weeks));
+        finish();
     }
 }
