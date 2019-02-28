@@ -129,14 +129,43 @@ public class SpecialArea {
                 String step = perItem[5];
                 String room = perItem[6];
 //
-                int dayInt = Integer.parseInt(day);
-                int startInt = Integer.parseInt(start);
-                int stepInt = Integer.parseInt(step);
+                int dayInt=0;
+                int startInt=0;
+                int stepInt=0;
+                boolean exception=false;
+                try{
+                    dayInt = Integer.parseInt(day);
+                }catch (Exception e){
+                    dayInt=7;
+                    exception=true;
+                }
+
+                try{
+                    startInt = Integer.parseInt(start);
+                }catch (Exception e){
+                    startInt=1;
+                    exception=true;
+                }
+
+                try{
+                    stepInt = Integer.parseInt(step);
+                }catch (Exception e){
+                    startInt=4;
+                    exception=true;
+                }
 
                 String[] weeksArray = weeks.split(" ");
                 List<Integer> weeksList = new ArrayList<>();
                 for (String val : weeksArray) {
                     if (!TextUtils.isEmpty(val)) weeksList.add(Integer.parseInt(val));
+                }
+
+                if(exception){
+                    if(name!=null){
+                        name="[出现异常,本课程数据不正确]"+name;
+                    }else {
+                        name="[出现异常,本课程数据不正确]";
+                    }
                 }
 
                 ParseResult model = new ParseResult();
