@@ -15,6 +15,8 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.zhuangfei.toolkit.tools.ToastTools;
+
 /**
  * js 工具类
  * Created by Liu ZhuangFei on 2018/10/27.
@@ -55,8 +57,15 @@ public class JsSupport {
                                         String contentDisposition, String mimetype,
                                         long contentLength) {
                 Uri uri = Uri.parse(url);
-                Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                context.startActivity(intent);
+                try{
+                    Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+                    if(intent==null){
+                        ToastTools.show(context,"无法下载该资源");
+                    }
+                    context.startActivity(intent);
+                }catch (Exception e){
+                    ToastTools.show(context,"Exception:"+e.getMessage());
+                }
             }
         });
 
