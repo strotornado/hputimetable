@@ -72,6 +72,15 @@ bugly {
 
 <img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.1/img1.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.1/img2.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.1/img3.jpg" width="30%"/>
 
+### v1.1.6 `2019/03/7`
+
+- 修复已知崩溃问题
+
+### v1.1.5 `2019/02/29`
+
+- 修复已知问题
+- 增加绑定课表功能，应广大用户的要求情侣功能又回来了，不需要的同学可以在工具箱关闭
+
 ### v1.1.4 `2019/02/26`
 
 - 修复导入分享的口令时失败问题

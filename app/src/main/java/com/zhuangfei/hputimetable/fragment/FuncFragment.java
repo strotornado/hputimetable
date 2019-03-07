@@ -714,6 +714,7 @@ public class FuncFragment extends LazyLoadFragment {
                                     public void onClick(DialogInterface dialogInterface, int i) {
                                         ShareTools.putInt(getActivity(),ShareConstants.INT_SCHEDULE_NAME_ID2,models.get(i).getId());
                                         findData2();
+                                        Toasty.success(getActivity(),"关联成功!").show();
                                     }
                                 });
                         builder.create().show();
@@ -745,6 +746,7 @@ public class FuncFragment extends LazyLoadFragment {
                                     public void onClick(DialogInterface dialogInterface, int i) {
                                         ShareTools.putInt(getActivity(),ShareConstants.INT_SCHEDULE_NAME_ID2,models.get(i).getId());
                                         findData2();
+                                        Toasty.success(getActivity(),"关联成功!").show();
                                     }
                                 });
                         builder.create().show();
