@@ -649,6 +649,10 @@ public class FuncFragment extends LazyLoadFragment {
             public void onResponse(Call<ListResult<MessageModel>> call, Response<ListResult<MessageModel>> response) {
                 if (response == null || getContext() == null) return;
                 ListResult<MessageModel> result = response.body();
+                if(result==null){
+                    ToastTools.show(getActivity(),"服务器开小差了!");
+                    return;
+                }
                 if (result.getCode() == 200) {
                     List<MessageModel> models = result.getData();
                     if (models != null) {
