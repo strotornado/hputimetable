@@ -246,8 +246,6 @@ public class MultiScheduleActivity extends Activity {
 
     public void getData() {
         loadLayout.setVisibility(View.VISIBLE);
-        nameList.clear();
-
         FindMultiExecutor executor=DataSupport.order("time desc").findAsync(ScheduleName.class);
         executor.listen(new FindMultiCallback() {
             @Override
@@ -255,6 +253,7 @@ public class MultiScheduleActivity extends Activity {
                 context.runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        nameList.clear();
                         nameList.addAll((Collection<? extends ScheduleName>) t);
                         titleTextView.setText("多课表(" + nameList.size() + ")");
 
