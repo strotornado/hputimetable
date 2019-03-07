@@ -53,6 +53,7 @@ public class UpdateTools {
                                     int v = Integer.parseInt(vals[0]);
                                     int isIgnoreUpdate = ShareTools.getInt(context, "isIgnoreUpdate", 0);
                                     if (isIgnoreUpdate == 0 && v > VersionTools.getVersionNumber()) {
+                                        if(context==null) return;
                                         AlertDialog.Builder builder = new AlertDialog.Builder(context)
                                                 .setTitle("发现新版本-v" + vals[1])
                                                 .setMessage("你可以在 工具箱->自动检查更新 中关闭提醒!\n\n更新日志:\n" + vals[2])
