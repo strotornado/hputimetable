@@ -1,13 +1,18 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <include layout="@layout/header"
-        android:visibility="gone"/>
+    <View
+        android:id="@+id/statuslayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/mainColor" />
+
+    <include layout="@layout/header" />
 
     <LinearLayout
         android:id="@+id/id_loadlayout"
@@ -23,23 +28,21 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="加载中.."
             android:layout_marginTop="10dp"
+            android:text="加载中.."
             android:textSize="16sp" />
     </LinearLayout>
 
     <com.zhuangfei.hputimetable.timetable_custom.CustomWeekView
         android:id="@+id/id_weekview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        />
+        android:layout_height="wrap_content" />
 
     <com.zhuangfei.timetable.TimetableView
         android:id="@+id/id_timetableView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="5dp">
-    </com.zhuangfei.timetable.TimetableView>
-    
-    </LinearLayout>
+        android:background="@color/app_white"
+        android:layout_marginBottom="5dp"></com.zhuangfei.timetable.TimetableView>
+</LinearLayout>
 

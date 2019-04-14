@@ -25,6 +25,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.tencent.bugly.crashreport.BuglyLog;
 import com.zhuangfei.classbox.activity.AuthActivity;
 import com.zhuangfei.classbox.model.SuperLesson;
 import com.zhuangfei.classbox.model.SuperResult;
@@ -33,6 +34,7 @@ import com.zhuangfei.hputimetable.CustomGridView;
 import com.zhuangfei.hputimetable.MainActivity;
 import com.zhuangfei.hputimetable.activity.MenuActivity;
 import com.zhuangfei.hputimetable.activity.MessageActivity;
+import com.zhuangfei.hputimetable.activity.VipActivity;
 import com.zhuangfei.hputimetable.activity.adapter.SearchSchoolActivity;
 import com.zhuangfei.hputimetable.activity.schedule.MultiScheduleActivity;
 import com.zhuangfei.hputimetable.R;
@@ -60,6 +62,8 @@ import com.zhuangfei.hputimetable.tools.DeviceTools;
 import com.zhuangfei.hputimetable.tools.ImportTools;
 import com.zhuangfei.hputimetable.tools.StationManager;
 import com.zhuangfei.hputimetable.tools.TimetableTools;
+import com.zhuangfei.hputimetable.tools.ViewTools;
+import com.zhuangfei.hputimetable.tools.VipTools;
 import com.zhuangfei.timetable.model.Schedule;
 import com.zhuangfei.timetable.model.ScheduleColorPool;
 import com.zhuangfei.timetable.model.ScheduleSupport;
@@ -68,6 +72,8 @@ import com.zhuangfei.toolkit.model.BundleModel;
 import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.ShareTools;
 import com.zhuangfei.toolkit.tools.ToastTools;
+import com.zhuangfei.toolkit.widget.listener.OnBaseScrollViewListener;
+import com.zhuangfei.toolkit.widget.view.BaseScrollView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -135,8 +141,14 @@ public class FuncFragment extends LazyLoadFragment {
     @BindView(R.id.id_ta_layout)
     LinearLayout bindContainer;
 
+    @BindView(R.id.id_vip_layout)
+    LinearLayout vipLayout;
+
     @BindView(R.id.id_func_setting_img)
     ImageView settingsImageView;
+
+    @BindView(R.id.statuslayout)
+    View statusView;
 
     int curWeek = 1;
     int dayOfWeek = -1;
@@ -153,6 +165,13 @@ public class FuncFragment extends LazyLoadFragment {
     public void onViewCreated(View view, Bundle savedInstanceState) {
         ButterKnife.bind(this, view);
         EventBus.getDefault().register(this);
+        try {
+            int statusHeight = ViewTools.getStatusHeight(getActivity());
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, statusHeight);
+            statusView.setLayoutParams(lp);
+        } catch (Exception e) {
+            BuglyLog.e("FuncFragment", "onViewCreated", e);
+        }
         super.onViewCreated(view, savedInstanceState);
     }
 
@@ -206,8 +225,11 @@ public class FuncFragment extends LazyLoadFragment {
                 }
             }
         });
-
-
+        //todo
+        int showVip=ShareTools.getInt(getActivity(),ShareConstants.INT_VIP_LAYOUT,1);
+        if(showVip==1&&!VipTools.isVip(getActivity())){
+            vipLayout.setVisibility(View.VISIBLE);
+        }
         registerForContextMenu(stationGridView);
         findData();
         findStationLocal();
@@ -277,13 +299,7 @@ public class FuncFragment extends LazyLoadFragment {
                     EventBus.getDefault().post(new SwitchPagerEvent());
                 }
             });
-            infoButtonText.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    toSearchSchool();
-                }
-            });
-            infoButtonText.setText("逛逛");
+            infoButtonText.setVisibility(View.GONE);
             cardLayout.addView(view);
 
         } else {
@@ -343,6 +359,7 @@ public class FuncFragment extends LazyLoadFragment {
                     toSearchSchool();
                 }
             });
+            infoButtonText.setVisibility(View.GONE);
             cardLayout2.addView(view);
         } else {
             for (int i = 0; i < models.size(); i++) {
@@ -384,6 +401,7 @@ public class FuncFragment extends LazyLoadFragment {
         }
     }
 
+    @OnClick(R.id.id_search_school)
     public void toSearchSchool() {
         ActivityTools.toActivityWithout(getActivity(), SearchSchoolActivity.class);
     }
@@ -429,18 +447,18 @@ public class FuncFragment extends LazyLoadFragment {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onUpdateBindDataEvent(UpdateBindDataEvent event){
+    public void onUpdateBindDataEvent(UpdateBindDataEvent event) {
         findData2();
     }
 
     public void findData2() {
         int id2 = ShareTools.getInt(getActivity(), ShareConstants.INT_SCHEDULE_NAME_ID2, 0);
-        int guanlian=ShareTools.getInt(getActivity(), ShareConstants.INT_GUANLIAN, 1);
+        int guanlian = ShareTools.getInt(getActivity(), ShareConstants.INT_GUANLIAN, 1);
 
-        if(guanlian==1){
+        if (guanlian == 1) {
             isBindLayout.setVisibility(View.VISIBLE);
             bindContainer.setVisibility(View.VISIBLE);
-        }else {
+        } else {
             isBindLayout.setVisibility(View.GONE);
             bindContainer.setVisibility(View.GONE);
             return;
@@ -448,7 +466,7 @@ public class FuncFragment extends LazyLoadFragment {
         if (id2 == 0) {
             bindContainer.setVisibility(View.GONE);
             return;
-        }else {
+        } else {
             bindContainer.setVisibility(View.VISIBLE);
         }
         final ScheduleName newName = DataSupport.find(ScheduleName.class, id2);
@@ -537,6 +555,7 @@ public class FuncFragment extends LazyLoadFragment {
                         }
                     }
                 })
+                .setCancelable(false)
                 .setNegativeButton("取消", null);
         builder.create().show();
         ;
@@ -649,8 +668,8 @@ public class FuncFragment extends LazyLoadFragment {
             public void onResponse(Call<ListResult<MessageModel>> call, Response<ListResult<MessageModel>> response) {
                 if (response == null || getContext() == null) return;
                 ListResult<MessageModel> result = response.body();
-                if(result==null){
-                    ToastTools.show(getActivity(),"服务器开小差了!");
+                if (result == null) {
+                    ToastTools.show(getActivity(), "服务器开小差了!");
                     return;
                 }
                 if (result.getCode() == 200) {
@@ -691,32 +710,34 @@ public class FuncFragment extends LazyLoadFragment {
         EventBus.getDefault().unregister(this);
     }
 
-    @OnClick(R.id.id_bind_course)
+    @OnClick(R.id.id_bind_course_btn)
     public void onBindLayoutClicked() {
 
         FindMultiExecutor executor = DataSupport.order("time desc").findAsync(ScheduleName.class);
         executor.listen(new FindMultiCallback() {
             @Override
             public <T> void onFinish(final List<T> t) {
-                final List<ScheduleName> models= (List<ScheduleName>) t;
-                if (t == null||models==null) return;
+                final List<ScheduleName> models = (List<ScheduleName>) t;
+                if (t == null || models == null) return;
                 getActivity().runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
                         String[] items = new String[t.size()];
-                        for(int i=0;i<models.size();i++){
-                            items[i]=models.get(i).getName();
+                        for (int i = 0; i < models.size(); i++) {
+                            items[i] = models.get(i).getName();
                         }
                         android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getActivity())
                                 .setTitle("选择一个课表以绑定")
                                 .setItems(items, new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
-                                        ShareTools.putInt(getActivity(),ShareConstants.INT_SCHEDULE_NAME_ID2,models.get(i).getId());
+                                        ShareTools.putInt(getActivity(), ShareConstants.INT_SCHEDULE_NAME_ID2, models.get(i).getId());
                                         findData2();
-                                        Toasty.success(getActivity(),"关联成功!").show();
+                                        Toasty.success(getActivity(), "关联成功!").show();
                                     }
-                                });
+                                })
+                                .setCancelable(false)
+                                .setNegativeButton("取消",null);
                         builder.create().show();
                     }
                 });
@@ -724,35 +745,100 @@ public class FuncFragment extends LazyLoadFragment {
         });
     }
 
+    @OnClick(R.id.id_func_setting_img2)
+    public void onSettingLayout2Clicked(){
+        String[] items = {
+                "隐藏本卡片"
+        };
+        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getActivity())
+                .setTitle("卡片设置")
+                .setItems(items, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        switch (i) {
+                            case 0:
+                                isBindLayout.setVisibility(View.GONE);
+                                bindContainer.setVisibility(View.GONE);
+                                ShareTools.putInt(getActivity(),  ShareConstants.INT_GUANLIAN, 0);
+                                ToastTools.show(getActivity(),"已隐藏关联课表卡片，可在工具箱中打开");
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                })
+                .setCancelable(false)
+                .setNegativeButton("取消",null);
+        builder.create().show();
+    }
+
     @OnClick(R.id.id_func_setting_img)
     public void onSettingLayoutClicked() {
-        FindMultiExecutor executor = DataSupport.order("time desc").findAsync(ScheduleName.class);
-        executor.listen(new FindMultiCallback() {
-            @Override
-            public <T> void onFinish(final List<T> t) {
-                final List<ScheduleName> models= (List<ScheduleName>) t;
-                if (t == null||models==null) return;
-                getActivity().runOnUiThread(new Runnable() {
+        String[] items = {
+                "查看关联信息",
+                "重新关联课表",
+                "隐藏本卡片"
+        };
+        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getActivity())
+                .setTitle("卡片设置")
+                .setItems(items, new DialogInterface.OnClickListener() {
                     @Override
-                    public void run() {
-                        String[] items = new String[t.size()];
-                        for(int i=0;i<models.size();i++){
-                            items[i]=models.get(i).getName();
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        switch (i) {
+                            case 0:
+                                int id2 = ShareTools.getInt(getActivity(), ShareConstants.INT_SCHEDULE_NAME_ID2, 0);
+                                final ScheduleName newName = DataSupport.find(ScheduleName.class, id2);
+                                if (newName != null) {
+                                    ToastTools.show(getActivity(),"课表名称:"+newName.getName());
+                                }
+                                break;
+                            case 1:
+                                onBindLayoutClicked();
+                                break;
+                            case 2:
+                                isBindLayout.setVisibility(View.GONE);
+                                bindContainer.setVisibility(View.GONE);
+                                ShareTools.putInt(getActivity(),  ShareConstants.INT_GUANLIAN, 0);
+                                ToastTools.show(getActivity(),"已隐藏关联课表卡片，可在工具箱中打开");
+                                break;
+                            default:
+                                break;
                         }
-                        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getActivity())
-                                .setTitle("选择一个课表以绑定")
-                                .setItems(items, new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        ShareTools.putInt(getActivity(),ShareConstants.INT_SCHEDULE_NAME_ID2,models.get(i).getId());
-                                        findData2();
-                                        Toasty.success(getActivity(),"关联成功!").show();
-                                    }
-                                });
-                        builder.create().show();
                     }
-                });
-            }
-        });
+                })
+                .setCancelable(false)
+                .setNegativeButton("取消",null);
+        builder.create().show();
+    }
+
+    @OnClick(R.id.id_vip_btn)
+    public void onVipBtnClicked(){
+        ActivityTools.toActivityWithout(getActivity(), VipActivity.class);
+    }
+
+    @OnClick(R.id.id_func_setting_img3)
+    public void onHideVipBtnClicked(){
+        String[] items = {
+                "隐藏本卡片"
+        };
+        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getActivity())
+                .setTitle("卡片设置")
+                .setItems(items, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        switch (i) {
+                            case 0:
+                                vipLayout.setVisibility(View.GONE);
+                                ShareTools.putInt(getActivity(),  ShareConstants.INT_VIP_LAYOUT, 0);
+                                ToastTools.show(getActivity(),"已隐藏关联课表卡片，可在工具箱中打开");
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                })
+                .setCancelable(false)
+                .setNegativeButton("取消",null);
+        builder.create().show();
     }
 }

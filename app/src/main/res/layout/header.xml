@@ -4,7 +4,7 @@
     android:layout_height="45dp"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:background="@color/colorPrimary">
+    android:background="?attr/mainColor">
 
     <LinearLayout
         android:id="@+id/id_layout"
@@ -18,10 +18,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="课程表"
-            android:textStyle="bold"
             android:textColor="@color/app_white"
             android:layout_marginLeft="15dp"
-            android:textSize="17sp" />
+            android:textSize="18sp" />
+
         <TextView
             android:id="@+id/id_schedulename"
             android:layout_width="wrap_content"
@@ -36,10 +36,10 @@
 
     <ImageView
         android:id="@+id/id_main_menu"
-        android:visibility="gone"
         android:layout_width="45dp"
         android:layout_height="45dp"
         android:layout_marginLeft="10dp"
         android:padding="5dp"
+        android:src="@drawable/ic_menu"
         android:layout_marginRight="10dp"/>
 </LinearLayout>

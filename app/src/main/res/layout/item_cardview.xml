@@ -6,6 +6,12 @@
     android:gravity="center"
     android:orientation="vertical">
 
+    <View
+        android:id="@+id/id_line"
+        android:layout_width="match_parent"
+        android:layout_height="1px"
+        android:background="@color/app_panel_bg" />
+
     <LinearLayout
         android:id="@+id/id_item_clicklayout"
         android:layout_width="match_parent"
@@ -67,13 +73,9 @@
         <View
             android:id="@+id/id_item_color"
             android:layout_marginLeft="10dp"
-            android:layout_width="20dp"
-            android:layout_height="20dp"/>
+            android:background="@drawable/border_dayview"
+            android:layout_width="10dp"
+            android:layout_height="10dp"/>
     </LinearLayout>
 
-    <View
-        android:id="@+id/id_line"
-        android:layout_width="match_parent"
-        android:layout_height="1px"
-        android:background="@color/app_panel_bg" />
 </LinearLayout>

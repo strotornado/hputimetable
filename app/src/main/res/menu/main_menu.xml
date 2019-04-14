@@ -2,4 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:id="@+id/id_menu2"
         android:title="添加课程"/>
+    <item android:id="@+id/id_menu3"
+        android:title="打开周次选择栏"/>
+    <item android:id="@+id/id_menu4"
+        android:title="关闭周次选择栏"/>
 </menu>

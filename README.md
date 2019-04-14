@@ -63,6 +63,10 @@ bugly {
 
 ## Images
 
+### v1.1.7
+
+<img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.7/img1.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.7/img2.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.7/img3.jpg" width="30%"/>
+
 ### v1.1.2
 
 <img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.2/img1.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.2/img3.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.2/img6.jpg" width="30%"/>
@@ -71,6 +75,16 @@ bugly {
 ### v1.1.1
 
 <img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.1/img1.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.1/img2.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.1/img3.jpg" width="30%"/>
+
+### v1.1.7 `2019/03/7`
+
+- 优化UI
+- 主题颜色可设置
+- 关联课表美化（下期开始优化关联课表）
+- 设置开学时间
+- 设置周日为起始日
+- 设置最大节次
+- 增加高级版，需要付费开通
 
 ### v1.1.6 `2019/03/7`
 

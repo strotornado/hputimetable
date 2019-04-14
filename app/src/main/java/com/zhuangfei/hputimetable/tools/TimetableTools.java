@@ -35,8 +35,14 @@ public class TimetableTools {
             return 1;
         }
         int r=ScheduleSupport.timeTransfrom(startTime);
+//        int isFirstSunday=ShareTools.getInt(context,"isFirstSunday",0);
+//        Calendar calendar=Calendar.getInstance();
+//        calendar.setTime(new Date());
+//        if(isFirstSunday==1&&calendar.get(Calendar.DAY_OF_WEEK)==Calendar.SUNDAY){
+//            r-=1;
+//        }
         if(r>25) return 25;
-        if(r<0) return 0;
+        if(r<=0) return 1;
         return r;
     }
 

@@ -23,5 +23,8 @@ public class ShareConstants {
 
     public static final String STRING_SCHOOL_NAME="string_school_name";
     public static final String INT_GUANLIAN="key_guanlian";
+    public static final String INT_VIP_LAYOUT="key_viplayout";
+
+    public static final String INT_THEME="key_theme";
 
 }

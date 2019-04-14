@@ -23,6 +23,7 @@ public class FileTools {
 
 	public static String IMAGE = "/image";
 	public static String TIME_TABLE = "/timtable";
+	public static String VIP = "/vip";
 	public static String LOG = "/log";
 
 	public static File saveViewImage(Bitmap bitmap, String fileName) {
@@ -73,6 +74,45 @@ public class FileTools {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	public static void writeVipInfo(String time,String value) {
+		File file = new File(getDir(VIP) + "/time.txt");
+		try {
+			PrintStream ps = new PrintStream(file);
+			ps.print(time);
+			ps.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		File file2 = new File(getDir(VIP) + "/value.txt");
+		try {
+			PrintStream ps = new PrintStream(file2);
+			ps.print(value);
+			ps.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static String readVipInfo(String fileName) {
+		File file = new File(getDir(VIP) + "/"+fileName+".txt");
+		String result = "";
+		try {
+			if (!file.exists())
+				file.createNewFile();
+			FileInputStream fis = new FileInputStream(file);
+			InputStreamReader isd = new InputStreamReader(fis);
+			BufferedReader reader = new BufferedReader(isd);
+			result=reader.readLine();
+			reader.close();
+			isd.close();
+			fis.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 
 	public static String readTimetable(String name) {

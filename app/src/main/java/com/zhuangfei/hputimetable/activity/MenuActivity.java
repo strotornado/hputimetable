@@ -2,18 +2,23 @@ package com.zhuangfei.hputimetable.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.icu.util.TimeZone;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.View;
+import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.tencent.bugly.beta.Beta;
+import com.tencent.bugly.crashreport.BuglyLog;
 import com.zhuangfei.hputimetable.MainActivity;
 import com.zhuangfei.hputimetable.R;
 import com.zhuangfei.hputimetable.activity.adapter.UploadHtmlActivity;
@@ -28,11 +33,17 @@ import com.zhuangfei.hputimetable.api.model.TimetableModel;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
 import com.zhuangfei.hputimetable.event.ConfigChangeEvent;
 import com.zhuangfei.hputimetable.event.UpdateBindDataEvent;
+import com.zhuangfei.hputimetable.event.UpdateScheduleEvent;
+import com.zhuangfei.hputimetable.model.ScheduleDao;
 import com.zhuangfei.hputimetable.tools.BroadcastUtils;
 import com.zhuangfei.hputimetable.tools.DeviceTools;
+import com.zhuangfei.hputimetable.tools.PayTools;
+import com.zhuangfei.hputimetable.tools.TimetableTools;
 import com.zhuangfei.hputimetable.tools.UpdateTools;
+import com.zhuangfei.hputimetable.tools.VipTools;
 import com.zhuangfei.hputimetable.tools.WidgetConfig;
 import com.zhuangfei.timetable.model.ScheduleConfig;
+import com.zhuangfei.timetable.model.ScheduleSupport;
 import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.ShareTools;
 import com.zhuangfei.toolkit.tools.ToastTools;
@@ -40,6 +51,10 @@ import com.zhuangfei.toolkit.tools.ToastTools;
 import org.greenrobot.eventbus.EventBus;
 import org.litepal.crud.DataSupport;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Set;
 
 import butterknife.BindView;
@@ -80,6 +95,9 @@ public class MenuActivity extends AppCompatActivity {
     @BindView(R.id.id_show_qinglv)
     SwitchCompat showQinglvSwitch;
 
+    @BindView(R.id.id_switch_firstsunday)
+    SwitchCompat firstSundaySwitch;
+
     boolean changeStatus=false;
     boolean changeStatus2=false;
 
@@ -92,6 +110,12 @@ public class MenuActivity extends AppCompatActivity {
     @BindView(R.id.id_school_count_text)
     TextView personCountText;
 
+    @BindView(R.id.tv_startTime)
+    TextView startTimeText;
+
+    @BindView(R.id.id_vip_btn)
+    LinearLayout vipButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -100,9 +124,16 @@ public class MenuActivity extends AppCompatActivity {
         inits();
     }
 
-    private void inits() {
-        context = this;
+    public void checkVip(){
+        updateTopText();
+        if(VipTools.isVip(this)){
+            vipButton.setVisibility(View.GONE);
+        }else{
+            vipButton.setVisibility(View.VISIBLE);
+        }
+    }
 
+    public void updateTopText(){
         String deviceId= DeviceTools.getDeviceId(this);
         if(deviceId!=null){
             if(deviceId.length()>=8){
@@ -114,6 +145,14 @@ public class MenuActivity extends AppCompatActivity {
             deviceText.setText("设备号获取失败");
         }
 
+        if(VipTools.isVip(this)){
+            deviceText.setText(deviceText.getText()+"(高级版)");
+        }
+    }
+
+    private void inits() {
+        context = this;
+        updateTopText();
         backLayout = findViewById(R.id.id_back);
         backLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -150,6 +189,13 @@ public class MenuActivity extends AppCompatActivity {
             checkedAutoSwitch.setChecked(false);
         }
 
+        int isFirstSunday = ShareTools.getInt(this, "isFirstSunday", 0);
+        if (isFirstSunday == 0) {
+            firstSundaySwitch.setChecked(false);
+        } else {
+            firstSundaySwitch.setChecked(true);
+        }
+
         boolean maxItem= WidgetConfig.get(this,WidgetConfig.CONFIG_MAX_ITEM);
         max15Switch.setChecked(maxItem);
 
@@ -166,6 +212,86 @@ public class MenuActivity extends AppCompatActivity {
             schoolText.setText(schoolName);
             getSchoolPersonCount(schoolName);
         }
+
+        String startTime=ShareTools.getString(this,ShareConstants.STRING_START_TIME,null);
+        if (TextUtils.isEmpty(startTime)) {
+            startTimeText.setText("未设置");
+        }else{
+            SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat sdf2=new SimpleDateFormat("yyyy/MM/dd");
+            try{
+                Date date=sdf.parse(startTime);
+                startTimeText.setText(sdf2.format(date));
+            }catch (Exception e){
+                BuglyLog.e("MenuActivity",e.getMessage(),e);
+            }
+        }
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        checkVip();
+    }
+
+    @OnClick(R.id.id_vip_btn)
+    public void onVipBtnClicked(){
+        ActivityTools.toActivityWithout(this, VipActivity.class);
+    }
+
+    @OnClick(R.id.id_set_maxcount)
+    public void onSetMaxCountClicked(){
+        if(!VipTools.isVip(this)){
+            VipTools.showAlertDialog(this);
+            return;
+        }
+        String[] items=new String[13];
+        for(int i=0;i<=12;i++){
+            items[i]=""+(i+8)+"节";
+        }
+        android.support.v7.app.AlertDialog.Builder builder=new android.support.v7.app.AlertDialog.Builder(this)
+                .setTitle("设置节次")
+                .setItems(items, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        ShareTools.putInt(MenuActivity.this,"maxCount",(i+8));
+                        ToastTools.show(MenuActivity.this,"设置成功!");
+                        changeStatus=true;
+                    }
+                })
+                .setCancelable(false)
+                .setNegativeButton("取消",null);
+        builder.create().show();
+    }
+
+    @OnClick(R.id.id_set_starttime_layout)
+    public void onSetStartTimeLayoutClicked(){
+        if(!VipTools.isVip(this)){
+            VipTools.showAlertDialog(this);
+            return;
+        }
+        final SimpleDateFormat sdf=new SimpleDateFormat("yyyy-M-d 00:00:00");
+        final SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        DatePickerDialog mDatePickerDialog = new DatePickerDialog(context,  new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                month = month + 1;//月份加一
+                try {
+                    Date date=sdf.parse(year+"-"+month+"-"+dayOfMonth+" 00:00:00");
+                    String time=sdf2.format(date);
+                    int curweek= TimetableTools.getCurWeek(MenuActivity.this);
+                    ShareTools.putString(MenuActivity.this,ShareConstants.STRING_START_TIME,time);
+                    ToastTools.show(MenuActivity.this,"设置成功，当前周:"+curweek);
+                    EventBus.getDefault().post(new UpdateScheduleEvent());
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+                startTimeText.setText(year+"/"+month+"/"+dayOfMonth);
+            }
+
+        }, 2019, 4, 14);
+        mDatePickerDialog.setOnCancelListener(null);
+        mDatePickerDialog.show();
     }
 
     public Activity getContext() {
@@ -296,6 +422,20 @@ public class MenuActivity extends AppCompatActivity {
         }
     }
 
+    @OnCheckedChanged(R.id.id_switch_firstsunday)
+    public void onFirstSundaySwitchClicked(boolean b) {
+        if(!VipTools.isVip(this)){
+            VipTools.showAlertDialog(this);
+            return;
+        }
+        if (b) {
+            ShareTools.putInt(this, "isFirstSunday", 1);
+        } else {
+            ShareTools.putInt(this, "isFirstSunday", 0);
+        }
+        changeStatus=true;
+    }
+
     @OnCheckedChanged(R.id.id_widget_hideweeks)
     public void onCheckedHideWeeksSwitchClicked(boolean b) {
         WidgetConfig.apply(this,WidgetConfig.CONFIG_HIDE_WEEKS,b);
@@ -325,6 +465,15 @@ public class MenuActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void showDialog(String title,String message){
+        AlertDialog alertDialog=new AlertDialog.Builder(this)
+                .setTitle(title)
+                .setMessage(message)
+                .setPositiveButton("我知道了",null)
+                .create();
+        alertDialog.show();
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -345,6 +494,33 @@ public class MenuActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         openBindSchoolActivity();
+                        if(dialogInterface!=null){
+                            dialogInterface.dismiss();
+                        }
+                    }
+                })
+                .setNegativeButton("取消",null);
+        builder.create().show();
+    }
+
+    @OnClick(R.id.id_set_theme_layout)
+    public void onSetThemeLayoutClicked(){
+        if(!VipTools.isVip(this)){
+            VipTools.showAlertDialog(this);
+            return;
+        }
+        String[] items={
+                "红色主题",
+                "蓝色主题",
+                "黑色主题"
+        };
+        android.support.v7.app.AlertDialog.Builder builder=new android.support.v7.app.AlertDialog.Builder(this)
+                .setTitle("修改学校")
+                .setItems(items, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        ShareTools.putInt(MenuActivity.this,ShareConstants.INT_THEME,i);
+                        ToastTools.show(MenuActivity.this,"设置成功，重启App生效");
                         if(dialogInterface!=null){
                             dialogInterface.dismiss();
                         }

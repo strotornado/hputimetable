@@ -31,13 +31,9 @@ import com.zhuangfei.hputimetable.event.UpdateTabTextEvent;
 import com.zhuangfei.hputimetable.fragment.FuncFragment;
 import com.zhuangfei.hputimetable.adapter.MyFragmentPagerAdapter;
 import com.zhuangfei.hputimetable.fragment.ScheduleFragment;
-import com.zhuangfei.hputimetable.listener.OnNoticeUpdateListener;
-import com.zhuangfei.hputimetable.listener.OnSwitchPagerListener;
-import com.zhuangfei.hputimetable.listener.OnSwitchTableListener;
-import com.zhuangfei.hputimetable.listener.OnUpdateCourseListener;
-import com.zhuangfei.hputimetable.tools.BroadcastUtils;
 import com.zhuangfei.hputimetable.tools.DeviceTools;
 import com.zhuangfei.hputimetable.tools.ImportTools;
+import com.zhuangfei.hputimetable.tools.ThemeManager;
 import com.zhuangfei.hputimetable.tools.UpdateTools;
 import com.zhuangfei.hputimetable.tools.VersionTools;
 import com.zhuangfei.hputimetable.tools.ViewTools;
@@ -143,10 +139,11 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ThemeManager.apply(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-//        ViewTools.setTransparent(this);
-        ViewTools.setStatusTextGrayColor(this);
+        ViewTools.setTransparent(this);
+//        ViewTools.setStatusTextGrayColor(this);
         ButterKnife.bind(this);
         EventBus.getDefault().register(this);
         shouldcheckPermission();
@@ -241,36 +238,36 @@ public class MainActivity extends AppCompatActivity {
         leftEnd = ScreenUtils.dip2px(MainActivity.this, titleWidthDip + marLeftDip + titleWidthDip / 2 - navWidthDip / 2);
 
         mViewPager = findViewById(R.id.id_viewpager);
-        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                Log.d(TAG, "onPageScrolled: " + position + "&&&" + positionOffset + "&&&" + positionOffsetPixels);
-
-//                marLeft=(int)((screenWidth/3)*(position+positionOffset));
-//                tabBottomViewParams.setMargins(marLeft,0,0,0);
-//                tabBottomView.setLayoutParams(tabBottomViewParams);
-
-                //20dp:Tab宽度的一半，8dp:指示条宽度的一半
-                float marLeft = leftStart + (leftEnd - leftStart) * (position + positionOffset);
-                lp.setMargins((int) marLeft, 0, 0, 0);
-                titleNavView.setLayoutParams(lp);
-
-
-                float newMar = searchViewStartMar + (searchViewEndMar - searchViewStartMar) * (position + positionOffset);
-                searchLayoutParams.setMargins((int) newMar, 0, searchViewStartMarRight, 0);
-                searchLayout.setLayoutParams(searchLayoutParams);
-            }
-
-            @Override
-            public void onPageSelected(int position) {
-                updateTabStatus(position);
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int state) {
-
-            }
-        });
+//        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+//            @Override
+//            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+//                Log.d(TAG, "onPageScrolled: " + position + "&&&" + positionOffset + "&&&" + positionOffsetPixels);
+//
+////                marLeft=(int)((screenWidth/3)*(position+positionOffset));
+////                tabBottomViewParams.setMargins(marLeft,0,0,0);
+////                tabBottomView.setLayoutParams(tabBottomViewParams);
+//
+//                //20dp:Tab宽度的一半，8dp:指示条宽度的一半
+//                float marLeft = leftStart + (leftEnd - leftStart) * (position + positionOffset);
+//                lp.setMargins((int) marLeft, 0, 0, 0);
+//                titleNavView.setLayoutParams(lp);
+//
+//
+//                float newMar = searchViewStartMar + (searchViewEndMar - searchViewStartMar) * (position + positionOffset);
+//                searchLayoutParams.setMargins((int) newMar, 0, searchViewStartMarRight, 0);
+//                searchLayout.setLayoutParams(searchLayoutParams);
+//            }
+//
+//            @Override
+//            public void onPageSelected(int position) {
+//                updateTabStatus(position);
+//            }
+//
+//            @Override
+//            public void onPageScrollStateChanged(int state) {
+//
+//            }
+//        });
 
         mFragmentList = new ArrayList<>();
         mFragmentList.add(new FuncFragment());
@@ -478,7 +475,9 @@ public class MainActivity extends AppCompatActivity {
                 .permissions(
                         Manifest.permission.CAMERA,
                         Manifest.permission.VIBRATE,
-                        Manifest.permission.READ_PHONE_STATE
+                        Manifest.permission.READ_PHONE_STATE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
                 )
                 .request();
     }
@@ -502,7 +501,7 @@ public class MainActivity extends AppCompatActivity {
     //申请失败
     @PermissionFail(requestCode = SUCCESSCODE)
     public void doFailSomething() {
-        ToastTools.show(this, "权限不足，运行中可能会出现故障!请务必开启读取设备信息权限，设备号将作为你的账户");
+       // ToastTools.show(this, "权限不足，运行中可能会出现故障!请务必开启读取设备信息权限，设备号将作为你的账户");
     }
 
 
@@ -543,11 +542,6 @@ public class MainActivity extends AppCompatActivity {
         if (mViewPager.getCurrentItem() == 1) {
             EventBus.getDefault().post(new ToggleWeekViewEvent());
         }
-    }
-
-    @OnClick(R.id.id_search_school)
-    public void toSearchSchool() {
-        ActivityTools.toActivityWithout(this, SearchSchoolActivity.class);
     }
 
     @Override

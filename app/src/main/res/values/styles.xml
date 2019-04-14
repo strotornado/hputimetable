@@ -21,9 +21,9 @@
     </style>
 
     <style name="mainTheme" parent="AppTheme">
-        <item name="colorPrimary">@color/colorPrimary2</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <!--<item name="colorPrimary">@color/colorPrimary2</item>-->
+        <!--<item name="colorPrimaryDark">@color/colorPrimaryDark</item>-->
+        <!--<item name="colorAccent">@color/colorAccent</item>-->
     </style>
 
     <style name="searchTheme" parent="AppTheme">
@@ -39,6 +39,18 @@
         <item name="wheel_item_text_color">@color/app_gray</item>
         <item name="wheel_selected_item_text_color">@android:color/black</item>
         <item name="wheel_item_text_size">14sp</item>
+    </style>
+
+    <style name="blueTheme" parent="AppTheme">
+        <item name="mainColor">@color/app_blue2</item>
+    </style>
+
+    <style name="redTheme" parent="AppTheme">
+        <item name="mainColor">@color/theme_red</item>
+    </style>
+
+    <style name="blackTheme" parent="AppTheme">
+        <item name="mainColor">@color/theme_dark</item>
     </style>
 
 </resources>
