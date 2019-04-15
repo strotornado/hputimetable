@@ -8,7 +8,7 @@
     <string name="vip_money">880</string>
     <string name="vip_money2">220</string>
     <string name="vip_body">永久</string>
-    <string name="vip_body2">一个月</string>
+    <string name="vip_body2">三个月</string>
     <string name="vip_success">支付成功，高级版已开启</string>
     <string name="vip_error">支付失败</string>
     <string name="signature">73c419013830a771157e2f188fcafaf8</string>

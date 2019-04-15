@@ -18,6 +18,7 @@ import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.ShareTools;
 import com.zhuangfei.toolkit.tools.ToastTools;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import butterknife.BindView;
@@ -55,7 +56,19 @@ public class AdapterDebugTipActivity extends AppCompatActivity {
             Toasty.warning(this, "不允许为空，请填充完整!").show();
         } else {
             if(name.equals("ZFMAN")&&userkey.equals("ZFMAN")){
-                PayLicense license=VipTools.getLicense(AdapterDebugTipActivity.this,1000,new Date());
+                Calendar cal = Calendar.getInstance();
+                cal.add(Calendar.DATE, 30);
+                Date date = cal.getTime();
+                PayLicense license=VipTools.getLicense(AdapterDebugTipActivity.this,1000,date);
+                VipTools.registerVip(license);
+                ToastTools.show(this,"Success:");
+                return;
+            }
+            if(name.equals("ZFMAN")&&userkey.equals("ZFMAN2")){
+                Calendar cal = Calendar.getInstance();
+                cal.add(Calendar.DATE, 30);
+                Date date = cal.getTime();
+                PayLicense license=VipTools.getLicense(AdapterDebugTipActivity.this,1000,date);
                 VipTools.registerVip(license);
                 ToastTools.show(this,"Success:");
                 return;

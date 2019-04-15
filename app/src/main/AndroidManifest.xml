@@ -69,8 +69,36 @@
                 android:resource="@xml/schedule_app_widget_info" />
         </receiver>
 
+        <receiver
+            android:name=".appwidget.ScheduleAppWidget2"
+            android:label="课表周视图">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.TIME_SET" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.zhuangfei.action.POINTER_CLICK" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.zhuangfei.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/schedule_app_widget_info2" />
+        </receiver>
+
         <service
             android:name=".appwidget.ScheduleService"
+            android:enabled="true"
+            android:exported="false"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+
+        <service
+            android:name=".appwidget.ScheduleService2"
             android:enabled="true"
             android:exported="false"
             android:permission="android.permission.BIND_REMOTEVIEWS" />

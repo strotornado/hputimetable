@@ -70,7 +70,7 @@ public class VipActivity extends AppCompatActivity {
             public void onFinish(Context context, Long payId, String orderId, String payUserId, EPayResult payResult, int payType, Integer amount) {
                 if(payResult.getCode()==EPayResult.SUCCESS_CODE.getCode()){
                     Calendar cal = Calendar.getInstance();
-                    cal.add(Calendar.DATE, 30);
+                    cal.add(Calendar.YEAR, 4);
                     Date date = cal.getTime();
                     PayLicense license=VipTools.getLicense(VipActivity.this,payId,date);
                     VipTools.registerVip(license);
@@ -102,7 +102,7 @@ public class VipActivity extends AppCompatActivity {
             public void onFinish(Context context, Long payId, String orderId, String payUserId, EPayResult payResult, int payType, Integer amount) {
                 if(payResult.getCode()==EPayResult.SUCCESS_CODE.getCode()){
                     Calendar cal = Calendar.getInstance();
-                    cal.add(Calendar.YEAR, 4);
+                    cal.add(Calendar.DATE, 30);
                     Date date = cal.getTime();
                     PayLicense license=VipTools.getLicense(VipActivity.this,payId,date);
                     VipTools.registerVip(license);
