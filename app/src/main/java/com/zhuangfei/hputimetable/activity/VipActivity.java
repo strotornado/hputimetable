@@ -14,7 +14,9 @@ import com.bumptech.glide.Glide;
 import com.payelves.sdk.enums.EPayResult;
 import com.payelves.sdk.listener.PayResultListener;
 import com.zhuangfei.hputimetable.R;
+import com.zhuangfei.hputimetable.model.PayLicense;
 import com.zhuangfei.hputimetable.tools.DeviceTools;
+import com.zhuangfei.hputimetable.tools.Md5Tools;
 import com.zhuangfei.hputimetable.tools.PayTools;
 import com.zhuangfei.hputimetable.tools.VersionTools;
 import com.zhuangfei.hputimetable.tools.VipTools;
@@ -22,6 +24,7 @@ import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.ToastTools;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 
@@ -50,21 +53,62 @@ public class VipActivity extends AppCompatActivity {
 
     @OnClick(R.id.id_vip_btn)
     public void onVipBtnClicked(){
-        String name="怪兽课表高级版";
+        String name=getResources().getString(R.string.vip_name);
+        String body=getResources().getString(R.string.vip_body);
+        Integer amount=Integer.parseInt(getResources().getString(R.string.vip_money));
         SimpleDateFormat sdf=new SimpleDateFormat("yyyyMMddHHmmss");
         String userId= DeviceTools.getDeviceId(this);
         String orderid=sdf.format(new Date())+"_"+(int)(Math.random()*1000)+"_gs";
         if(!TextUtils.isEmpty(userId)){
             orderid=orderid+userId;
+        }else{
+            ToastTools.show(this,"请先开启读取设备IMEI权限");
+            return;
         }
-        PayTools.callPay(this, name, "8.8元", 880, orderid, null, null, new PayResultListener() {
+        PayTools.callPay(this, name, body, amount, orderid, null, null, new PayResultListener() {
             @Override
             public void onFinish(Context context, Long payId, String orderId, String payUserId, EPayResult payResult, int payType, Integer amount) {
                 if(payResult.getCode()==EPayResult.SUCCESS_CODE.getCode()){
-                    VipTools.registerVip(VipActivity.this);
-                    ToastTools.show(VipActivity.this,"支付成功，高级版已开启");
+                    Calendar cal = Calendar.getInstance();
+                    cal.add(Calendar.DATE, 30);
+                    Date date = cal.getTime();
+                    PayLicense license=VipTools.getLicense(VipActivity.this,payId,date);
+                    VipTools.registerVip(license);
+                    ToastTools.show(VipActivity.this,getResources().getString(R.string.vip_success));
                 }else{
-                    ToastTools.show(VipActivity.this,"支付失败");
+                    ToastTools.show(VipActivity.this,getResources().getString(R.string.vip_error));
+                }
+                VipActivity.this.finish();
+            }
+        });
+    }
+
+    @OnClick(R.id.id_vip_btn2)
+    public void onVipBtnClicked2(){
+        String name=getResources().getString(R.string.vip_name2);
+        String body=getResources().getString(R.string.vip_body2);
+        Integer amount=Integer.parseInt(getResources().getString(R.string.vip_money2));
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyyMMddHHmmss");
+        String userId= DeviceTools.getDeviceId(this);
+        String orderid=sdf.format(new Date())+"_"+(int)(Math.random()*1000)+"_gs";
+        if(!TextUtils.isEmpty(userId)){
+            orderid=orderid+userId;
+        }else{
+            ToastTools.show(this,"请先开启读取设备IMEI权限");
+            return;
+        }
+        PayTools.callPay(this, name, body, amount, orderid, null, null, new PayResultListener() {
+            @Override
+            public void onFinish(Context context, Long payId, String orderId, String payUserId, EPayResult payResult, int payType, Integer amount) {
+                if(payResult.getCode()==EPayResult.SUCCESS_CODE.getCode()){
+                    Calendar cal = Calendar.getInstance();
+                    cal.add(Calendar.YEAR, 4);
+                    Date date = cal.getTime();
+                    PayLicense license=VipTools.getLicense(VipActivity.this,payId,date);
+                    VipTools.registerVip(license);
+                    ToastTools.show(VipActivity.this,getResources().getString(R.string.vip_success));
+                }else{
+                    ToastTools.show(VipActivity.this,getResources().getString(R.string.vip_error));
                 }
                 VipActivity.this.finish();
             }

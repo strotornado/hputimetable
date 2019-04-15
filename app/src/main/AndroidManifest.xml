@@ -24,7 +24,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launch"
         android:supportsRtl="true"
-        android:theme="@style/redTheme">
+        android:theme="@style/blackTheme">
         <activity
             android:name=".MainActivity"
             android:launchMode="singleTop">

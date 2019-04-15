@@ -76,6 +76,36 @@ public class FileTools {
 		}
 	}
 
+	public static void writeVipLicense(String value) {
+		File file = new File(getDir(VIP) + "/vip.license");
+		try {
+			PrintStream ps = new PrintStream(file);
+			ps.print(value);
+			ps.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static String readVipLicense() {
+		File file = new File(getDir(VIP) + "/vip.license");
+		String result = "";
+		try {
+			if (!file.exists())
+				file.createNewFile();
+			FileInputStream fis = new FileInputStream(file);
+			InputStreamReader isd = new InputStreamReader(fis);
+			BufferedReader reader = new BufferedReader(isd);
+			result=reader.readLine();
+			reader.close();
+			isd.close();
+			fis.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+
 	public static void writeVipInfo(String time,String value) {
 		File file = new File(getDir(VIP) + "/time.txt");
 		try {

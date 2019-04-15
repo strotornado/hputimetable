@@ -17,6 +17,9 @@ import android.widget.DatePicker;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.payelves.sdk.bean.QueryOrderModel;
+import com.payelves.sdk.listener.QueryOrderListener;
 import com.tencent.bugly.beta.Beta;
 import com.tencent.bugly.crashreport.BuglyLog;
 import com.zhuangfei.hputimetable.MainActivity;
@@ -34,6 +37,7 @@ import com.zhuangfei.hputimetable.constants.ShareConstants;
 import com.zhuangfei.hputimetable.event.ConfigChangeEvent;
 import com.zhuangfei.hputimetable.event.UpdateBindDataEvent;
 import com.zhuangfei.hputimetable.event.UpdateScheduleEvent;
+import com.zhuangfei.hputimetable.model.PayLicense;
 import com.zhuangfei.hputimetable.model.ScheduleDao;
 import com.zhuangfei.hputimetable.tools.BroadcastUtils;
 import com.zhuangfei.hputimetable.tools.DeviceTools;
@@ -116,6 +120,11 @@ public class MenuActivity extends AppCompatActivity {
     @BindView(R.id.id_vip_btn)
     LinearLayout vipButton;
 
+    @BindView(R.id.id_vip_expire)
+    TextView expireText;
+
+    SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:MM");
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -125,28 +134,61 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     public void checkVip(){
-        updateTopText();
         if(VipTools.isVip(this)){
+            updateTopText();
             vipButton.setVisibility(View.GONE);
+            expireText.setVisibility(View.VISIBLE);
+            PayLicense license=VipTools.getLocalLicense(this);
+
+            expireText.setText("有效期至: "+sdf.format(new Date(Long.parseLong(license.getExpire()))));
+            PayTools.checkPay(this, license,new QueryOrderListener() {
+                @Override
+                public void onFinish(boolean isSuccess, String msg, QueryOrderModel model) {
+                    if(!isSuccess){
+                        if(msg!=null&&msg.indexOf("订单不存在")!=-1){
+                            showDeleteLicenseDialog();
+                            cancelVip();
+                        }
+                    }
+                    ToastTools.show(MenuActivity.this,isSuccess+";"+msg);
+                }
+            });
         }else{
-            vipButton.setVisibility(View.VISIBLE);
+            cancelVip();
         }
     }
 
+    private void showDeleteLicenseDialog() {
+        VipTools.unregisterVip();
+        android.support.v7.app.AlertDialog.Builder builder=new android.support.v7.app.AlertDialog.Builder(this)
+                .setTitle("高级版被撤销")
+                .setMessage("经过系统检测，您的高级版凭证非正版，证书已被删除！请支持正版，感谢您的支持，如果本检测有误，请联系客服进行申诉:1193600556@qq.com")
+                .setPositiveButton("我知道了", null);
+        builder.create().show();
+    }
+
+    private void cancelVip() {
+        updateTopText();
+        vipButton.setVisibility(View.VISIBLE);
+        expireText.setVisibility(View.GONE);
+    }
+
     public void updateTopText(){
-        String deviceId= DeviceTools.getDeviceId(this);
-        if(deviceId!=null){
-            if(deviceId.length()>=8){
-                deviceText.setText("UID:"+deviceId.substring(deviceId.length()-8));
-            }else {
-                deviceText.setText("UID:"+deviceId);
-            }
-        }else{
-            deviceText.setText("设备号获取失败");
-        }
+//        String deviceId= DeviceTools.getDeviceId(this);
+//        if(deviceId!=null){
+//            if(deviceId.length()>=8){
+//                deviceText.setText("UID:"+deviceId.substring(deviceId.length()-8));
+//            }else {
+//                deviceText.setText("UID:"+deviceId);
+//            }
+//        }else{
+//            deviceText.setText("设备号获取失败");
+//        }
 
         if(VipTools.isVip(this)){
-            deviceText.setText(deviceText.getText()+"(高级版)");
+            deviceText.setText("高级版");
+        }else{
+            deviceText.setText("普通版)");
         }
     }
 

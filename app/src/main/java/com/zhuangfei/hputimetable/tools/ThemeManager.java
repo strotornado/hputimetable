@@ -11,7 +11,7 @@ import com.zhuangfei.toolkit.tools.ShareTools;
  */
 public class ThemeManager {
     public static void apply(Context context) {
-        int theme = ShareTools.getInt(context, ShareConstants.INT_THEME, 0);
+        int theme = ShareTools.getInt(context, ShareConstants.INT_THEME, 2);
         switch (theme) {
             case 0:
                 context.setTheme(R.style.redTheme);

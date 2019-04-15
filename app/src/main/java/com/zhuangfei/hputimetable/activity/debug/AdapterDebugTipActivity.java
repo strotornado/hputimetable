@@ -7,14 +7,18 @@ import android.widget.EditText;
 
 import com.zhuangfei.hputimetable.MainActivity;
 import com.zhuangfei.hputimetable.R;
+import com.zhuangfei.hputimetable.activity.VipActivity;
 import com.zhuangfei.hputimetable.api.TimetableRequest;
 import com.zhuangfei.hputimetable.api.model.ObjResult;
 import com.zhuangfei.hputimetable.api.model.UserDebugModel;
+import com.zhuangfei.hputimetable.model.PayLicense;
 import com.zhuangfei.hputimetable.tools.FileTools;
 import com.zhuangfei.hputimetable.tools.VipTools;
 import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.ShareTools;
 import com.zhuangfei.toolkit.tools.ToastTools;
+
+import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -51,8 +55,9 @@ public class AdapterDebugTipActivity extends AppCompatActivity {
             Toasty.warning(this, "不允许为空，请填充完整!").show();
         } else {
             if(name.equals("ZFMAN")&&userkey.equals("ZFMAN")){
-                VipTools.registerVip(this);
-                ToastTools.show(this,"Success:"+ FileTools.readVipInfo("time")+"="+FileTools.readVipInfo("value"));
+                PayLicense license=VipTools.getLicense(AdapterDebugTipActivity.this,1000,new Date());
+                VipTools.registerVip(license);
+                ToastTools.show(this,"Success:");
                 return;
             }
             TimetableRequest.getUserInfo(this, name, userkey,

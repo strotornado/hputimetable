@@ -4,6 +4,8 @@ import android.content.Context;
 
 import com.payelves.sdk.EPay;
 import com.payelves.sdk.listener.PayResultListener;
+import com.payelves.sdk.listener.QueryOrderListener;
+import com.zhuangfei.hputimetable.model.PayLicense;
 
 /**
  * Created by Liu ZhuangFei on 2019/4/5.
@@ -28,5 +30,18 @@ public class PayTools {
                         String backParams, PayResultListener payResultListener){
         checkPaySdkInit(context);
         EPay.getInstance(context).pay(subject,body,amount,order,userId,backParams,payResultListener);
+    }
+
+    public static void checkPay(Context context, PayLicense license,QueryOrderListener listener){
+        if(listener==null||context==null||license==null){
+            listener.onFinish(false,"环境异常",null);
+            return;
+        }
+        checkPaySdkInit(context);
+        if(license==null){
+            listener.onFinish(false,"证书校验失败",null);
+            return;
+        }
+        EPay.getInstance(context).queryOrder(license.getOrderId(),listener);
     }
 }

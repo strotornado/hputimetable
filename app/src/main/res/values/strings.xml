@@ -3,6 +3,16 @@
     <string name="appwidget_text">怪兽课表插件4x2</string>
     <string name="add_widget">Add widget</string>
     <string name="key">zfman12345678.0</string>
+    <string name="vip_name">怪兽课表高级版</string>
+    <string name="vip_name2">怪兽课表高级版</string>
+    <string name="vip_money">880</string>
+    <string name="vip_money2">220</string>
+    <string name="vip_body">永久</string>
+    <string name="vip_body2">一个月</string>
+    <string name="vip_success">支付成功，高级版已开启</string>
+    <string name="vip_error">支付失败</string>
+    <string name="signature">73c419013830a771157e2f188fcafaf8</string>
+
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

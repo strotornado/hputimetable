@@ -73,6 +73,16 @@
                     android:textColor="@color/theme_red" />
 
             </RelativeLayout>
+            <include layout="@layout/view_line" />
+            <TextView
+                android:id="@+id/id_vip_expire"
+                android:gravity="center_vertical"
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:textColor="@color/app_gray"
+                android:text=""/>
 
             <TextView
                 android:layout_width="match_parent"
