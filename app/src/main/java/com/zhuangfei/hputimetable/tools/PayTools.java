@@ -7,6 +7,9 @@ import com.payelves.sdk.listener.PayResultListener;
 import com.payelves.sdk.listener.QueryOrderListener;
 import com.zhuangfei.hputimetable.model.PayLicense;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * Created by Liu ZhuangFei on 2019/4/5.
  */
@@ -43,5 +46,11 @@ public class PayTools {
             return;
         }
         EPay.getInstance(context).queryOrder(license.getOrderId(),listener);
+    }
+
+    public static String getOrderId(String userId){
+        SimpleDateFormat sdf=new SimpleDateFormat("yyyyMMddHHmmss");
+        String orderid=sdf.format(new Date())+"_"+(int)(Math.random()*1000)+"_gs2_"+VersionTools.getVersionName()+"_"+userId;
+        return orderid;
     }
 }

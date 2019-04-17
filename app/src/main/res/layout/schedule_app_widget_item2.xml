@@ -1,12 +1,12 @@
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/id_widget_item_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:gravity="center"
-    android:scrollbars="none">
-    <ImageView
-    android:id="@+id/iv_imgview"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+    android:gravity="center">
 
-</ScrollView>
+    <ImageView
+        android:id="@+id/iv_imgview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</LinearLayout>

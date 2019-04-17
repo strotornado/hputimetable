@@ -9,7 +9,10 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.google.gson.Gson;
+import com.payelves.sdk.bean.QueryOrderModel;
+import com.payelves.sdk.listener.QueryOrderListener;
 import com.zhuangfei.hputimetable.activity.BindSchoolActivity;
+import com.zhuangfei.hputimetable.activity.MenuActivity;
 import com.zhuangfei.hputimetable.activity.MessageActivity;
 import com.zhuangfei.hputimetable.activity.StationWebViewActivity;
 import com.zhuangfei.hputimetable.activity.adapter.SearchSchoolActivity;
@@ -31,12 +34,15 @@ import com.zhuangfei.hputimetable.event.UpdateTabTextEvent;
 import com.zhuangfei.hputimetable.fragment.FuncFragment;
 import com.zhuangfei.hputimetable.adapter.MyFragmentPagerAdapter;
 import com.zhuangfei.hputimetable.fragment.ScheduleFragment;
+import com.zhuangfei.hputimetable.model.PayLicense;
 import com.zhuangfei.hputimetable.tools.DeviceTools;
 import com.zhuangfei.hputimetable.tools.ImportTools;
+import com.zhuangfei.hputimetable.tools.PayTools;
 import com.zhuangfei.hputimetable.tools.ThemeManager;
 import com.zhuangfei.hputimetable.tools.UpdateTools;
 import com.zhuangfei.hputimetable.tools.VersionTools;
 import com.zhuangfei.hputimetable.tools.ViewTools;
+import com.zhuangfei.hputimetable.tools.VipTools;
 import com.zhuangfei.timetable.utils.ScreenUtils;
 import com.zhuangfei.toolkit.model.BundleModel;
 import com.zhuangfei.toolkit.tools.ActivityTools;
@@ -148,6 +154,12 @@ public class MainActivity extends AppCompatActivity {
         EventBus.getDefault().register(this);
         shouldcheckPermission();
         inits();
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                handler.sendEmptyMessage(0x220);
+            }
+        }, 1000);
     }
 
     @Override
@@ -191,8 +203,29 @@ public class MainActivity extends AppCompatActivity {
             if (msg.what == 0x125) {
                 select(toItem);
             }
+            if (msg.what == 0x220) {
+                try{
+                    checkVip();
+                }catch (Exception e){
+                }
+            }
         }
     };
+
+    public void checkVip() {
+        if (VipTools.isVip(this)) {
+            final PayLicense license = VipTools.getLocalLicense(this);
+            PayTools.checkPay(this, license, new QueryOrderListener() {
+                @Override
+                public void onFinish(boolean isSuccess, String msg, QueryOrderModel model) {
+                    boolean ok = VipTools.checkOrderResult(MainActivity.this, isSuccess, msg, model);
+                    if (!ok) {
+                        VipTools.showDeleteLicenseDialog(MainActivity.this);
+                    }
+                }
+            });
+        }
+    }
 
     public void openBindSchoolActivity() {
         Intent intent = new Intent(this, BindSchoolActivity.class);
@@ -501,7 +534,7 @@ public class MainActivity extends AppCompatActivity {
     //申请失败
     @PermissionFail(requestCode = SUCCESSCODE)
     public void doFailSomething() {
-       // ToastTools.show(this, "权限不足，运行中可能会出现故障!请务必开启读取设备信息权限，设备号将作为你的账户");
+        // ToastTools.show(this, "权限不足，运行中可能会出现故障!请务必开启读取设备信息权限，设备号将作为你的账户");
     }
 
 
@@ -511,8 +544,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onUpdateSchoolEvent(UpdateSchoolEvent event){
-        if(event!=null&&event.getSchool()!=null){
+    public void onUpdateSchoolEvent(UpdateSchoolEvent event) {
+        if (event != null && event.getSchool() != null) {
             schoolTextView.setText(event.getSchool());
         }
     }
@@ -538,7 +571,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @OnClick(R.id.id_title)
-    public void onCurWeekTextClicked(){
+    public void onCurWeekTextClicked() {
         if (mViewPager.getCurrentItem() == 1) {
             EventBus.getDefault().post(new ToggleWeekViewEvent());
         }

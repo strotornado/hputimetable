@@ -58,20 +58,19 @@ public class VipActivity extends AppCompatActivity {
         Integer amount=Integer.parseInt(getResources().getString(R.string.vip_money));
         SimpleDateFormat sdf=new SimpleDateFormat("yyyyMMddHHmmss");
         String userId= DeviceTools.getDeviceId(this);
-        String orderid=sdf.format(new Date())+"_"+(int)(Math.random()*1000)+"_gs";
-        if(!TextUtils.isEmpty(userId)){
-            orderid=orderid+userId;
-        }else{
+        String orderid=PayTools.getOrderId(userId);
+        if(TextUtils.isEmpty(userId)){
             ToastTools.show(this,"请先开启读取设备IMEI权限");
             return;
         }
-        PayTools.callPay(this, name, body, amount, orderid, null, null, new PayResultListener() {
+        PayTools.callPay(this, name, body, amount, orderid, userId, null, new PayResultListener() {
             @Override
             public void onFinish(Context context, Long payId, String orderId, String payUserId, EPayResult payResult, int payType, Integer amount) {
                 if(payResult.getCode()==EPayResult.SUCCESS_CODE.getCode()){
                     Calendar cal = Calendar.getInstance();
                     cal.add(Calendar.YEAR, 4);
                     Date date = cal.getTime();
+
                     PayLicense license=VipTools.getLicense(VipActivity.this,payId,date);
                     VipTools.registerVip(license);
                     ToastTools.show(VipActivity.this,getResources().getString(R.string.vip_success));
@@ -88,16 +87,13 @@ public class VipActivity extends AppCompatActivity {
         String name=getResources().getString(R.string.vip_name2);
         String body=getResources().getString(R.string.vip_body2);
         Integer amount=Integer.parseInt(getResources().getString(R.string.vip_money2));
-        SimpleDateFormat sdf=new SimpleDateFormat("yyyyMMddHHmmss");
         String userId= DeviceTools.getDeviceId(this);
-        String orderid=sdf.format(new Date())+"_"+(int)(Math.random()*1000)+"_gs";
-        if(!TextUtils.isEmpty(userId)){
-            orderid=orderid+userId;
-        }else{
+        String orderid=PayTools.getOrderId(userId);
+        if(TextUtils.isEmpty(userId)){
             ToastTools.show(this,"请先开启读取设备IMEI权限");
             return;
         }
-        PayTools.callPay(this, name, body, amount, orderid, null, null, new PayResultListener() {
+        PayTools.callPay(this, name, body, amount, orderid, userId, null, new PayResultListener() {
             @Override
             public void onFinish(Context context, Long payId, String orderId, String payUserId, EPayResult payResult, int payType, Integer amount) {
                 if(payResult.getCode()==EPayResult.SUCCESS_CODE.getCode()){

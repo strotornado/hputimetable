@@ -120,6 +120,12 @@ public class PayLicense {
             if(Long.parseLong(getExpire())<Long.parseLong(getCreate())){
                 return false;
             }
+            if(Long.parseLong(getCreate())>System.currentTimeMillis()){
+                return false;
+            }
+            if(Long.parseLong(getExpire())<System.currentTimeMillis()){
+                return false;
+            }
 
             StringBuffer sb=new StringBuffer();
             sb.append("orderId=").append(getOrderId())

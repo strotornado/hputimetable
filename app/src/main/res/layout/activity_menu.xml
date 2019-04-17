@@ -79,9 +79,10 @@
                 android:gravity="center_vertical"
                 android:layout_width="match_parent"
                 android:layout_height="30dp"
-                android:layout_marginLeft="15dp"
-                android:layout_marginRight="15dp"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
                 android:textColor="@color/app_gray"
+                android:background="@color/app_white"
                 android:text=""/>
 
             <TextView

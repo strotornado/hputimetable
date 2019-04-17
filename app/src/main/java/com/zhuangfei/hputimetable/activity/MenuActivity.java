@@ -8,6 +8,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.icu.util.TimeZone;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
 import android.text.TextUtils;
@@ -18,7 +20,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.payelves.sdk.EPay;
 import com.payelves.sdk.bean.QueryOrderModel;
+import com.payelves.sdk.enums.EPayResult;
 import com.payelves.sdk.listener.QueryOrderListener;
 import com.tencent.bugly.beta.Beta;
 import com.tencent.bugly.crashreport.BuglyLog;
@@ -60,6 +64,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -138,19 +144,17 @@ public class MenuActivity extends AppCompatActivity {
             updateTopText();
             vipButton.setVisibility(View.GONE);
             expireText.setVisibility(View.VISIBLE);
-            PayLicense license=VipTools.getLocalLicense(this);
-
+            final PayLicense license=VipTools.getLocalLicense(this);
             expireText.setText("有效期至: "+sdf.format(new Date(Long.parseLong(license.getExpire()))));
             PayTools.checkPay(this, license,new QueryOrderListener() {
                 @Override
                 public void onFinish(boolean isSuccess, String msg, QueryOrderModel model) {
-                    if(!isSuccess){
-                        if(msg!=null&&msg.indexOf("订单不存在")!=-1){
-                            showDeleteLicenseDialog();
-                            cancelVip();
-                        }
+                    boolean ok=VipTools.checkOrderResult(MenuActivity.this,isSuccess,msg,model);
+                    if(!ok){
+                        VipTools.showDeleteLicenseDialog(MenuActivity.this);
+                        cancelVip();
                     }
-                    ToastTools.show(MenuActivity.this,isSuccess+";"+msg);
+                   showErrorDialog(isSuccess,msg,model,license);
                 }
             });
         }else{
@@ -158,11 +162,16 @@ public class MenuActivity extends AppCompatActivity {
         }
     }
 
-    private void showDeleteLicenseDialog() {
-        VipTools.unregisterVip();
+    private void showErrorDialog(boolean isSuccess,String msg,QueryOrderModel model,PayLicense license) {
+        String content=msg;
+        if(model!=null){
+            content="isSuccess:"+isSuccess+"\nmsg:"+msg+"\nststus:"+model.getPayStatus()+"\nfailcode:"
+                    + EPayResult.FAIL_CODE.getCode()+"\nsuccesscode:"+ EPayResult.SUCCESS_CODE.getCode()
+                    +"\norderId:"+model.getOrderId()+"\ndeviceId:"+DeviceTools.getDeviceId(this);
+        }
         android.support.v7.app.AlertDialog.Builder builder=new android.support.v7.app.AlertDialog.Builder(this)
-                .setTitle("高级版被撤销")
-                .setMessage("经过系统检测，您的高级版凭证非正版，证书已被删除！请支持正版，感谢您的支持，如果本检测有误，请联系客服进行申诉:1193600556@qq.com")
+                .setTitle("Test")
+                .setMessage(content)
                 .setPositiveButton("我知道了", null);
         builder.create().show();
     }
@@ -188,7 +197,7 @@ public class MenuActivity extends AppCompatActivity {
         if(VipTools.isVip(this)){
             deviceText.setText("高级版");
         }else{
-            deviceText.setText("普通版)");
+            deviceText.setText("普通版");
         }
     }
 
@@ -273,8 +282,24 @@ public class MenuActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        checkVip();
+        new Timer().schedule(new TimerTask() {
+            @Override
+            public void run() {
+                handler.sendEmptyMessage(0x123);
+            }
+        },500);
     }
+
+    Handler handler=new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            try{
+                checkVip();
+            }catch (Exception e){
+            }
+        }
+    };
 
     @OnClick(R.id.id_vip_btn)
     public void onVipBtnClicked(){
