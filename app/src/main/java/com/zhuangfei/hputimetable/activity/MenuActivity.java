@@ -41,10 +41,13 @@ import com.zhuangfei.hputimetable.constants.ShareConstants;
 import com.zhuangfei.hputimetable.event.ConfigChangeEvent;
 import com.zhuangfei.hputimetable.event.UpdateBindDataEvent;
 import com.zhuangfei.hputimetable.event.UpdateScheduleEvent;
+import com.zhuangfei.hputimetable.listener.VipVerifyResult;
 import com.zhuangfei.hputimetable.model.PayLicense;
 import com.zhuangfei.hputimetable.model.ScheduleDao;
 import com.zhuangfei.hputimetable.tools.BroadcastUtils;
 import com.zhuangfei.hputimetable.tools.DeviceTools;
+import com.zhuangfei.hputimetable.tools.FileTools;
+import com.zhuangfei.hputimetable.tools.Md5Tools;
 import com.zhuangfei.hputimetable.tools.PayTools;
 import com.zhuangfei.hputimetable.tools.TimetableTools;
 import com.zhuangfei.hputimetable.tools.UpdateTools;
@@ -59,6 +62,7 @@ import com.zhuangfei.toolkit.tools.ToastTools;
 import org.greenrobot.eventbus.EventBus;
 import org.litepal.crud.DataSupport;
 
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -140,26 +144,42 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     public void checkVip(){
-        if(VipTools.isVip(this)){
+        final VipVerifyResult result=VipTools.isVip(this);
+        if(result!=null&&result.isSuccess()){
             updateTopText();
             vipButton.setVisibility(View.GONE);
             expireText.setVisibility(View.VISIBLE);
-            final PayLicense license=VipTools.getLocalLicense(this);
+            final PayLicense license=result.getLicense();
             expireText.setText("有效期至: "+sdf.format(new Date(Long.parseLong(license.getExpire()))));
-            PayTools.checkPay(this, license,new QueryOrderListener() {
+        }else{
+            cancelVip();
+        }
+        String deviceId=DeviceTools.getDeviceId(context);
+        if(TextUtils.isEmpty(deviceId)){
+            deviceId="";
+        }
+        if(result!=null&&result.isNeedVerify()){
+            final String finalLastModifyMd = VipTools.getLastModifyMd5(context);
+            final String finalDeviceId = deviceId;
+            PayTools.checkPay(this, result.getLicense(),new QueryOrderListener() {
                 @Override
                 public void onFinish(boolean isSuccess, String msg, QueryOrderModel model) {
                     boolean ok=VipTools.checkOrderResult(MenuActivity.this,isSuccess,msg,model);
                     if(!ok){
                         VipTools.showDeleteLicenseDialog(MenuActivity.this);
                         cancelVip();
+                    }else if(isSuccess){
+                        if(model!=null&&model.getPayStatus()!=null&&model.getPayStatus().equals("SUCCESS")){
+                            if(model!=null&&model.getOrderId()!=null&&model.getOrderId().indexOf(finalDeviceId)!=-1){
+                                ShareTools.putString(MenuActivity.this,"lastModify",""+ finalLastModifyMd);
+                            }
+                        }
                     }
-                   showErrorDialog(isSuccess,msg,model,license);
+                    showErrorDialog(isSuccess,msg,model,result.getLicense());
                 }
             });
-        }else{
-            cancelVip();
         }
+        showDialog("Title",result.getMsg());
     }
 
     private void showErrorDialog(boolean isSuccess,String msg,QueryOrderModel model,PayLicense license) {
@@ -194,7 +214,7 @@ public class MenuActivity extends AppCompatActivity {
 //            deviceText.setText("设备号获取失败");
 //        }
 
-        if(VipTools.isVip(this)){
+        if(VipTools.isVip(this).isSuccess()){
             deviceText.setText("高级版");
         }else{
             deviceText.setText("普通版");
@@ -308,7 +328,7 @@ public class MenuActivity extends AppCompatActivity {
 
     @OnClick(R.id.id_set_maxcount)
     public void onSetMaxCountClicked(){
-        if(!VipTools.isVip(this)){
+        if(!VipTools.isVip(this).isSuccess()){
             VipTools.showAlertDialog(this);
             return;
         }
@@ -333,10 +353,6 @@ public class MenuActivity extends AppCompatActivity {
 
     @OnClick(R.id.id_set_starttime_layout)
     public void onSetStartTimeLayoutClicked(){
-        if(!VipTools.isVip(this)){
-            VipTools.showAlertDialog(this);
-            return;
-        }
         final SimpleDateFormat sdf=new SimpleDateFormat("yyyy-M-d 00:00:00");
         final SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         DatePickerDialog mDatePickerDialog = new DatePickerDialog(context,  new DatePickerDialog.OnDateSetListener() {
@@ -491,7 +507,7 @@ public class MenuActivity extends AppCompatActivity {
 
     @OnCheckedChanged(R.id.id_switch_firstsunday)
     public void onFirstSundaySwitchClicked(boolean b) {
-        if(!VipTools.isVip(this)){
+        if(!VipTools.isVip(this).isSuccess()){
             VipTools.showAlertDialog(this);
             return;
         }
@@ -572,10 +588,39 @@ public class MenuActivity extends AppCompatActivity {
 
     @OnClick(R.id.id_set_theme_layout)
     public void onSetThemeLayoutClicked(){
-        if(!VipTools.isVip(this)){
+        if(!VipTools.isVip(this).isSuccess()){
             VipTools.showAlertDialog(this);
             return;
         }
+        String[] items={
+                "红色主题",
+                "蓝色主题",
+                "黑色主题",
+                "紫色主题",
+                "棕色主题",
+                "青色主题",
+                "蓝色主题2",
+                "橙色主题",
+                "灰色主题"
+        };
+        android.support.v7.app.AlertDialog.Builder builder=new android.support.v7.app.AlertDialog.Builder(this)
+                .setTitle("修改学校")
+                .setItems(items, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        ShareTools.putInt(MenuActivity.this,ShareConstants.INT_THEME,i);
+                        ToastTools.show(MenuActivity.this,"设置成功，重启App生效");
+                        if(dialogInterface!=null){
+                            dialogInterface.dismiss();
+                        }
+                    }
+                })
+                .setNegativeButton("取消",null);
+        builder.create().show();
+    }
+
+    @OnClick(R.id.id_set_theme_layout_normal)
+    public void onSetThemeLayoutClicked2(){
         String[] items={
                 "红色主题",
                 "蓝色主题",

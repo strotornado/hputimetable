@@ -4,8 +4,10 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.zhuangfei.hputimetable.R;
+import com.zhuangfei.hputimetable.listener.VipVerifyResult;
 import com.zhuangfei.hputimetable.tools.DeviceTools;
 import com.zhuangfei.hputimetable.tools.Md5Tools;
+import com.zhuangfei.hputimetable.tools.VipTools;
 
 /**
  * Created by Liu ZhuangFei on 2019/4/14.
@@ -96,34 +98,46 @@ public class PayLicense {
     }
 
     public boolean check(Context context){
+        return check(context,null);
+    }
+
+    public boolean check(Context context, VipVerifyResult result){
         try{
             String signatureKey=context.getResources().getString(R.string.signature);
             String signature= DeviceTools.getSHA1Signature(context);
             //验证凭证签名是否为本应用签发
             if(signature==null||getSignature()==null||!getSignature().equals(Md5Tools.encrypBy(signature))){
+                VipTools.recordMsg(result,false,"signature modified");
                 return false;
             }
             if(!signatureKey.equals(Md5Tools.encrypBy(signature))){
+                VipTools.recordMsg(result,false,"signature is error");
                 return false;
             }
             String key=context.getResources().getString(R.string.key);
             String deviceId= DeviceTools.getDeviceId(context);
             if(deviceId==null||getUserId()==null){
+                VipTools.recordMsg(result,false,"device or userid is null");
                 return false;
             }
             if(!deviceId.equals(getUserId())){
+                VipTools.recordMsg(result,false,"userid is error");
                 return false;
             }
             if(getCreate()==null||getExpire()==null){
+                VipTools.recordMsg(result,false,"time is null");
                 return false;
             }
             if(Long.parseLong(getExpire())<Long.parseLong(getCreate())){
+                VipTools.recordMsg(result,false,"expier < create");
                 return false;
             }
             if(Long.parseLong(getCreate())>System.currentTimeMillis()){
+                VipTools.recordMsg(result,false,"create > current");
                 return false;
             }
             if(Long.parseLong(getExpire())<System.currentTimeMillis()){
+                VipTools.recordMsg(result,false,"expire < current");
                 return false;
             }
 
@@ -134,10 +148,13 @@ public class PayLicense {
                     .append("&expire=").append(getExpire())
                     .append("&signature=").append(getSignature());
             if(!Md5Tools.encrypBy(sb.toString()+key).equals(getSignature2())){
+                VipTools.recordMsg(result,false,"params modified");
                 return false;
             }
+            VipTools.recordMsg(result,true,"success");
             return true;
         }catch (Exception e){
+            VipTools.recordMsg(result,false,"Exception:"+e.getMessage());
             return false;
         }
     }

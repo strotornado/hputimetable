@@ -227,7 +227,7 @@ public class FuncFragment extends LazyLoadFragment {
         });
         //todo
         int showVip=ShareTools.getInt(getActivity(),ShareConstants.INT_VIP_LAYOUT,1);
-        if(showVip==1&&!VipTools.isVip(getActivity())){
+        if(showVip==1&&!VipTools.isVip(getActivity()).isSuccess()){
             vipLayout.setVisibility(View.VISIBLE);
         }
         registerForContextMenu(stationGridView);

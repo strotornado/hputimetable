@@ -170,38 +170,12 @@
                     android:layout_marginLeft="15dp"
                     android:layout_weight="1"
                     android:gravity="center_vertical"
-                    android:text="设置首页主颜色" />
+                    android:text="设置首页主颜色（多种）" />
 
             </LinearLayout>
 
             <include layout="@layout/view_line" />
 
-            <LinearLayout
-                android:id="@+id/id_set_starttime_layout"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="@color/app_white"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="15dp"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:text="设置开学时间" />
-
-                <TextView
-                    android:id="@+id/tv_startTime"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginRight="15dp"
-                    android:gravity="center_vertical"
-                    android:text="未设置" />
-
-            </LinearLayout>
-            <include layout="@layout/view_line" />
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
@@ -242,6 +216,58 @@
 
             </LinearLayout>
 
+            <include layout="@layout/view_line" />
+            <LinearLayout
+                android:id="@+id/id_check_license"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="@color/app_white"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:textSize="16sp"
+                    android:gravity="center_vertical"
+                    android:text="证书安全性检查" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:gravity="center_vertical"
+                    android:textSize="14sp"
+                    android:textColor="@color/app_gray"
+                    android:text="检查目前证书存在的问题" />
+            </LinearLayout>
+            <include layout="@layout/view_line" />
+            <LinearLayout
+                android:id="@+id/id_find_license"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="@color/app_white"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:textSize="16sp"
+                    android:gravity="center_vertical"
+                    android:text="高级版证书恢复" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:gravity="center_vertical"
+                    android:textSize="14sp"
+                    android:textColor="@color/app_gray"
+                    android:text="解决由于刷机等造成的高级版丢失问题" />
+            </LinearLayout>
             <include layout="@layout/view_line" />
 
             <LinearLayout
@@ -384,6 +410,51 @@
                     android:checked="true"
                     android:gravity="center_vertical" />
             </LinearLayout>
+            <include layout="@layout/view_line" />
+            <LinearLayout
+                android:id="@+id/id_set_theme_layout_normal"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@color/app_white"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="15dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="设置首页主颜色（仅三种）" />
+
+            </LinearLayout>
+            <include layout="@layout/view_line" />
+            <LinearLayout
+                android:id="@+id/id_set_starttime_layout"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@color/app_white"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="15dp"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:text="设置开学时间" />
+
+                <TextView
+                    android:id="@+id/tv_startTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="15dp"
+                    android:gravity="center_vertical"
+                    android:text="未设置" />
+
+            </LinearLayout>
+
 
             <TextView
                 android:layout_width="match_parent"
@@ -393,8 +464,7 @@
                 android:gravity="center_vertical"
                 android:paddingLeft="15dp"
                 android:text="桌面部件设置"
-                android:textColor="@color/app_gray"
-                android:visibility="gone" />
+                android:textColor="@color/app_gray"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -426,8 +496,7 @@
                 android:layout_height="50dp"
                 android:background="@color/app_white"
                 android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:visibility="gone">
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="0dp"
@@ -451,8 +520,7 @@
                 android:layout_height="50dp"
                 android:background="@color/app_white"
                 android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:visibility="gone">
+                android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="0dp"

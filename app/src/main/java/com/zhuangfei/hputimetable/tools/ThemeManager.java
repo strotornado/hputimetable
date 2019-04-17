@@ -22,8 +22,26 @@ public class ThemeManager {
             case 2:
                 context.setTheme(R.style.blackTheme);
                 break;
+            case 3:
+                context.setTheme(R.style.ziTheme);
+                break;
+            case 4:
+                context.setTheme(R.style.zongTheme);
+                break;
+            case 5:
+                context.setTheme(R.style.qingTheme);
+                break;
+            case 6:
+                context.setTheme(R.style.lanTheme);
+                break;
+            case 7:
+                context.setTheme(R.style.chengTheme);
+                break;
+            case 8:
+                context.setTheme(R.style.grayTheme);
+                break;
             default:
-                context.setTheme(R.style.redTheme);
+                context.setTheme(R.style.blackTheme);
                 break;
 
         }

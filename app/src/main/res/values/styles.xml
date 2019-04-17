@@ -53,4 +53,25 @@
         <item name="mainColor">@color/theme_dark</item>
     </style>
 
+    <style name="ziTheme" parent="AppTheme">
+        <item name="mainColor">#673BB7</item>
+    </style>
+
+    <style name="zongTheme" parent="AppTheme">
+        <item name="mainColor">#795547</item>
+    </style>
+
+    <style name="qingTheme" parent="AppTheme">
+        <item name="mainColor">#009786</item>
+    </style>
+    <style name="lanTheme" parent="AppTheme">
+        <item name="mainColor">#3F51B5</item>
+    </style>
+    <style name="chengTheme" parent="AppTheme">
+        <item name="mainColor">#FF9700</item>
+    </style>
+    <style name="grayTheme" parent="AppTheme">
+        <item name="mainColor">#607D8B</item>
+    </style>
+
 </resources>

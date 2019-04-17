@@ -87,6 +87,17 @@ public class FileTools {
 		}
 	}
 
+	public static File getVipLicenseFile() {
+		File file = new File(getDir(VIP) + "/vip.license");
+		try {
+			if (!file.exists())
+				file.createNewFile();
+			return file;
+		} catch (IOException e) {
+			return null;
+		}
+	}
+
 	public static String readVipLicense() {
 		File file = new File(getDir(VIP) + "/vip.license");
 		String result = "";

@@ -154,12 +154,6 @@ public class MainActivity extends AppCompatActivity {
         EventBus.getDefault().register(this);
         shouldcheckPermission();
         inits();
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                handler.sendEmptyMessage(0x220);
-            }
-        }, 1000);
     }
 
     @Override
@@ -203,29 +197,8 @@ public class MainActivity extends AppCompatActivity {
             if (msg.what == 0x125) {
                 select(toItem);
             }
-            if (msg.what == 0x220) {
-                try{
-                    checkVip();
-                }catch (Exception e){
-                }
-            }
         }
     };
-
-    public void checkVip() {
-        if (VipTools.isVip(this)) {
-            final PayLicense license = VipTools.getLocalLicense(this);
-            PayTools.checkPay(this, license, new QueryOrderListener() {
-                @Override
-                public void onFinish(boolean isSuccess, String msg, QueryOrderModel model) {
-                    boolean ok = VipTools.checkOrderResult(MainActivity.this, isSuccess, msg, model);
-                    if (!ok) {
-                        VipTools.showDeleteLicenseDialog(MainActivity.this);
-                    }
-                }
-            });
-        }
-    }
 
     public void openBindSchoolActivity() {
         Intent intent = new Intent(this, BindSchoolActivity.class);
