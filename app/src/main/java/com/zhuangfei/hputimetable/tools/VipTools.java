@@ -168,8 +168,7 @@ public class VipTools {
     }
     public static void recordVerifyMsg(VipVerifyResult result,boolean needVerify,String msg){
         if(result!=null){
-            result.setSuccess(false);
-            result.setNeedVerify(true);
+            result.setNeedVerify(needVerify);
             result.setMsg(msg);
         }
     }

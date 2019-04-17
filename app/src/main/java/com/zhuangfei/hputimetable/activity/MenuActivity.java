@@ -172,6 +172,11 @@ public class MenuActivity extends AppCompatActivity {
                         if(model!=null&&model.getPayStatus()!=null&&model.getPayStatus().equals("SUCCESS")){
                             if(model!=null&&model.getOrderId()!=null&&model.getOrderId().indexOf(finalDeviceId)!=-1){
                                 ShareTools.putString(MenuActivity.this,"lastModify",""+ finalLastModifyMd);
+                                updateTopText();
+                                vipButton.setVisibility(View.GONE);
+                                expireText.setVisibility(View.VISIBLE);
+                                final PayLicense license=result.getLicense();
+                                expireText.setText("有效期至: "+sdf.format(new Date(Long.parseLong(license.getExpire()))));
                             }
                         }
                     }
@@ -179,7 +184,7 @@ public class MenuActivity extends AppCompatActivity {
                 }
             });
         }
-        showDialog("Title",result.getMsg());
+        showDialog("Title",result.getMsg()+"\n"+result.isNeedVerify());
     }
 
     private void showErrorDialog(boolean isSuccess,String msg,QueryOrderModel model,PayLicense license) {
