@@ -20,6 +20,7 @@ import com.zhuangfei.toolkit.tools.ShareTools;
 import com.zhuangfei.toolkit.tools.ToastTools;
 
 import java.io.File;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -205,5 +206,25 @@ public class VipTools {
                 .setMessage("经过系统检测，您的高级版凭证非正版，证书已被删除！请支持正版，感谢您的支持，如果本检测有误，请联系客服进行申诉:1193600556@qq.com")
                 .setPositiveButton("我知道了", null);
         builder.create().show();
+    }
+
+    /**
+     * 增加套餐时在这里修改
+     * @param create
+     * @param amount
+     * @return
+     */
+    public static Date getExpireDate(Date create,Integer amount){
+        if(create==null||amount<=0) return null;
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(create);
+        if(amount==880){
+            cal.add(Calendar.YEAR, 1);
+        }
+        if(amount==330){
+            cal.add(Calendar.DATE, 3);
+        }
+        Date date = cal.getTime();
+        return date;
     }
 }

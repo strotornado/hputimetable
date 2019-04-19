@@ -48,9 +48,28 @@ public class PayTools {
         EPay.getInstance(context).queryOrder(license.getOrderId(),listener);
     }
 
-    public static String getOrderId(String userId){
+    public static String getOrderId(String userId,Integer amount){
         SimpleDateFormat sdf=new SimpleDateFormat("yyyyMMddHHmmss");
-        String orderid=sdf.format(new Date())+"_"+(int)(Math.random()*1000)+"_gs2_"+VersionTools.getVersionName()+"_"+userId;
+        String orderid=sdf.format(new Date())+"_"+(int)(Math.random()*1000)+"_gs2_"+VersionTools.getVersionName()+"_"+userId+"_money"+amount;
         return orderid;
+    }
+
+    public static Integer getMoneyByOrderId(String orderId){
+        if(orderId==null) return 0;
+        //兼容旧版本
+        if(orderId.indexOf("_money")==-1){
+            return 880;
+        }
+        int index=orderId.lastIndexOf("_money");
+        if(index==-1){
+            return 880;
+        }
+        try {
+            String moneyString=orderId.substring(index+6);
+            Integer money=Integer.parseInt(moneyString);
+            return money;
+        }catch (Exception e){
+            return 0;
+        }
     }
 }

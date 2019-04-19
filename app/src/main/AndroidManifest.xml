@@ -126,6 +126,7 @@
         <activity android:name=".activity.MessageActivity"></activity>
         <activity android:name=".activity.BindSchoolActivity"></activity>
         <activity android:name=".activity.VipActivity"></activity>
+        <activity android:name=".activity.FindVipLicenseActivity"></activity>
     </application>
 
 </manifest>

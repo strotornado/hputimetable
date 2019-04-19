@@ -169,6 +169,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginLeft="15dp"
                     android:layout_weight="1"
+                    android:textSize="16sp"
                     android:gravity="center_vertical"
                     android:text="设置首页主颜色（多种）" />
 
@@ -188,6 +189,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginLeft="15dp"
                     android:layout_weight="1"
+                    android:textSize="16sp"
                     android:gravity="center_vertical"
                     android:text="设置周日为起始日" />
 
@@ -211,6 +213,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginLeft="15dp"
                     android:layout_weight="1"
+                    android:textSize="16sp"
                     android:gravity="center_vertical"
                     android:text="最大节次设置" />
 
@@ -229,7 +232,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="15dp"
-                    android:textSize="16sp"
+                    android:textSize="17sp"
                     android:gravity="center_vertical"
                     android:text="证书安全性检查" />
                 <TextView
@@ -255,7 +258,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="15dp"
-                    android:textSize="16sp"
+                    android:textSize="17sp"
                     android:gravity="center_vertical"
                     android:text="高级版证书恢复" />
                 <TextView
@@ -330,6 +333,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginLeft="15dp"
                     android:layout_weight="1"
+                    android:textSize="16sp"
                     android:gravity="center_vertical"
                     android:text="隐藏非本周" />
 
@@ -352,6 +356,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginLeft="15dp"
                     android:layout_weight="1"
+                    android:textSize="16sp"
                     android:gravity="center_vertical"
                     android:text="隐藏周末" />
 
@@ -375,6 +380,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginLeft="15dp"
                     android:layout_weight="1"
+                    android:textSize="16sp"
                     android:gravity="center_vertical"
                     android:text="自动检查更新" />
 
@@ -399,6 +405,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginLeft="15dp"
                     android:layout_weight="1"
+                    android:textSize="16sp"
                     android:gravity="center_vertical"
                     android:text="显示关联课表" />
 
@@ -424,6 +431,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginLeft="15dp"
                     android:layout_weight="1"
+                    android:textSize="16sp"
                     android:gravity="center_vertical"
                     android:text="设置首页主颜色（仅三种）" />
 
@@ -442,6 +450,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginLeft="15dp"
                     android:layout_weight="1"
+                    android:textSize="16sp"
                     android:gravity="center_vertical"
                     android:text="设置开学时间" />
 
@@ -451,6 +460,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginRight="15dp"
                     android:gravity="center_vertical"
+                    android:textSize="16sp"
                     android:text="未设置" />
 
             </LinearLayout>
@@ -464,6 +474,7 @@
                 android:gravity="center_vertical"
                 android:paddingLeft="15dp"
                 android:text="桌面部件设置"
+                android:textSize="16sp"
                 android:textColor="@color/app_gray"/>
 
             <LinearLayout
@@ -479,6 +490,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginLeft="15dp"
                     android:layout_weight="1"
+                    android:textSize="16sp"
                     android:gravity="center_vertical"
                     android:text="开启15节次" />
 
@@ -503,6 +515,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginLeft="15dp"
                     android:layout_weight="1"
+                    android:textSize="16sp"
                     android:gravity="center_vertical"
                     android:text="隐藏周末" />
 
@@ -527,6 +540,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginLeft="15dp"
                     android:layout_weight="1"
+                    android:textSize="16sp"
                     android:gravity="center_vertical"
                     android:text="隐藏日期栏" />
 
@@ -559,6 +573,7 @@
                 android:background="@color/app_white"
                 android:gravity="center_vertical"
                 android:paddingLeft="15dp"
+                android:textSize="16sp"
                 android:text="适配调试器" />
 
             <TextView

@@ -177,14 +177,15 @@ public class MenuActivity extends AppCompatActivity {
                                 expireText.setVisibility(View.VISIBLE);
                                 final PayLicense license=result.getLicense();
                                 expireText.setText("有效期至: "+sdf.format(new Date(Long.parseLong(license.getExpire()))));
+                                ToastTools.show(getContext(),"证书验证成功!");
                             }
                         }
                     }
-                    showErrorDialog(isSuccess,msg,model,result.getLicense());
+//                    showErrorDialog(isSuccess,msg,model,result.getLicense());
                 }
             });
         }
-        showDialog("Title",result.getMsg()+"\n"+result.isNeedVerify());
+//        showDialog("Title",result.getMsg()+"\n"+result.isNeedVerify());
     }
 
     private void showErrorDialog(boolean isSuccess,String msg,QueryOrderModel model,PayLicense license) {
@@ -557,6 +558,7 @@ public class MenuActivity extends AppCompatActivity {
         AlertDialog alertDialog=new AlertDialog.Builder(this)
                 .setTitle(title)
                 .setMessage(message)
+                .setCancelable(false)
                 .setPositiveButton("我知道了",null)
                 .create();
         alertDialog.show();
@@ -653,5 +655,26 @@ public class MenuActivity extends AppCompatActivity {
         startActivity(intent);
         overridePendingTransition(R.anim.anim_station_open_activity, R.anim.anim_station_static);//动画
         finish();
+    }
+
+    @OnClick(R.id.id_find_license)
+    public void toFindLicenseActivity() {
+        ActivityTools.toActivityWithout(getContext(),FindVipLicenseActivity.class);
+    }
+
+    @OnClick(R.id.id_check_license)
+    public void checkLicense() {
+        VipVerifyResult result=VipTools.isVip(getContext());
+        if(result==null){
+            showDialog("检查证书安全性","证书不存在");
+            return;
+        }
+        if(result.isSuccess()){
+            showDialog("检查证书安全性","您的证书状态安全，请放心使用！");
+        }else if(result.isNeedVerify()){
+            checkVip();
+        }else{
+            showDialog("检查证书安全性","验证失败:"+result);
+        }
     }
 }

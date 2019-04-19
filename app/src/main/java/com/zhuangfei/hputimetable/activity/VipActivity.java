@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.payelves.sdk.EPay;
 import com.payelves.sdk.enums.EPayResult;
 import com.payelves.sdk.listener.PayResultListener;
 import com.zhuangfei.hputimetable.R;
@@ -58,7 +59,7 @@ public class VipActivity extends AppCompatActivity {
         Integer amount=Integer.parseInt(getResources().getString(R.string.vip_money));
         SimpleDateFormat sdf=new SimpleDateFormat("yyyyMMddHHmmss");
         String userId= DeviceTools.getDeviceId(this);
-        String orderid=PayTools.getOrderId(userId);
+        String orderid=PayTools.getOrderId(userId,amount);
         if(TextUtils.isEmpty(userId)){
             ToastTools.show(this,"请先开启读取设备IMEI权限");
             return;
@@ -66,9 +67,10 @@ public class VipActivity extends AppCompatActivity {
         PayTools.callPay(this, name, body, amount, orderid, userId, null, new PayResultListener() {
             @Override
             public void onFinish(Context context, Long payId, String orderId, String payUserId, EPayResult payResult, int payType, Integer amount) {
+                EPay.getInstance(VipActivity.this).closePayView();
                 if(payResult.getCode()==EPayResult.SUCCESS_CODE.getCode()){
                     Calendar cal = Calendar.getInstance();
-                    cal.add(Calendar.YEAR, 4);
+                    cal.add(Calendar.YEAR, 1);
                     Date date = cal.getTime();
 
                     PayLicense license=VipTools.getLicense(VipActivity.this,payId,date);
@@ -88,7 +90,7 @@ public class VipActivity extends AppCompatActivity {
         String body=getResources().getString(R.string.vip_body2);
         Integer amount=Integer.parseInt(getResources().getString(R.string.vip_money2));
         String userId= DeviceTools.getDeviceId(this);
-        String orderid=PayTools.getOrderId(userId);
+        String orderid=PayTools.getOrderId(userId,amount);
         if(TextUtils.isEmpty(userId)){
             ToastTools.show(this,"请先开启读取设备IMEI权限");
             return;
@@ -96,6 +98,7 @@ public class VipActivity extends AppCompatActivity {
         PayTools.callPay(this, name, body, amount, orderid, userId, null, new PayResultListener() {
             @Override
             public void onFinish(Context context, Long payId, String orderId, String payUserId, EPayResult payResult, int payType, Integer amount) {
+                EPay.getInstance(VipActivity.this).closePayView();
                 if(payResult.getCode()==EPayResult.SUCCESS_CODE.getCode()){
                     Calendar cal = Calendar.getInstance();
                     cal.add(Calendar.DATE, 30);
