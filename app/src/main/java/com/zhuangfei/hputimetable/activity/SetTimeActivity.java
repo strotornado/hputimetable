@@ -1,6 +1,8 @@
 package com.zhuangfei.hputimetable.activity;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
@@ -68,17 +70,32 @@ public class SetTimeActivity extends AppCompatActivity {
 
     @OnClick(R.id.id_set_time)
     public void onSetTimeButtonClicked(){
+        AlertDialog.Builder builder=new AlertDialog.Builder(this)
+                .setTitle("设置上课时间")
+                .setMessage("请保证给出的时间足够覆盖所有的课程，所以可能出现各种各样的问题\n假设你的课程节次最晚的一门课是12节，那么你的时间最少12行")
+                .setNegativeButton("取消",null)
+                .setPositiveButton("设置时间", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        todoSetTime();
+                    }
+                });
+        builder.create().show();
+
+    }
+
+    private void todoSetTime() {
         displayText.setText("");
         String timeString=timeEdit.getText().toString();
         if(TextUtils.isEmpty(timeString)){
             ToastTools.show(this,"不允许为空");
             return;
         }
-        String[] timeArray=timeString.split("\\n");
+        String[] timeArray=timeString.split("\n");
         List<String> startTimeList=new ArrayList<>();
         List<String> endTimeList=new ArrayList<>();
         SimpleDateFormat sdf=new SimpleDateFormat("HH:mm");
-        if(timeArray==null){
+        if(timeArray!=null){
             for(String item:timeArray){
                 if(item==null||item.indexOf("-")==-1){
                     ToastTools.show(this,"解析出错：某行没有横杠");
@@ -111,7 +128,7 @@ public class SetTimeActivity extends AppCompatActivity {
         displayText.setText(sb.toString());
 
         if(startTimeList.size()!=endTimeList.size()||startTimeList.size()<5){
-            ToastTools.show(this,"行数太少，最少5行");
+            ToastTools.show(this,"行数太少，最少8行,now:"+startTimeList.size());
             return;
         }
 

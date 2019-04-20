@@ -120,7 +120,9 @@ public class CalendarReminderUtils {
                                              List<String> endTimeList, int curWeek, OnExportProgressListener listener){
         if(model==null||model.getWeekList()==null||startTimeList==null
                 ||endTimeList==null
-                ||model.getStep()==0||model.getStart()==0) return;
+                ||model.getStep()==0||model.getStart()==0
+                ||(model.getStart()-1)>=startTimeList.size()
+                ||(model.getStart()+model.getStep()-2)>=endTimeList.size()) return;
         Set<Integer> weekSet= new HashSet<>();
         weekSet.addAll(model.getWeekList());
         String startTime=startTimeList.get(model.getStart()-1);

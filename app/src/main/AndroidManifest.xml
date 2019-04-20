@@ -157,7 +157,7 @@
         <activity android:name=".activity.BindSchoolActivity"></activity>
         <activity android:name=".activity.VipActivity"></activity>
         <activity android:name=".activity.FindVipLicenseActivity" android:windowSoftInputMode="stateHidden"></activity>
-        <activity android:name=".activity.SetTimeActivity"></activity>
+        <activity android:name=".activity.SetTimeActivity" android:windowSoftInputMode="stateHidden"></activity>
     </application>
 
 </manifest>

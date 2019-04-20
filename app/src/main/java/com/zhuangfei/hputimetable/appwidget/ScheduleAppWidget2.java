@@ -62,11 +62,8 @@ public class ScheduleAppWidget2 extends AppWidgetProvider {
         int curWeek = TimetableTools.getCurWeek(context);
         views.setTextViewText(R.id.id_appwidget_week,"第"+curWeek+"周  "+sdf2.format(new Date()));
 
-        boolean textColorWhite= WidgetConfig.get(context,WidgetConfig.CONFIG_TEXT_COLOR_WHITE);
+//        boolean textColorWhite= WidgetConfig.get(context,WidgetConfig.CONFIG_TEXT_COLOR_WHITE);
         int textColor= Color.BLACK;
-        if(textColorWhite){
-            textColor=Color.WHITE;
-        }
         views.setTextColor(R.id.id_appwidget_week,textColor);
 
         // template to handle the click listener for each item

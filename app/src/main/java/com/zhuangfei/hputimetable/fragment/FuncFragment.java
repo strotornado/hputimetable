@@ -338,7 +338,11 @@ public class FuncFragment extends LazyLoadFragment {
                 if (TextUtils.isEmpty(name)) name = "课程名未知";
                 if (TextUtils.isEmpty(room)) room = "上课地点未知";
                 if(!TextUtils.isEmpty(time)){
-                    room=startTimeList.get(schedule.getStart()-1)+"-"+endTimeList.get(schedule.getStart()+schedule.getStep()-2)+" | "+room;
+                    int startTimeIndex=schedule.getStart()-1;
+                    int endTimeIndex=schedule.getStart()+schedule.getStep()-2;
+                    if(startTimeIndex<startTimeList.size()&&endTimeIndex<endTimeList.size()){
+                        room=startTimeList.get(startTimeIndex)+"-"+endTimeList.get(endTimeIndex)+" | "+room;
+                    }
                 }
                 nameText.setText(name);
                 roomText.setText(room);
@@ -405,7 +409,11 @@ public class FuncFragment extends LazyLoadFragment {
                 if (TextUtils.isEmpty(name)) name = "课程名未知";
                 if (TextUtils.isEmpty(room)) room = "上课地点未知";
                 if(!TextUtils.isEmpty(time)){
-                    room=startTimeList.get(schedule.getStart()-1)+"-"+endTimeList.get(schedule.getStart()+schedule.getStep()-2)+" | "+room;
+                    int startTimeIndex=schedule.getStart()-1;
+                    int endTimeIndex=schedule.getStart()+schedule.getStep()-2;
+                    if(startTimeIndex<startTimeList.size()&&endTimeIndex<endTimeList.size()){
+                        room=startTimeList.get(startTimeIndex)+"-"+endTimeList.get(endTimeIndex)+" | "+room;
+                    }
                 }
                 nameText.setText(name);
                 roomText.setText(room);

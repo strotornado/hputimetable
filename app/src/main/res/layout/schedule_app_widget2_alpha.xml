@@ -6,7 +6,6 @@
     android:padding="@dimen/widget_margin">
 
     <LinearLayout
-        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="35dp"
         android:orientation="horizontal">

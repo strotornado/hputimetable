@@ -76,15 +76,19 @@ bugly {
 
 <img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.1/img1.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.1/img2.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.1/img3.jpg" width="30%"/>
 
-### v1.1.7 `2019/03/7`
+### v1.1.8 `2019/04/21`
 
-- 优化UI
-- 主题颜色可设置
-- 关联课表美化（下期开始优化关联课表）
-- 设置开学时间
-- 设置周日为起始日
+-
+
+### v1.1.7 `2019/04/14`
+
+- 主题颜色开放给普通用户
+- 增加两个周课表部件，属性可设置
+- 设置周课表为首页
+- 导出当前课表到系统日历
+- 导出情侣课表到系统日历
 - 设置最大节次
-- 增加高级版，需要付费开通
+- 可通过订单号找回高级版证书
 
 ### v1.1.6 `2019/03/7`
 

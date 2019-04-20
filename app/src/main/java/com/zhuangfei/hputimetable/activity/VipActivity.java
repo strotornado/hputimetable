@@ -68,6 +68,7 @@ public class VipActivity extends AppCompatActivity {
         PayTools.callPay(this, name, body, amount, orderid, userId, null, new PayResultListener() {
             @Override
             public void onFinish(Context context, Long payId, String orderId, String payUserId, EPayResult payResult, int payType, Integer amount) {
+                EPay.getInstance(context).closePayView();
                 handlePayResult(context,payResult,payId,amount);
             }
         });
@@ -87,17 +88,18 @@ public class VipActivity extends AppCompatActivity {
         PayTools.callPay(this, name, body, amount, orderid, userId, null, new PayResultListener() {
             @Override
             public void onFinish(Context context, Long payId, String orderId, String payUserId, EPayResult payResult, int payType, Integer amount) {
+                EPay.getInstance(context).closePayView();
                 handlePayResult(context,payResult,payId,amount);
             }
         });
     }
 
     public void handlePayResult(Context context,EPayResult payResult,Long payId,Integer amount){
+
         if(context==null||payResult==null||payId==0||amount==0){
             ToastTools.show(VipActivity.this,"Error on handlePayResult");
             return;
         }
-        EPay.getInstance(VipActivity.this).closePayView();
         if(payResult.getCode()==EPayResult.SUCCESS_CODE.getCode()){
             Date date = new Date();
             PayLicense license=VipTools.getLicense(VipActivity.this,payId,date,amount);

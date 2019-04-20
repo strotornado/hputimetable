@@ -222,7 +222,7 @@ public class VipTools {
             cal.add(Calendar.YEAR, 1);
         }
         if(amount==330){
-            cal.add(Calendar.DATE, 3);
+            cal.add(Calendar.DATE, 30);
         }
         Date date = cal.getTime();
         return date;

@@ -166,6 +166,15 @@ public class MenuActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         inits();
         checkVip();
+        showOldVersionHelp();
+    }
+
+    public void showOldVersionHelp(){
+        int old=ShareTools.getInt(this,"oldVip",1);
+        if(old==1){
+            showDialog("高级版证书升级","由于安全策略升级，在旧版上开通的高级版凭证将全部被弃用，所有用户都会被降级到普通用户，之前开通过高级版的用户可在工具箱-高级版证书恢复中找回");
+            ShareTools.putInt(this,"oldVip",0);
+        }
     }
 
     public void checkVip(){
@@ -869,8 +878,9 @@ public class MenuActivity extends AppCompatActivity {
                 final List<String> startTimeList=new ArrayList<>();
                 final List<String> endTimeList=new ArrayList<>();
                 boolean getTime=TimetableTools.getTimeList(getContext(),startTimeList,endTimeList);
-                if(!getTime){
+                if(!getTime||startTimeList.size()==0||endTimeList.size()==0){
                     showDialog("请先设置时间","导出到日历需要依赖课程时间，请先去设置课程时间");
+                    if(loadAlert!=null) loadAlert.hide();
                     return;
                 }
                 final int curWeek=TimetableTools.getCurWeek(getContext());
@@ -898,12 +908,14 @@ public class MenuActivity extends AppCompatActivity {
                                         max=modelMax;
                                     }
                                 }
-                                if(max<startTimeList.size()){
+                                if(max>startTimeList.size()){
+                                    final int finalMax = max;
                                     handler.post(new Runnable() {
                                         @Override
                                         public void run() {
                                             loadAlert.hide();
-                                            showDialog("请先设置时间","导出到日历需要依赖课程时间，请先去设置课程时间");
+                                            showDialog("请先设置时间","当前课程最大节次为:"+ finalMax+"\n课程时间节次:"+startTimeList.size()+
+                                                    "\n请务必保证课程时间可以覆盖到所有课程，所有导出会有遗漏");
                                         }
                                     });
                                     return;
