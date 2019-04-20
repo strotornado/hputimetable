@@ -421,6 +421,20 @@ public class ScheduleFragment extends LazyLoadFragment implements IThemeView {
         mTimetableView.maxSlideItem(maxCount);
 
         changeConfig();
+
+        final List<String> startTimeList=new ArrayList<>();
+        final List<String> endTimeList=new ArrayList<>();
+        TimetableTools.getTimeList(getContext(),startTimeList,endTimeList);
+        OnSlideBuildAdapter slideBuildAdapter=new OnSlideBuildAdapter();
+        String time= ShareTools.getString(getContext(),"schedule_time",null);
+        if(!TextUtils.isEmpty(time)){
+            String[] times= new String[startTimeList.size()];
+            for(int i=0;i<startTimeList.size();i++){
+                times[i]=startTimeList.get(i);
+            }
+            slideBuildAdapter.setTimes(times);
+        }
+
         int curWeek = TimetableTools.getCurWeek(getActivity());
         mTimetableView.curWeek(curWeek).updateView();
         mWeekView.curWeek(curWeek).showView();

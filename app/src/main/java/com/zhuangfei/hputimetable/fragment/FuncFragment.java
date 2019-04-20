@@ -315,7 +315,7 @@ public class FuncFragment extends LazyLoadFragment {
         } else {
             final List<String> startTimeList=new ArrayList<>();
             final List<String> endTimeList=new ArrayList<>();
-            TimetableTools.getTimeList(getContext(),startTimeList,endTimeList);
+            boolean isGetTime=TimetableTools.getTimeList(getContext(),startTimeList,endTimeList);
             String time= ShareTools.getString(getContext(),"schedule_time",null);
 
             for (int i = 0; i < models.size(); i++) {

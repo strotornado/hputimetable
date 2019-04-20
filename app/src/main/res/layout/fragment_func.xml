@@ -503,7 +503,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:lineSpacingExtra="2dp"
-                        android:text="高级版可享有专属功能，目前有:\n1.增强小部件，周部件可设置\n2.主题颜色更多选项\n3.导出到日历已经管理日历\n4.其他功能"
+                        android:text="高级版可享有专属功能，目前有:\n1.增强小部件，周部件可设置\n2.主题颜色更多选项\n3.导出到日历以及管理日历\n4.其他功能"
                         android:textSize="16sp" />
 
                     <TextView

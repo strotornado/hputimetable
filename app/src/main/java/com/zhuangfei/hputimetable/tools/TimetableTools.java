@@ -197,6 +197,7 @@ public class TimetableTools {
 
     public static boolean getTimeList(Context context,List<String> startTimeList,List<String> endTimeList){
         String time= ShareTools.getString(context,"schedule_time",null);
+        if(time==null) return false;
         String[] timeArray=time.split("\\n");
         SimpleDateFormat sdf=new SimpleDateFormat("HH:mm");
         if(timeArray==null){

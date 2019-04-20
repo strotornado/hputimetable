@@ -868,7 +868,11 @@ public class MenuActivity extends AppCompatActivity {
                 final List<TimetableModel> models = (List<TimetableModel>) t;
                 final List<String> startTimeList=new ArrayList<>();
                 final List<String> endTimeList=new ArrayList<>();
-                TimetableTools.getTimeList(getContext(),startTimeList,endTimeList);
+                boolean getTime=TimetableTools.getTimeList(getContext(),startTimeList,endTimeList);
+                if(!getTime){
+                    showDialog("请先设置时间","导出到日历需要依赖课程时间，请先去设置课程时间");
+                    return;
+                }
                 final int curWeek=TimetableTools.getCurWeek(getContext());
                 new Thread(new Runnable() {
                     @Override
