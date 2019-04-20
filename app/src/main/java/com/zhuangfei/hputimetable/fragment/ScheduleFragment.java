@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.PopupMenu;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -42,6 +43,9 @@ import com.zhuangfei.hputimetable.tools.ViewTools;
 import com.zhuangfei.timetable.TimetableView;
 import com.zhuangfei.timetable.listener.ISchedule;
 import com.zhuangfei.timetable.listener.IWeekView;
+import com.zhuangfei.timetable.listener.OnDateBuildAapter;
+import com.zhuangfei.timetable.listener.OnScrollViewBuildAdapter;
+import com.zhuangfei.timetable.listener.OnSlideBuildAdapter;
 import com.zhuangfei.timetable.model.Schedule;
 import com.zhuangfei.timetable.model.ScheduleConfig;
 import com.zhuangfei.timetable.model.ScheduleSupport;
@@ -59,6 +63,8 @@ import org.litepal.crud.async.FindMultiExecutor;
 import org.litepal.crud.callback.FindMultiCallback;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -240,8 +246,21 @@ public class ScheduleFragment extends LazyLoadFragment implements IThemeView {
                     .callback((ISchedule.OnScrollViewBuildListener) null);
         }
 
-        int maxCount = ShareTools.getInt(context, "maxCount", 10);
+        int maxCount = ShareTools.getInt(context, "maxCount", 12);
         mTimetableView.maxSlideItem(maxCount);
+
+        final List<String> startTimeList=new ArrayList<>();
+        final List<String> endTimeList=new ArrayList<>();
+        TimetableTools.getTimeList(getContext(),startTimeList,endTimeList);
+        OnSlideBuildAdapter slideBuildAdapter=new OnSlideBuildAdapter();
+        String time= ShareTools.getString(getContext(),"schedule_time",null);
+        if(!TextUtils.isEmpty(time)){
+            String[] times= new String[startTimeList.size()];
+            for(int i=0;i<startTimeList.size();i++){
+                times[i]=startTimeList.get(i);
+            }
+            slideBuildAdapter.setTimes(times);
+        }
 
         mTimetableView.curWeek(curWeek)
                 .itemHeight(ScreenUtils.dip2px(context, 50))
@@ -285,6 +304,7 @@ public class ScheduleFragment extends LazyLoadFragment implements IThemeView {
                         ActivityTools.toActivityWithout(getContext(), AddTimetableActivity.class, model);
                     }
                 })
+                .callback(slideBuildAdapter)
                 .showView();
         loadLayout.setVisibility(View.GONE);
         mThemeLoader.execute();
@@ -417,8 +437,8 @@ public class ScheduleFragment extends LazyLoadFragment implements IThemeView {
                         }
                     });
         } else {
-            mTimetableView.callback((ISchedule.OnDateBuildListener) null)
-                    .callback((ISchedule.OnScrollViewBuildListener) null);
+            mTimetableView.callback(new OnDateBuildAapter())
+                    .callback(new OnScrollViewBuildAdapter());
         }
     }
 

@@ -64,6 +64,7 @@ import com.zhuangfei.hputimetable.tools.StationManager;
 import com.zhuangfei.hputimetable.tools.TimetableTools;
 import com.zhuangfei.hputimetable.tools.ViewTools;
 import com.zhuangfei.hputimetable.tools.VipTools;
+import com.zhuangfei.timetable.listener.OnSlideBuildAdapter;
 import com.zhuangfei.timetable.model.Schedule;
 import com.zhuangfei.timetable.model.ScheduleColorPool;
 import com.zhuangfei.timetable.model.ScheduleSupport;
@@ -143,6 +144,10 @@ public class FuncFragment extends LazyLoadFragment {
 
     @BindView(R.id.id_vip_layout)
     LinearLayout vipLayout;
+
+    @BindView(R.id.id_help_layout)
+    LinearLayout helpLayout;
+
 
     @BindView(R.id.id_func_setting_img)
     ImageView settingsImageView;
@@ -230,6 +235,11 @@ public class FuncFragment extends LazyLoadFragment {
         if(showVip==1&&!VipTools.isVip(getActivity()).isSuccess()){
             vipLayout.setVisibility(View.VISIBLE);
         }
+
+        int showHelp=ShareTools.getInt(getContext(),"showHelpLayout",1);
+        if(showHelp==1){
+            helpLayout.setVisibility(View.VISIBLE);
+        }
         registerForContextMenu(stationGridView);
         findData();
         findStationLocal();
@@ -303,6 +313,11 @@ public class FuncFragment extends LazyLoadFragment {
             cardLayout.addView(view);
 
         } else {
+            final List<String> startTimeList=new ArrayList<>();
+            final List<String> endTimeList=new ArrayList<>();
+            TimetableTools.getTimeList(getContext(),startTimeList,endTimeList);
+            String time= ShareTools.getString(getContext(),"schedule_time",null);
+
             for (int i = 0; i < models.size(); i++) {
                 final Schedule schedule = models.get(i);
                 if (schedule == null) continue;
@@ -322,6 +337,9 @@ public class FuncFragment extends LazyLoadFragment {
                 String room = schedule.getRoom();
                 if (TextUtils.isEmpty(name)) name = "课程名未知";
                 if (TextUtils.isEmpty(room)) room = "上课地点未知";
+                if(!TextUtils.isEmpty(time)){
+                    room=startTimeList.get(schedule.getStart()-1)+"-"+endTimeList.get(schedule.getStart()+schedule.getStep()-2)+" | "+room;
+                }
                 nameText.setText(name);
                 roomText.setText(room);
                 startText.setText(schedule.getStart() + "-" + (schedule.getStart() + schedule.getStep() - 1) + "节");
@@ -362,6 +380,11 @@ public class FuncFragment extends LazyLoadFragment {
             infoButtonText.setVisibility(View.GONE);
             cardLayout2.addView(view);
         } else {
+            final List<String> startTimeList=new ArrayList<>();
+            final List<String> endTimeList=new ArrayList<>();
+            TimetableTools.getTimeList(getContext(),startTimeList,endTimeList);
+            String time= ShareTools.getString(getContext(),"schedule_time",null);
+
             for (int i = 0; i < models.size(); i++) {
                 final Schedule schedule = models.get(i);
                 if (schedule == null) continue;
@@ -381,6 +404,9 @@ public class FuncFragment extends LazyLoadFragment {
                 String room = schedule.getRoom();
                 if (TextUtils.isEmpty(name)) name = "课程名未知";
                 if (TextUtils.isEmpty(room)) room = "上课地点未知";
+                if(!TextUtils.isEmpty(time)){
+                    room=startTimeList.get(schedule.getStart()-1)+"-"+endTimeList.get(schedule.getStart()+schedule.getStep()-2)+" | "+room;
+                }
                 nameText.setText(name);
                 roomText.setText(room);
                 startText.setText(schedule.getStart() + "-" + (schedule.getStart() + schedule.getStep() - 1) + "节");
@@ -733,6 +759,7 @@ public class FuncFragment extends LazyLoadFragment {
                                     public void onClick(DialogInterface dialogInterface, int i) {
                                         ShareTools.putInt(getActivity(), ShareConstants.INT_SCHEDULE_NAME_ID2, models.get(i).getId());
                                         findData2();
+                                        BroadcastUtils.refreshAppWidget(getContext());
                                         Toasty.success(getActivity(), "关联成功!").show();
                                     }
                                 })
@@ -800,6 +827,31 @@ public class FuncFragment extends LazyLoadFragment {
                                 bindContainer.setVisibility(View.GONE);
                                 ShareTools.putInt(getActivity(),  ShareConstants.INT_GUANLIAN, 0);
                                 ToastTools.show(getActivity(),"已隐藏关联课表卡片，可在工具箱中打开");
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                })
+                .setCancelable(false)
+                .setNegativeButton("取消",null);
+        builder.create().show();
+    }
+
+    @OnClick(R.id.id_func_setting_img4)
+    public void onHelpLayoutClicked() {
+        String[] items = {
+                "隐藏本卡片"
+        };
+        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getActivity())
+                .setTitle("卡片设置")
+                .setItems(items, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        switch (i) {
+                            case 0:
+                                helpLayout.setVisibility(View.GONE);
+                                ShareTools.putInt(getContext(),"showHelpLayout",0);
                                 break;
                             default:
                                 break;

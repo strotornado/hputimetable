@@ -2,6 +2,7 @@
 <resources>
     <color name="app_qing_profile">#3DD7F1</color>
     <color name="white_alpha50">#80FFFFFF</color>
+    <color name="white_alpha70">#4DFFFFFF</color>
     <color name="white_alpha20">#CCFFFFFF</color>
     <color name="white_alpha25">#BFFFFFFF</color><!--30-->
     <color name="app_gold">#FF7A59</color>

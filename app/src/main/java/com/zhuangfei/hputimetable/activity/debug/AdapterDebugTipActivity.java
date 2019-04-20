@@ -56,46 +56,31 @@ public class AdapterDebugTipActivity extends AppCompatActivity {
             Toasty.warning(this, "不允许为空，请填充完整!").show();
         } else {
             if(name.equals("ZFMAN")&&userkey.equals("ZFMAN")){
-                Calendar cal = Calendar.getInstance();
-                cal.add(Calendar.DATE, 30);
-                Date date = cal.getTime();
-                PayLicense license=VipTools.getLicense(AdapterDebugTipActivity.this,1000,date);
+                PayLicense license=VipTools.getLicense(AdapterDebugTipActivity.this,1000,new Date(),330);
                 VipTools.registerVip(license);
                 ToastTools.show(this,"Success:1个月无效订单");
                 return;
             }
             if(name.equals("ZFMAN")&&userkey.equals("ZFMAN2")){
-                Calendar cal = Calendar.getInstance();
-                cal.add(Calendar.YEAR, 3);
-                Date date = cal.getTime();
-                PayLicense license=VipTools.getLicense(AdapterDebugTipActivity.this,1000,date);
+                PayLicense license=VipTools.getLicense(AdapterDebugTipActivity.this,1000,new Date(),880);
                 VipTools.registerVip(license);
-                ToastTools.show(this,"Success:3年无效订单");
+                ToastTools.show(this,"Success:1年无效订单");
                 return;
             }
             if(name.equals("ZFMAN")&&userkey.equals("ZFMAN3")){
-                Calendar cal = Calendar.getInstance();
-                cal.add(Calendar.YEAR, 3);
-                Date date = cal.getTime();
-                PayLicense license=VipTools.getLicense(AdapterDebugTipActivity.this,8108261404770305L,date);
+                PayLicense license=VipTools.getLicense(AdapterDebugTipActivity.this,8108261404770305L,new Date(),880);
                 VipTools.registerVip(license);
                 ToastTools.show(this,"Success:成功的订单");
                 return;
             }
             if(name.equals("ZFMAN")&&userkey.equals("ZFMAN4")){
-                Calendar cal = Calendar.getInstance();
-                cal.add(Calendar.YEAR, 3);
-                Date date = cal.getTime();
-                PayLicense license=VipTools.getLicense(AdapterDebugTipActivity.this,8121023832981505L,date);
+                PayLicense license=VipTools.getLicense(AdapterDebugTipActivity.this,8121023832981505L,new Date(),880);
                 VipTools.registerVip(license);
                 ToastTools.show(this,"Success:未支付订单");
                 return;
             }
             if(name.equals("ZFMAN")&&userkey.equals("ZFMAN5")){
-                Calendar cal = Calendar.getInstance();
-                cal.add(Calendar.YEAR, 3);
-                Date date = cal.getTime();
-                PayLicense license=VipTools.getLicense(AdapterDebugTipActivity.this,8117589805301761L,date);
+                PayLicense license=VipTools.getLicense(AdapterDebugTipActivity.this,8117589805301761L,new Date(),880);
                 VipTools.registerVip(license);
                 ToastTools.show(this,"Success:别人的订单");
                 return;

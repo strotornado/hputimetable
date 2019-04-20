@@ -9,6 +9,7 @@
 
         <item name="windowNoTitle">true</item>
         <item name="android:textColor">@android:color/black</item>
+        <item name="mainColor">@color/theme_dark</item>
 
     </style>
 

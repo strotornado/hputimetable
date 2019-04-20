@@ -35,16 +35,19 @@ import com.zhuangfei.hputimetable.adapter.OnGryphonConfigHandler;
 import com.zhuangfei.hputimetable.api.TimetableRequest;
 import com.zhuangfei.hputimetable.api.model.BaseResult;
 import com.zhuangfei.hputimetable.api.model.ObjResult;
+import com.zhuangfei.hputimetable.api.model.ScheduleName;
 import com.zhuangfei.hputimetable.api.model.SchoolPersonModel;
 import com.zhuangfei.hputimetable.api.model.TimetableModel;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
 import com.zhuangfei.hputimetable.event.ConfigChangeEvent;
 import com.zhuangfei.hputimetable.event.UpdateBindDataEvent;
 import com.zhuangfei.hputimetable.event.UpdateScheduleEvent;
+import com.zhuangfei.hputimetable.listener.OnExportProgressListener;
 import com.zhuangfei.hputimetable.listener.VipVerifyResult;
 import com.zhuangfei.hputimetable.model.PayLicense;
 import com.zhuangfei.hputimetable.model.ScheduleDao;
 import com.zhuangfei.hputimetable.tools.BroadcastUtils;
+import com.zhuangfei.hputimetable.tools.CalendarReminderUtils;
 import com.zhuangfei.hputimetable.tools.DeviceTools;
 import com.zhuangfei.hputimetable.tools.FileTools;
 import com.zhuangfei.hputimetable.tools.Md5Tools;
@@ -53,6 +56,9 @@ import com.zhuangfei.hputimetable.tools.TimetableTools;
 import com.zhuangfei.hputimetable.tools.UpdateTools;
 import com.zhuangfei.hputimetable.tools.VipTools;
 import com.zhuangfei.hputimetable.tools.WidgetConfig;
+import com.zhuangfei.smartalert.core.LoadAlert;
+import com.zhuangfei.smartalert.core.MessageAlert;
+import com.zhuangfei.timetable.model.Schedule;
 import com.zhuangfei.timetable.model.ScheduleConfig;
 import com.zhuangfei.timetable.model.ScheduleSupport;
 import com.zhuangfei.toolkit.tools.ActivityTools;
@@ -61,12 +67,16 @@ import com.zhuangfei.toolkit.tools.ToastTools;
 
 import org.greenrobot.eventbus.EventBus;
 import org.litepal.crud.DataSupport;
+import org.litepal.crud.async.FindMultiExecutor;
+import org.litepal.crud.callback.FindMultiCallback;
 
 import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -112,6 +122,15 @@ public class MenuActivity extends AppCompatActivity {
     @BindView(R.id.id_switch_firstsunday)
     SwitchCompat firstSundaySwitch;
 
+    @BindView(R.id.id_switch_weekdayfirst)
+    SwitchCompat weekdayFirstSwitch;
+
+    @BindView(R.id.id_widget_alpha1)
+    SwitchCompat alpha1Switch;
+
+    @BindView(R.id.id_widget_textcolor)
+    SwitchCompat whiteTextColorSwitch;
+
     boolean changeStatus=false;
     boolean changeStatus2=false;
 
@@ -135,12 +154,18 @@ public class MenuActivity extends AppCompatActivity {
 
     SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:MM");
 
+    boolean effect=false;
+    boolean excute=false;
+
+    MessageAlert loadAlert;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
         ButterKnife.bind(this);
         inits();
+        checkVip();
     }
 
     public void checkVip(){
@@ -156,7 +181,8 @@ public class MenuActivity extends AppCompatActivity {
         }
         String deviceId=DeviceTools.getDeviceId(context);
         if(TextUtils.isEmpty(deviceId)){
-            deviceId="";
+            showDialog("权限不足","无法获取设备ID，证书验证失败，请先开启读取设备IMEI权限");
+            return;
         }
         if(result!=null&&result.isNeedVerify()){
             final String finalLastModifyMd = VipTools.getLastModifyMd5(context);
@@ -180,26 +206,12 @@ public class MenuActivity extends AppCompatActivity {
                                 ToastTools.show(getContext(),"证书验证成功!");
                             }
                         }
+                    }else{
+                        ToastTools.show(getContext(),"验证失败:"+msg);
                     }
-//                    showErrorDialog(isSuccess,msg,model,result.getLicense());
                 }
             });
         }
-//        showDialog("Title",result.getMsg()+"\n"+result.isNeedVerify());
-    }
-
-    private void showErrorDialog(boolean isSuccess,String msg,QueryOrderModel model,PayLicense license) {
-        String content=msg;
-        if(model!=null){
-            content="isSuccess:"+isSuccess+"\nmsg:"+msg+"\nststus:"+model.getPayStatus()+"\nfailcode:"
-                    + EPayResult.FAIL_CODE.getCode()+"\nsuccesscode:"+ EPayResult.SUCCESS_CODE.getCode()
-                    +"\norderId:"+model.getOrderId()+"\ndeviceId:"+DeviceTools.getDeviceId(this);
-        }
-        android.support.v7.app.AlertDialog.Builder builder=new android.support.v7.app.AlertDialog.Builder(this)
-                .setTitle("Test")
-                .setMessage(content)
-                .setPositiveButton("我知道了", null);
-        builder.create().show();
     }
 
     private void cancelVip() {
@@ -273,6 +285,13 @@ public class MenuActivity extends AppCompatActivity {
             firstSundaySwitch.setChecked(true);
         }
 
+        int isWeekViewFirst = ShareTools.getInt(this, "isWeekViewFirst", 0);
+        if (isWeekViewFirst == 0) {
+            weekdayFirstSwitch.setChecked(false);
+        } else {
+            weekdayFirstSwitch.setChecked(true);
+        }
+
         boolean maxItem= WidgetConfig.get(this,WidgetConfig.CONFIG_MAX_ITEM);
         max15Switch.setChecked(maxItem);
 
@@ -281,6 +300,12 @@ public class MenuActivity extends AppCompatActivity {
 
         boolean hideDate= WidgetConfig.get(this,WidgetConfig.CONFIG_HIDE_DATE);
         hideDateSwitch.setChecked(hideDate);
+
+        boolean alpha1= WidgetConfig.get(this,WidgetConfig.CONFIG_ALPHA1);
+        alpha1Switch.setChecked(alpha1);
+
+        boolean textColorWhite= WidgetConfig.get(this,WidgetConfig.CONFIG_TEXT_COLOR_WHITE);
+        whiteTextColorSwitch.setChecked(textColorWhite);
 
         String schoolName=ShareTools.getString(MenuActivity.this,ShareConstants.STRING_SCHOOL_NAME,null);
         if(schoolName==null){
@@ -303,17 +328,24 @@ public class MenuActivity extends AppCompatActivity {
                 BuglyLog.e("MenuActivity",e.getMessage(),e);
             }
         }
+        effect=true;
     }
 
+    //除了第一次之外都需要执行检查
+    //防止和onCreate中的检查冲突
     @Override
-    protected void onStart() {
-        super.onStart();
-        new Timer().schedule(new TimerTask() {
-            @Override
-            public void run() {
-                handler.sendEmptyMessage(0x123);
-            }
-        },500);
+    protected void onResume() {
+        super.onResume();
+        if(!excute){
+            excute=true;
+        }else{
+            new Timer().schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    handler.sendEmptyMessage(0x123);
+                }
+            },500);
+        }
     }
 
     Handler handler=new Handler(){
@@ -329,13 +361,23 @@ public class MenuActivity extends AppCompatActivity {
 
     @OnClick(R.id.id_vip_btn)
     public void onVipBtnClicked(){
+        VipVerifyResult result=VipTools.isVip(this);
+        if(result.isSuccess()){
+            showDialog("您已开通","已开通高级版且可用，无需再次开通!");
+            checkVip();
+            return;
+        }
+        if(result.isNeedVerify()){
+            showDialog("您已开通","已开通高级版，但是存在风险，请连接网络进行验证即可!");
+            checkVip();
+            return;
+        }
         ActivityTools.toActivityWithout(this, VipActivity.class);
     }
 
     @OnClick(R.id.id_set_maxcount)
     public void onSetMaxCountClicked(){
-        if(!VipTools.isVip(this).isSuccess()){
-            VipTools.showAlertDialog(this);
+        if(!checkVipStatus()){
             return;
         }
         String[] items=new String[13];
@@ -474,7 +516,7 @@ public class MenuActivity extends AppCompatActivity {
 
     @OnCheckedChanged(R.id.id_switch_hidenotcur)
     public void onHideNotCurSwitchClicked(boolean b) {
-        changeStatus=true;
+        setChangeStatus(true);
         if (b) {
             ShareTools.putInt(this, "hidenotcur", 1);
         } else {
@@ -484,7 +526,7 @@ public class MenuActivity extends AppCompatActivity {
 
     @OnCheckedChanged(R.id.id_switch_hideweekends)
     public void onHideWeekendsSwitchClicked(boolean b) {
-        changeStatus=true;
+        setChangeStatus(true);
         if (b) {
             ShareTools.putInt(this, "hideweekends", 1);
         } else {
@@ -494,7 +536,7 @@ public class MenuActivity extends AppCompatActivity {
 
     @OnCheckedChanged(R.id.id_show_qinglv)
     public void onShowQinglvSwitchClicked(boolean b) {
-        changeStatus2=true;
+        setChangeStatus2(true);
         if (b) {
             ShareTools.putInt(this, ShareConstants.INT_GUANLIAN, 1);
         } else {
@@ -513,8 +555,7 @@ public class MenuActivity extends AppCompatActivity {
 
     @OnCheckedChanged(R.id.id_switch_firstsunday)
     public void onFirstSundaySwitchClicked(boolean b) {
-        if(!VipTools.isVip(this).isSuccess()){
-            VipTools.showAlertDialog(this);
+        if(effect&&!checkVipStatus()){
             return;
         }
         if (b) {
@@ -522,24 +563,74 @@ public class MenuActivity extends AppCompatActivity {
         } else {
             ShareTools.putInt(this, "isFirstSunday", 0);
         }
-        changeStatus=true;
+        setChangeStatus(true);
+    }
+
+    /**
+     * 周视图在第一屏
+     * @param b
+     */
+    @OnCheckedChanged(R.id.id_switch_weekdayfirst)
+    public void onWeekDayFirstSwitchClicked(boolean b) {
+        if(effect&&!checkVipStatus()){
+            return;
+        }
+        if (b) {
+            ShareTools.putInt(this, "isWeekViewFirst", 1);
+        } else {
+            ShareTools.putInt(this, "isWeekViewFirst", 0);
+        }
+        if(effect){
+            ToastTools.show(MenuActivity.this,"设置成功，重启App生效");
+        }
+        setChangeStatus(true);
     }
 
     @OnCheckedChanged(R.id.id_widget_hideweeks)
     public void onCheckedHideWeeksSwitchClicked(boolean b) {
+        if(effect&&!checkVipStatus()){
+            return;
+        }
         WidgetConfig.apply(this,WidgetConfig.CONFIG_HIDE_WEEKS,b);
         BroadcastUtils.refreshAppWidget(this);
     }
 
     @OnCheckedChanged(R.id.id_widget_max15)
     public void onCheckedMax15SwitchClicked(boolean b) {
+        if(effect&&!checkVipStatus()){
+            return;
+        }
         WidgetConfig.apply(this,WidgetConfig.CONFIG_MAX_ITEM,b);
         BroadcastUtils.refreshAppWidget(this);
     }
 
     @OnCheckedChanged(R.id.id_widget_hidedate)
     public void onCheckedHideDateSwitchClicked(boolean b) {
+        if(effect&&!checkVipStatus()){
+            return;
+        }
         WidgetConfig.apply(this,WidgetConfig.CONFIG_HIDE_DATE,b);
+        BroadcastUtils.refreshAppWidget(this);
+    }
+
+    @OnCheckedChanged(R.id.id_widget_alpha1)
+    public void onAlpha1SwitchClicked(boolean b) {
+        if(effect&&!checkVipStatus()){
+            return;
+        }
+        WidgetConfig.apply(this,WidgetConfig.CONFIG_ALPHA1,b);
+        BroadcastUtils.refreshAppWidget(this);
+        if(effect){
+            ToastTools.show(context,"设置成功，重新添加小部件生效");
+        }
+    }
+
+    @OnCheckedChanged(R.id.id_widget_textcolor)
+    public void onWhiteTextColorSwitchClicked(boolean b) {
+        if(effect&&!checkVipStatus()){
+            return;
+        }
+        WidgetConfig.apply(this,WidgetConfig.CONFIG_TEXT_COLOR_WHITE,b);
         BroadcastUtils.refreshAppWidget(this);
     }
 
@@ -562,6 +653,18 @@ public class MenuActivity extends AppCompatActivity {
                 .setPositiveButton("我知道了",null)
                 .create();
         alertDialog.show();
+    }
+
+    public void setChangeStatus(boolean changeStatus) {
+        if(effect){
+            this.changeStatus = changeStatus;
+        }
+    }
+
+    public void setChangeStatus2(boolean changeStatus2) {
+        if(effect){
+            this.changeStatus2 = changeStatus2;
+        }
     }
 
     @Override
@@ -595,8 +698,7 @@ public class MenuActivity extends AppCompatActivity {
 
     @OnClick(R.id.id_set_theme_layout)
     public void onSetThemeLayoutClicked(){
-        if(!VipTools.isVip(this).isSuccess()){
-            VipTools.showAlertDialog(this);
+        if(!checkVipStatus()){
             return;
         }
         String[] items={
@@ -659,6 +761,12 @@ public class MenuActivity extends AppCompatActivity {
 
     @OnClick(R.id.id_find_license)
     public void toFindLicenseActivity() {
+        String deviceId=DeviceTools.getDeviceId(context);
+        if(TextUtils.isEmpty(deviceId)){
+            showDialog("权限不足","无法获取设备ID，证书验证失败，请先开启读取设备IMEI权限");
+            return;
+        }
+
         ActivityTools.toActivityWithout(getContext(),FindVipLicenseActivity.class);
     }
 
@@ -670,11 +778,291 @@ public class MenuActivity extends AppCompatActivity {
             return;
         }
         if(result.isSuccess()){
-            showDialog("检查证书安全性","您的证书状态安全，请放心使用！");
+            PayLicense license=result.getLicense();
+            SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            showDialog("检查证书安全性","您的证书状态安全，证书内容如下:\n"
+            +"签发时间:"+sdf.format(new Date(Long.parseLong(license.getCreate())))+"\n"
+            +"失效时间:"+sdf.format(new Date(Long.parseLong(license.getExpire())))+"\n"
+            +"设备信息:"+DeviceTools.getDeviceId(this)+"\n"
+            +"数字签名:"+license.getSignature2());
         }else if(result.isNeedVerify()){
             checkVip();
         }else{
-            showDialog("检查证书安全性","验证失败:"+result);
+            showDialog("检查证书安全性","验证失败:"+result.getMsg());
         }
+    }
+
+    @OnClick(R.id.id_export_calender)
+    public void exportToSystemCalender() {
+        if(!checkVipStatus()){
+            return;
+        }
+        String startTimeString="";
+        String startTime=ShareTools.getString(this,ShareConstants.STRING_START_TIME,null);
+        if (TextUtils.isEmpty(startTime)) {
+            showDialog("出现错误","开学时间或当前周未设置");
+            return;
+        }else{
+            SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat sdf2=new SimpleDateFormat("yyyy/MM/dd");
+            try{
+                Date date=sdf.parse(startTime);
+                startTimeString=sdf2.format(date);
+            }catch (Exception e){
+                BuglyLog.e("MenuActivity",e.getMessage(),e);
+            }
+        }
+
+        AlertDialog.Builder builder=new AlertDialog.Builder(this)
+                .setTitle("导出到系统日历")
+                .setMessage("开学时间:"+startTimeString+"(第"+TimetableTools.getCurWeek(getContext())+"周)\n将当前课表写入系统日历事件中，写入日历后对当前课表进行的编辑操作将不会自动同步到日历中\n2.请务必授予日历权限\n3.请保证本地日期准确\n4.请保证开学时间或当前周设置准确")
+                .setPositiveButton("开始导出", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        doExport();
+                    }
+                }).setNegativeButton("取消导出",null);
+        builder.create().show();
+    }
+
+    @OnClick(R.id.id_export_calender_qinglv)
+    public void exportQinglvToSystemCalender() {
+        if(!checkVipStatus()){
+            return;
+        }
+        String startTimeString="";
+        String startTime=ShareTools.getString(this,ShareConstants.STRING_START_TIME,null);
+        if (TextUtils.isEmpty(startTime)) {
+            showDialog("出现错误","开学时间或当前周未设置");
+            return;
+        }else{
+            SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            SimpleDateFormat sdf2=new SimpleDateFormat("yyyy/MM/dd");
+            try{
+                Date date=sdf.parse(startTime);
+                startTimeString=sdf2.format(date);
+            }catch (Exception e){
+                BuglyLog.e("MenuActivity",e.getMessage(),e);
+            }
+        }
+
+        AlertDialog.Builder builder=new AlertDialog.Builder(this)
+                .setTitle("导出到系统日历")
+                .setMessage("开学时间:"+startTimeString+"(第"+TimetableTools.getCurWeek(getContext())+"周)\n1.将情侣课表写入系统日历事件中\n2.请务必授予日历权限\n3.请保证本地日期准确\n4.请保证开学时间或当前周设置准确\n5.导出的数据在事件名会标记[情侣]")
+                .setPositiveButton("开始导出", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        doExport2();
+                    }
+                }).setNegativeButton("取消导出",null);
+        builder.create().show();
+    }
+    public void doExportOperator(int id, final boolean qinglv){
+        final ScheduleName newName = DataSupport.find(ScheduleName.class, id);
+        if (newName == null) return;
+
+        FindMultiExecutor executor = newName.getModelsAsync();
+        executor.listen(new FindMultiCallback() {
+            @Override
+            public <T> void onFinish(List<T> t) {
+                final List<TimetableModel> models = (List<TimetableModel>) t;
+                final List<String> startTimeList=new ArrayList<>();
+                final List<String> endTimeList=new ArrayList<>();
+                TimetableTools.getTimeList(getContext(),startTimeList,endTimeList);
+                final int curWeek=TimetableTools.getCurWeek(getContext());
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (models != null) {
+                            if (models != null && models.size() != 0) {
+
+                                final String origin="计算量有点大，可能需要耗费15s左右，请耐心等待..\n"
+                                        +"等待写入"+models.size()+"个课程\n";
+
+
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        loadAlert.setContent(origin);
+                                    }
+                                });
+
+                                int max=1;
+                                for(TimetableModel model:models){
+                                    int modelMax=model.getStart()+model.getStep()-1;
+                                    if(modelMax>max){
+                                        max=modelMax;
+                                    }
+                                }
+                                if(max<startTimeList.size()){
+                                    handler.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            loadAlert.hide();
+                                            showDialog("请先设置时间","导出到日历需要依赖课程时间，请先去设置课程时间");
+                                        }
+                                    });
+                                    return;
+                                }
+
+                                int index=0;
+                                for(TimetableModel model:models){
+                                    index++;
+                                    final int finalIndex = index;
+                                    CalendarReminderUtils.addScheduleToCalender(getContext(), model,qinglv,
+                                            startTimeList, endTimeList,
+                                            curWeek, new OnExportProgressListener() {
+                                                @Override
+                                                public void onProgress(final int total, final int now) {
+                                                    handler.post(new Runnable() {
+                                                        @Override
+                                                        public void run() {
+                                                            loadAlert.setContent(origin+"写入第"+ finalIndex +"个数据("+now+"/"+total+")");
+                                                        }
+                                                    });
+                                                }
+                                            });
+                                }
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        loadAlert.hide();
+                                        showDialog("导出到日历","导出成功，以后可以用日历看课表啦~");
+                                    }
+                                });
+                            } else{
+                                handler.post(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        loadAlert.hide();
+                                        ToastTools.show(getContext(),"导出失败：当前课表为空");
+                                    }
+                                });
+                            }
+                        }else{
+                            handler.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    loadAlert.hide();
+                                }
+                            });
+                        }
+                    }
+                }).start();
+            }
+        });
+    }
+
+    public void doExport(){
+        if(getContext()==null) return;
+        ScheduleName scheduleName = DataSupport.where("name=?", "默认课表").findFirst(ScheduleName.class);
+        if (scheduleName == null) {
+            scheduleName = new ScheduleName();
+            scheduleName.setName("默认课表");
+            scheduleName.setTime(System.currentTimeMillis());
+            scheduleName.save();
+            ShareTools.put(this, ShareConstants.INT_SCHEDULE_NAME_ID, scheduleName.getId());
+        }
+
+        loadAlert=new MessageAlert(getContext(),true).create();
+        loadAlert.setContent("正在获取课表信息..\n");
+        loadAlert.show();
+
+        int id = ScheduleDao.getApplyScheduleId(this);
+        doExportOperator(id,false);
+    }
+
+    public void doExport2(){
+        int id2 = ShareTools.getInt(context, ShareConstants.INT_SCHEDULE_NAME_ID2, 0);
+        if(id2==0){
+            showDialog("导出失败","你还没有关联课表,先去和Ta的课表关联起来吧");
+            return;
+        }
+        final ScheduleName newName = DataSupport.find(ScheduleName.class, id2);
+        if (newName == null){
+            showDialog("导出失败","关联的课表不存在,先去和Ta的课表关联起来吧");
+            return;
+        }
+        loadAlert=new MessageAlert(getContext(),true).create();
+        loadAlert.setContent("正在获取课表信息..\n");
+        loadAlert.show();
+        doExportOperator(id2,true);
+    }
+
+    @OnClick(R.id.id_clear_calender)
+    public void clearSystemCalender() {
+        if(!checkVipStatus()){
+            return;
+        }
+        AlertDialog.Builder builder=new AlertDialog.Builder(this)
+                .setTitle("清除日历课程内容")
+                .setMessage("该操作仅仅会清除日历中由怪兽课表添加的内容!")
+                .setPositiveButton("开始清除", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        doCleat();
+                    }
+                }).setNegativeButton("取消清除",null);
+        builder.create().show();
+    }
+
+    @OnClick(R.id.id_set_time)
+    public void setTimeLayoutClicked() {
+        if(!checkVipStatus()){
+            return;
+        }
+        ActivityTools.toActivityWithout(getContext(),SetTimeActivity.class);
+    }
+
+    private void doCleat() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        loadAlert=new MessageAlert(getContext(),true).create();
+                        loadAlert.setContent("正在清除\n这可能需要一些时间，请耐心等待..");
+                        loadAlert.show();
+                    }
+                });
+                CalendarReminderUtils.deleteCalendarSchedule(getContext(), handler, new OnExportProgressListener() {
+                    @Override
+                    public void onProgress(final int total, final int now) {
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                loadAlert.setContent("正在清除\n这可能需要一些时间，请耐心等待..\n"+
+                                "正在删除("+now+"/"+total+")");
+                            }
+                        });
+                    }
+                });
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(loadAlert!=null) loadAlert.hide();
+                    }
+                });
+            }
+        }).start();
+    }
+    public boolean checkVipStatus(){
+        String deviceId=DeviceTools.getDeviceId(context);
+        if(TextUtils.isEmpty(deviceId)){
+            showDialog("权限不足","无法获取设备ID，证书验证失败，请先开启读取设备IMEI权限");
+            return false;
+        }
+        VipVerifyResult result=VipTools.isVip(this);
+        if(result.isSuccess()){
+            return true;
+        }
+        if(result.isNeedVerify()){
+            showDialog("验证高级版","证书存在风险，需要连接网络进行验证！");
+            checkVip();
+            return false;
+        }
+        VipTools.showAlertDialog(this);
+        return false;
     }
 }

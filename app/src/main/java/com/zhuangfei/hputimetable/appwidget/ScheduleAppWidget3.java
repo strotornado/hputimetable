@@ -13,7 +13,6 @@ import android.widget.RemoteViews;
 import com.zhuangfei.hputimetable.R;
 import com.zhuangfei.hputimetable.tools.TimetableTools;
 import com.zhuangfei.hputimetable.tools.WidgetConfig;
-import com.zhuangfei.timetable.listener.OnSlideBuildAdapter;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -21,7 +20,7 @@ import java.util.Date;
 /**
  * Implementation of App Widget functionality.
  */
-public class ScheduleAppWidget2 extends AppWidgetProvider {
+public class ScheduleAppWidget3 extends AppWidgetProvider {
     private static final String TAG = "ScheduleAppWidget";
     public static final String CLICK_ACTION = "com.zhuangfei.action.POINTER_CLICK";
     public static final String UPDATE_ACTION = "com.zhuangfei.action.APPWIDGET_UPDATE";
@@ -34,7 +33,7 @@ public class ScheduleAppWidget2 extends AppWidgetProvider {
         super.onReceive(context, intent);
         if (intent.getAction().equals(UPDATE_APPWIDGET)||intent.getAction().equals(UPDATE_ACTION) || intent.getAction().equals(Intent.ACTION_TIME_CHANGED)) {
             AppWidgetManager mgr = AppWidgetManager.getInstance(context);
-            ComponentName cn = new ComponentName(context, ScheduleAppWidget2.class);
+            ComponentName cn = new ComponentName(context, ScheduleAppWidget3.class);
             mgr.notifyAppWidgetViewDataChanged(mgr.getAppWidgetIds(cn), R.id.id_widget_listview);
         }
     }
@@ -52,7 +51,7 @@ public class ScheduleAppWidget2 extends AppWidgetProvider {
             views = new RemoteViews(context.getPackageName(), R.layout.schedule_app_widget2);
         }
 
-        Intent serviceIntent = new Intent(context, ScheduleService2.class);
+        Intent serviceIntent = new Intent(context, ScheduleService3.class);
         views.setRemoteAdapter(R.id.id_widget_listview, serviceIntent);
 
 //        SimpleDateFormat sdf=new SimpleDateFormat("MM月dd日");
@@ -60,7 +59,7 @@ public class ScheduleAppWidget2 extends AppWidgetProvider {
 //
         SimpleDateFormat sdf2=new SimpleDateFormat("EEEE");
         int curWeek = TimetableTools.getCurWeek(context);
-        views.setTextViewText(R.id.id_appwidget_week,"第"+curWeek+"周  "+sdf2.format(new Date()));
+        views.setTextViewText(R.id.id_appwidget_week,"Ta的课表 第"+curWeek+"周  "+sdf2.format(new Date())+"");
 
         boolean textColorWhite= WidgetConfig.get(context,WidgetConfig.CONFIG_TEXT_COLOR_WHITE);
         int textColor= Color.BLACK;

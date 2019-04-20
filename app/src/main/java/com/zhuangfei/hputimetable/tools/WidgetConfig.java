@@ -12,6 +12,8 @@ public class WidgetConfig {
     public static final String CONFIG_MAX_ITEM="CONFIG_MAX_ITEM";
     public static final String CONFIG_HIDE_WEEKS="CONFIG_HIDE_WEEKS";
     public static final String CONFIG_HIDE_DATE="CONFIG_HIDE_DATE";
+    public static final String CONFIG_ALPHA1="CONFIG_ALPHA1";
+    public static final String CONFIG_TEXT_COLOR_WHITE="CONFIG_TEXT_COLOR_WHITE";
     public static void apply(Context context,String config, boolean b){
         ShareTools.putInt(context,config,b==true?1:0);
     }

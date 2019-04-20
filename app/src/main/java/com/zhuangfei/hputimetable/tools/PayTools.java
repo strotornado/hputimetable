@@ -1,6 +1,7 @@
 package com.zhuangfei.hputimetable.tools;
 
 import android.content.Context;
+import android.text.TextUtils;
 
 import com.payelves.sdk.EPay;
 import com.payelves.sdk.listener.PayResultListener;
@@ -49,8 +50,11 @@ public class PayTools {
     }
 
     public static String getOrderId(String userId,Integer amount){
+        if(TextUtils.isEmpty(userId)||amount==0){
+            return null;
+        }
         SimpleDateFormat sdf=new SimpleDateFormat("yyyyMMddHHmmss");
-        String orderid=sdf.format(new Date())+"_"+(int)(Math.random()*1000)+"_gs2_"+VersionTools.getVersionName()+"_"+userId+"_money"+amount;
+        String orderid=sdf.format(new Date())+"_gs2_"+VersionTools.getVersionName()+"_"+userId+"_money"+amount;
         return orderid;
     }
 

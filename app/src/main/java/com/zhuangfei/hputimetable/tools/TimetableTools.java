@@ -9,7 +9,9 @@ import com.zhuangfei.hputimetable.api.model.TimetableResultModel;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
 import com.zhuangfei.timetable.model.ScheduleSupport;
 import com.zhuangfei.toolkit.tools.ShareTools;
+import com.zhuangfei.toolkit.tools.ToastTools;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -75,6 +77,26 @@ public class TimetableTools {
         // 根据日历的规则，给当前日期减去星期几与一个星期第一天的差值
         cal.add(Calendar.DATE, cal.getFirstDayOfWeek() - day);
         return cal.getTime();
+    }
+
+    /**
+     * 获取今天周几
+     * @return
+     */
+    public static int getThisWeek() {
+        //获取周几，1->7
+        Calendar now = Calendar.getInstance();
+        //一周第一天是否为星期天
+        boolean isFirstSunday = (now.getFirstDayOfWeek() == Calendar.SUNDAY);
+        int weekDay = now.get(Calendar.DAY_OF_WEEK);
+        //若一周第一天为星期天，则-1
+        if (isFirstSunday) {
+            weekDay = weekDay - 1;
+            if (weekDay == 0) {
+                weekDay = 7;
+            }
+        }
+        return weekDay;
     }
 
     public static List<Integer> getWeekListThrowExcept(String weeksString) {
@@ -164,5 +186,39 @@ public class TimetableTools {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public static Date getTargetDate(int curWeek,int targetWeek,int curDay,int targetDay){
+        Calendar resultCalender=Calendar.getInstance();
+        resultCalender.setTime(new Date());
+        resultCalender.add(Calendar.DATE,(targetWeek-curWeek)*7+targetDay-curDay);
+        return resultCalender.getTime();
+    }
+
+    public static boolean getTimeList(Context context,List<String> startTimeList,List<String> endTimeList){
+        String time= ShareTools.getString(context,"schedule_time",null);
+        String[] timeArray=time.split("\\n");
+        SimpleDateFormat sdf=new SimpleDateFormat("HH:mm");
+        if(timeArray==null){
+            for(String item:timeArray){
+                if(item==null||item.indexOf("-")==-1){
+                    return false;
+                }
+                String[] lineArray=item.split("-");
+                if(lineArray==null||lineArray.length!=2){
+                    return false;
+                }
+                try {
+                    Date date1=sdf.parse(lineArray[0]);
+                    Date date2=sdf.parse(lineArray[1]);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+                startTimeList.add(lineArray[0]);
+                endTimeList.add(lineArray[1]);
+            }
+        }
+        return true;
     }
 }

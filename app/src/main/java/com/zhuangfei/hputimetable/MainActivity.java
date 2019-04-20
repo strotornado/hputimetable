@@ -3,6 +3,7 @@ package com.zhuangfei.hputimetable;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Timer;
@@ -35,6 +36,7 @@ import com.zhuangfei.hputimetable.fragment.FuncFragment;
 import com.zhuangfei.hputimetable.adapter.MyFragmentPagerAdapter;
 import com.zhuangfei.hputimetable.fragment.ScheduleFragment;
 import com.zhuangfei.hputimetable.model.PayLicense;
+import com.zhuangfei.hputimetable.tools.CalendarReminderUtils;
 import com.zhuangfei.hputimetable.tools.DeviceTools;
 import com.zhuangfei.hputimetable.tools.ImportTools;
 import com.zhuangfei.hputimetable.tools.PayTools;
@@ -118,24 +120,6 @@ public class MainActivity extends AppCompatActivity {
 
     @BindView(R.id.id_search_school)
     LinearLayout searchLayout;
-
-    RelativeLayout.LayoutParams lp;
-    float leftStart = 0;
-    float leftEnd = 0;
-    int normalTextSize = 15;
-    int highlighTextSize = 20;
-    int navWidthDip = 16;//指示条宽度
-    int titleWidthDip = 40;//Tab宽度
-    int marLeftDip = 10;//边距
-
-    //搜索框的边距dp
-    int searchViewStartMarDp = 10;
-    int searchViewEndMarDp = 80;
-    int searchViewStartMar = 0;
-    int searchViewEndMar = 0;
-    RelativeLayout.LayoutParams searchLayoutParams;
-    int searchViewStartMarRightDp = 10;
-    int searchViewStartMarRight = 0;
 
     @BindView(R.id.id_main_school_text)
     TextView schoolTextView;
@@ -223,11 +207,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             EventBus.getDefault().post(new UpdateSchoolEvent(schoolName));
         }
-
-        searchLayoutParams = (RelativeLayout.LayoutParams) searchLayout.getLayoutParams();
-        searchViewStartMar = ScreenUtils.dip2px(MainActivity.this, searchViewStartMarDp);
-        searchViewEndMar = ScreenUtils.dip2px(MainActivity.this, searchViewEndMarDp);
-        searchViewStartMarRight = ScreenUtils.dip2px(MainActivity.this, searchViewStartMarRightDp);
         ScheduleName scheduleName = DataSupport.where("name=?", "默认课表").findFirst(ScheduleName.class);
         if (scheduleName == null) {
             scheduleName = new ScheduleName();
@@ -237,50 +216,19 @@ public class MainActivity extends AppCompatActivity {
             ShareTools.put(this, ShareConstants.INT_SCHEDULE_NAME_ID, scheduleName.getId());
         }
 
-        lp = (RelativeLayout.LayoutParams) titleNavView.getLayoutParams();
-        lp.width = ScreenUtils.dip2px(this, navWidthDip);
-        lp.height = ScreenUtils.dip2px(this, 3);
-        leftStart = ScreenUtils.dip2px(MainActivity.this, titleWidthDip / 2 - navWidthDip / 2);
-        leftEnd = ScreenUtils.dip2px(MainActivity.this, titleWidthDip + marLeftDip + titleWidthDip / 2 - navWidthDip / 2);
-
         mViewPager = findViewById(R.id.id_viewpager);
-//        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-//            @Override
-//            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-//                Log.d(TAG, "onPageScrolled: " + position + "&&&" + positionOffset + "&&&" + positionOffsetPixels);
-//
-////                marLeft=(int)((screenWidth/3)*(position+positionOffset));
-////                tabBottomViewParams.setMargins(marLeft,0,0,0);
-////                tabBottomView.setLayoutParams(tabBottomViewParams);
-//
-//                //20dp:Tab宽度的一半，8dp:指示条宽度的一半
-//                float marLeft = leftStart + (leftEnd - leftStart) * (position + positionOffset);
-//                lp.setMargins((int) marLeft, 0, 0, 0);
-//                titleNavView.setLayoutParams(lp);
-//
-//
-//                float newMar = searchViewStartMar + (searchViewEndMar - searchViewStartMar) * (position + positionOffset);
-//                searchLayoutParams.setMargins((int) newMar, 0, searchViewStartMarRight, 0);
-//                searchLayout.setLayoutParams(searchLayoutParams);
-//            }
-//
-//            @Override
-//            public void onPageSelected(int position) {
-//                updateTabStatus(position);
-//            }
-//
-//            @Override
-//            public void onPageScrollStateChanged(int state) {
-//
-//            }
-//        });
-
         mFragmentList = new ArrayList<>();
+
         mFragmentList.add(new FuncFragment());
         mFragmentList.add(new ScheduleFragment());
         mAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager(), mFragmentList);
         mViewPager.setAdapter(mAdapter);
-        int item = (int) BundleTools.getInt(this, "item", 0);
+        int isWeekViewFirst = ShareTools.getInt(this, "isWeekViewFirst", 0);
+        int defaultSelect=0;
+        if(isWeekViewFirst==1){
+            defaultSelect=1;
+        }
+        int item = (int) BundleTools.getInt(this, "item", defaultSelect);
         select(item);
 
         try {
@@ -436,7 +384,6 @@ public class MainActivity extends AppCompatActivity {
     public void select(int i) {
         int lightColor = Color.RED;
         titleNavView.setBackgroundColor(lightColor);
-        updateTabStatus(i);
         switch (i) {
             case 0:
                 mViewPager.setCurrentItem(0);
@@ -447,34 +394,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void updateTabStatus(int i) {
-        initTabs();
-        int lightColor = Color.RED;
-        titleNavView.setBackgroundColor(lightColor);
-        switch (i) {
-            case 0:
-                tabTitle1.setTextSize(highlighTextSize);
-                lp.setMargins((int) leftStart, 0, 0, 0);
-                break;
-            case 1:
-                curWeekText.setVisibility(View.VISIBLE);
-                tabTitle2.setTextSize(highlighTextSize);
-                lp.setMargins((int) leftEnd, 0, 0, 0);
-                break;
-        }
-    }
-
-    private void initTabs() {
-        int defaultColor = Color.BLACK;
-        tabTitle1.setTextColor(defaultColor);
-        tabTitle2.setTextColor(defaultColor);
-
-        tabTitle1.setTextSize(normalTextSize);
-        tabTitle2.setTextSize(normalTextSize);
-
-        curWeekText.setVisibility(View.GONE);
-    }
-
     private void shouldcheckPermission() {
         PermissionGen.with(MainActivity.this)
                 .addRequestCode(SUCCESSCODE)
@@ -483,7 +402,9 @@ public class MainActivity extends AppCompatActivity {
                         Manifest.permission.VIBRATE,
                         Manifest.permission.READ_PHONE_STATE,
                         Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.WRITE_CALENDAR,
+                        Manifest.permission.READ_CALENDAR
                 )
                 .request();
     }
@@ -525,6 +446,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
+        int isWeekViewFirst = ShareTools.getInt(this, "isWeekViewFirst", 0);
+        if(isWeekViewFirst==1){
+            super.onBackPressed();
+            finish();
+            return;
+        }
         if (mViewPager.getCurrentItem() == 1) {
             mViewPager.setCurrentItem(0);
         } else {

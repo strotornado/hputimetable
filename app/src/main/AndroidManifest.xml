@@ -16,6 +16,8 @@
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
 
     <application
         android:name=".MyApplication"
@@ -91,6 +93,28 @@
                 android:resource="@xml/schedule_app_widget_info2" />
         </receiver>
 
+        <receiver
+            android:name=".appwidget.ScheduleAppWidget3"
+            android:label="情侣周视图">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.TIME_SET" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.zhuangfei.action.POINTER_CLICK" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.zhuangfei.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/schedule_app_widget_info3" />
+        </receiver>
+
         <service
             android:name=".appwidget.ScheduleService"
             android:enabled="true"
@@ -99,6 +123,12 @@
 
         <service
             android:name=".appwidget.ScheduleService2"
+            android:enabled="true"
+            android:exported="false"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
+
+        <service
+            android:name=".appwidget.ScheduleService3"
             android:enabled="true"
             android:exported="false"
             android:permission="android.permission.BIND_REMOTEVIEWS" />
@@ -126,7 +156,8 @@
         <activity android:name=".activity.MessageActivity"></activity>
         <activity android:name=".activity.BindSchoolActivity"></activity>
         <activity android:name=".activity.VipActivity"></activity>
-        <activity android:name=".activity.FindVipLicenseActivity"></activity>
+        <activity android:name=".activity.FindVipLicenseActivity" android:windowSoftInputMode="stateHidden"></activity>
+        <activity android:name=".activity.SetTimeActivity"></activity>
     </application>
 
 </manifest>

@@ -26,20 +26,11 @@ public class PayLicense {
      */
     private int version=1;//证书版本，升级认证机制时升级该版本
     private long orderId;
-    private int money=0;
     private String userId;
     private String signature;// app signature
     private String expire;
     private String create;//time
     private String signature2;//all signature
-
-    public void setMoney(int money) {
-        this.money = money;
-    }
-
-    public int getMoney() {
-        return money;
-    }
 
     public void setVersion(int version) {
         this.version = version;

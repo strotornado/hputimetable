@@ -22,6 +22,26 @@ public class CustomDateBuildAdapter extends OnDateBuildAapter{
         this.textSize = textSize;
     }
 
+    public int perDayWidth=0;
+
+    public int perMonthWidth=0;
+
+    public void setPerMonthWidth(int perMonthWidth) {
+        this.perMonthWidth = perMonthWidth;
+    }
+
+    public void setPerDayWidth(int perDayWidth) {
+        this.perDayWidth = perDayWidth;
+    }
+
+    public float getPerDayWidth() {
+        return perDayWidth;
+    }
+
+    public float getPerMonthWidth() {
+        return perMonthWidth;
+    }
+
     @Override
     public void onHighLight() {
         super.onHighLight();
@@ -39,7 +59,7 @@ public class CustomDateBuildAdapter extends OnDateBuildAapter{
         View[] views = new View[8];
         views[0] = onBuildMonthLayout(mInflate, (int) monthWidth, height);
         for (int i = 1; i < 8; i++) {
-            views[i] = onBuildDayLayout(mInflate, i, (int) perWidth, height);
+            views[i] = onBuildDayLayout(mInflate, i, perMonthWidth, height);
         }
         return views;
     }
@@ -53,7 +73,7 @@ public class CustomDateBuildAdapter extends OnDateBuildAapter{
         textViews[pos] = v.findViewById(com.zhuangfei.android_timetableview.sample.R.id.id_week_date);
         layouts[pos] = v.findViewById(com.zhuangfei.android_timetableview.sample.R.id.id_week_layout);
 
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(width, height);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(perDayWidth, height);
         layouts[pos].setLayoutParams(lp);
         textViews[pos].setText(weekDates.get(pos) + "日");
 

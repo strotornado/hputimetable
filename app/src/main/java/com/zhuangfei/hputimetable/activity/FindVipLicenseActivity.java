@@ -16,7 +16,9 @@ import com.payelves.sdk.EPay;
 import com.payelves.sdk.bean.QueryOrderModel;
 import com.payelves.sdk.listener.QueryOrderListener;
 import com.zhuangfei.hputimetable.R;
+import com.zhuangfei.hputimetable.listener.VipVerifyResult;
 import com.zhuangfei.hputimetable.model.PayLicense;
+import com.zhuangfei.hputimetable.tools.DeviceTools;
 import com.zhuangfei.hputimetable.tools.PayTools;
 import com.zhuangfei.hputimetable.tools.VersionTools;
 import com.zhuangfei.hputimetable.tools.VipTools;
@@ -38,6 +40,9 @@ public class FindVipLicenseActivity extends AppCompatActivity {
     @BindView(R.id.id_vip_order)
     EditText orderNumberEdit;
 
+    @BindView(R.id.id_device_info)
+    TextView deviceInfoText;
+
     Context context;
 
     @Override
@@ -46,6 +51,12 @@ public class FindVipLicenseActivity extends AppCompatActivity {
         setContentView(R.layout.activity_find_vip_license);
         ButterKnife.bind(this);
         context=this;
+        String userId= DeviceTools.getDeviceId(this);
+        if(TextUtils.isEmpty(userId)){
+            ToastTools.show(this,"请先开启读取设备IMEI权限");
+            finish();
+        }
+        deviceInfoText.setText("当前设备:"+userId);
     }
 
     public Context getContext() {
@@ -64,6 +75,11 @@ public class FindVipLicenseActivity extends AppCompatActivity {
 
     @OnClick(R.id.id_find_vip)
     public void onFindVipButtonClicked(){
+        String userId= DeviceTools.getDeviceId(this);
+        if(TextUtils.isEmpty(userId)){
+            ToastTools.show(this,"请先开启读取设备IMEI权限");
+            return;
+        }
         String orderNumber=orderNumberEdit.getText().toString();
         long orderLong=0;
         try {
@@ -97,13 +113,15 @@ public class FindVipLicenseActivity extends AppCompatActivity {
                     try {
                         Date create=sdf.parse(payTime);
                         Integer amount=PayTools.getMoneyByOrderId(model.getOrderId());
-                        Date expire=VipTools.getExpireDate(create,amount);
-                        PayLicense license=VipTools.getLicense(getContext(), finalOrderLong,expire);
-                        if(VipTools.isVip(getContext(),license)){
+                        PayLicense license=VipTools.getLicense(getContext(), finalOrderLong,create,amount);
+                        VipVerifyResult verifyResult=VipTools.isVip(getContext(),license);
+                        if(verifyResult.isSuccess()||verifyResult.isNeedVerify()){
                             VipTools.registerVip(license);
+                            ToastTools.show(getContext(),"高级版证书恢复成功，等待验证..");
+                            finish();
+                        }else{
+                            ToastTools.show(getContext(),"验证失败:"+verifyResult.getMsg());
                         }
-                        ToastTools.show(getContext(),"高级版证书恢复成功，等待验证..");
-                        finish();
                     } catch (ParseException e) {
                         ToastTools.show(getContext(),"Exception:"+e.getMessage());
                         e.printStackTrace();

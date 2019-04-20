@@ -38,30 +38,8 @@ public class VipTools {
         }
     }
 
-    public static boolean installVip(Context context,String json){
-        if(TextUtils.isEmpty(json)){
-            return false;
-        }
-        try {
-            PayLicense license=new Gson().fromJson(json,PayLicense.class);
-            if(license==null) return false;
-            if(!isVip(context,license)) return false;
-            FileTools.writeVipLicense(json);
-            return true;
-        }catch (Exception e){
-            return false;
-        }
-    }
-
     public static void unregisterVip(){
         FileTools.writeVipLicense("");
-    }
-
-    public static boolean isVip(Context context,PayLicense license){
-        if(license==null){
-            return false;
-        }
-        return license.check(context);
     }
 
     public static String getLastModifyMd5(Context context){
@@ -79,6 +57,26 @@ public class VipTools {
     public static VipVerifyResult isVip(Context context){
         VipVerifyResult result=new VipVerifyResult();
         PayLicense license=getLocalLicense(context,result);
+        if(license==null){
+            recordMsg(result,false,"vip.license is empty");
+            return result;
+        }
+        result.setLicense(license);
+        isVip(context,license,result);
+        return result;
+    }
+
+    public static VipVerifyResult isVip(Context context,PayLicense license){
+        return isVip(context,license,null);
+    }
+
+    public static VipVerifyResult isVip(Context context,PayLicense license,VipVerifyResult r){
+        VipVerifyResult result;
+        if(r==null){
+            result=new VipVerifyResult();
+        }else{
+            result=r;
+        }
         if(license==null){
             recordMsg(result,false,"vip.license is empty");
             return result;
@@ -116,14 +114,15 @@ public class VipTools {
         builder.create().show();
     }
 
-    public static PayLicense getLicense(Context context,long payId,Date expire){
+    public static PayLicense getLicense(Context context,long payId,Date create,Integer amount){
+        Date expire=getExpireDate(create,amount);
         if(context==null||expire==null){
-            return null;
+            return new PayLicense();
         }
         PayLicense license=new PayLicense();
         String key=context.getResources().getString(R.string.key);
         String userId=DeviceTools.getDeviceId(context);
-        String createTime=""+System.currentTimeMillis();
+        String createTime=""+create.getTime();
         license.setOrderId(payId);
         license.setUserId(userId);
         license.setCreate(createTime);
@@ -203,6 +202,7 @@ public class VipTools {
         VipTools.unregisterVip();
         android.support.v7.app.AlertDialog.Builder builder=new android.support.v7.app.AlertDialog.Builder(context)
                 .setTitle("高级版被撤销")
+                .setCancelable(false)
                 .setMessage("经过系统检测，您的高级版凭证非正版，证书已被删除！请支持正版，感谢您的支持，如果本检测有误，请联系客服进行申诉:1193600556@qq.com")
                 .setPositiveButton("我知道了", null);
         builder.create().show();

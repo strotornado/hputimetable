@@ -201,6 +201,30 @@
             </LinearLayout>
             <include layout="@layout/view_line" />
             <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@color/app_white"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="15dp"
+                    android:layout_weight="1"
+                    android:textSize="16sp"
+                    android:gravity="center_vertical"
+                    android:text="设置周视图为首页" />
+
+                <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/id_switch_weekdayfirst"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="15dp" />
+            </LinearLayout>
+            <include layout="@layout/view_line" />
+
+            <LinearLayout
                 android:id="@+id/id_set_maxcount"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
@@ -220,6 +244,106 @@
             </LinearLayout>
 
             <include layout="@layout/view_line" />
+            <LinearLayout
+                android:id="@+id/id_set_time"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@color/app_white"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="15dp"
+                    android:layout_weight="1"
+                    android:textSize="16sp"
+                    android:gravity="center_vertical"
+                    android:text="节次时间设置" />
+
+            </LinearLayout>
+
+            <include layout="@layout/view_line" />
+            <LinearLayout
+                android:id="@+id/id_export_calender"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="@color/app_white"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:textSize="17sp"
+                    android:gravity="center_vertical"
+                    android:text="导出到日历" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:gravity="center_vertical"
+                    android:textSize="14sp"
+                    android:textColor="@color/app_gray"
+                    android:text="将当前课表写入系统日历中" />
+            </LinearLayout>
+            <include layout="@layout/view_line" />
+            <LinearLayout
+                android:id="@+id/id_export_calender_qinglv"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="@color/app_white"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:textSize="17sp"
+                    android:gravity="center_vertical"
+                    android:text="导出情侣课表到日历" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:gravity="center_vertical"
+                    android:textSize="14sp"
+                    android:textColor="@color/app_gray"
+                    android:text="将情侣课表写入系统日历中" />
+            </LinearLayout>
+
+            <include layout="@layout/view_line" />
+            <LinearLayout
+                android:id="@+id/id_clear_calender"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:background="@color/app_white"
+                android:gravity="center_vertical"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:textSize="17sp"
+                    android:gravity="center_vertical"
+                    android:text="清除日历中的课程" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:gravity="center_vertical"
+                    android:textSize="14sp"
+                    android:textColor="@color/app_gray"
+                    android:text="仅仅移除日历中的课程" />
+            </LinearLayout>
+            <include layout="@layout/view_line" />
+
             <LinearLayout
                 android:id="@+id/id_check_license"
                 android:layout_width="match_parent"
@@ -275,18 +399,27 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:gravity="center"
+                android:layout_height="60dp"
                 android:background="@color/app_white"
+                android:gravity="center_vertical"
                 android:orientation="vertical">
+
                 <TextView
-                    android:gravity="center_vertical"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:textSize="17sp"
+                    android:gravity="center_vertical"
+                    android:text="专属客服答疑" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_marginLeft="15dp"
                     android:layout_marginRight="15dp"
+                    android:gravity="center_vertical"
+                    android:textSize="14sp"
                     android:textColor="@color/app_gray"
-                    android:text="有问题请联系:1193600556@qq.com"/>
+                    android:text="有问题请联系邮箱:1193600556@qq.com" />
             </LinearLayout>
 
             <include layout="@layout/view_line" />
@@ -304,7 +437,7 @@
                     android:layout_marginRight="15dp"
                     android:background="@drawable/btn_bg"
                     android:gravity="center"
-                    android:text="开通高级版"
+                    android:text="开通高级版（低至¥3.3）"
                     android:textColor="@color/app_white"
                     android:textSize="16sp" />
             </LinearLayout>
@@ -316,7 +449,143 @@
                 android:background="@color/app_white"
                 android:gravity="center_vertical"
                 android:paddingLeft="15dp"
-                android:text="设置相关"
+                android:text="桌面部件设置"
+                android:textSize="16sp"
+                android:textColor="@color/app_gray"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@color/app_white"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="15dp"
+                    android:layout_weight="1"
+                    android:textSize="16sp"
+                    android:gravity="center_vertical"
+                    android:text="开启15节次" />
+
+                <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/id_widget_max15"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="15dp"
+                    android:checked="false"
+                    android:gravity="center_vertical" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@color/app_white"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="15dp"
+                    android:layout_weight="1"
+                    android:textSize="16sp"
+                    android:gravity="center_vertical"
+                    android:text="隐藏周末" />
+
+                <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/id_widget_hideweeks"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="15dp"
+                    android:checked="false"
+                    android:gravity="center_vertical" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@color/app_white"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="15dp"
+                    android:layout_weight="1"
+                    android:textSize="16sp"
+                    android:gravity="center_vertical"
+                    android:text="隐藏日期栏" />
+
+                <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/id_widget_hidedate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="15dp"
+                    android:checked="false"
+                    android:gravity="center_vertical" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@color/app_white"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="15dp"
+                    android:layout_weight="1"
+                    android:textSize="16sp"
+                    android:gravity="center_vertical"
+                    android:text="小部件周视图透明版" />
+
+                <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/id_widget_alpha1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="15dp"
+                    android:checked="false"
+                    android:gravity="center_vertical" />
+            </LinearLayout>
+            <LinearLayout
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@color/app_white"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="15dp"
+                    android:layout_weight="1"
+                    android:textSize="16sp"
+                    android:gravity="center_vertical"
+                    android:text="侧边栏文字颜色为白色" />
+
+                <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/id_widget_textcolor"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="15dp"
+                    android:checked="false"
+                    android:gravity="center_vertical" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="15dp"
+                android:background="@color/app_white"
+                android:gravity="center_vertical"
+                android:paddingLeft="15dp"
+                android:text="基础设置"
                 android:textColor="@color/app_gray" />
 
             <include layout="@layout/view_line" />
@@ -464,95 +733,6 @@
                     android:text="未设置" />
 
             </LinearLayout>
-
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_marginTop="15dp"
-                android:background="@color/app_white"
-                android:gravity="center_vertical"
-                android:paddingLeft="15dp"
-                android:text="桌面部件设置"
-                android:textSize="16sp"
-                android:textColor="@color/app_gray"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="@color/app_white"
-                android:gravity="center_vertical"
-                android:orientation="horizontal"
-                android:visibility="gone">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="15dp"
-                    android:layout_weight="1"
-                    android:textSize="16sp"
-                    android:gravity="center_vertical"
-                    android:text="开启15节次" />
-
-                <android.support.v7.widget.SwitchCompat
-                    android:id="@+id/id_widget_max15"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="15dp"
-                    android:checked="false"
-                    android:gravity="center_vertical" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="@color/app_white"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="15dp"
-                    android:layout_weight="1"
-                    android:textSize="16sp"
-                    android:gravity="center_vertical"
-                    android:text="隐藏周末" />
-
-                <android.support.v7.widget.SwitchCompat
-                    android:id="@+id/id_widget_hideweeks"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="15dp"
-                    android:checked="false"
-                    android:gravity="center_vertical" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="@color/app_white"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="15dp"
-                    android:layout_weight="1"
-                    android:textSize="16sp"
-                    android:gravity="center_vertical"
-                    android:text="隐藏日期栏" />
-
-                <android.support.v7.widget.SwitchCompat
-                    android:id="@+id/id_widget_hidedate"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="15dp"
-                    android:checked="false"
-                    android:gravity="center_vertical" />
-            </LinearLayout>
-
 
             <TextView
                 android:layout_width="match_parent"

@@ -24,9 +24,10 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center_vertical"
-            android:text="找回VIP"
+            android:text="设置时间"
             android:textSize="16sp"
             android:textStyle="bold" />
+
     </LinearLayout>
 
     <View
@@ -46,43 +47,33 @@
             android:gravity="center_horizontal"
             android:orientation="vertical">
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_marginTop="10dp"
+                android:text="请根据时间模板修改:\n1.每个时间段一行，每行中以横杠分隔两个时间段，分别表示开始时间和结束时间\n2.第1行表示第1节的时间段，以此类推\n3.时间使用24小时制，且8:30应该表示为08:30，即用两位数字表示"/>
             <EditText
-                android:id="@+id/id_vip_order"
+                android:id="@+id/id_time_edit"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:paddingLeft="15dp"
-                android:paddingRight="15dp"
-                android:hint="输入商家订单号"
-                android:singleLine="true"
-                android:textSize="16sp"
+                android:layout_height="150dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
                 android:background="@color/app_white"/>
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1px"
-                android:background="@color/app_line"/>
+
             <TextView
-                android:id="@+id/id_howtofind"
+                android:id="@+id/id_time_display"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:gravity="center_vertical"
-                android:background="@color/app_white"
-                android:paddingLeft="15dp"
-                android:textSize="16sp"
-                android:textColor="@color/theme_red"
-                android:text="如何查看商家订单号?"/>
-            <TextView
-                android:id="@+id/id_device_info"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:gravity="center_vertical"
-                android:background="@color/app_white"
-                android:paddingLeft="15dp"
-                android:textSize="16sp"
-                android:textColor="@color/theme_red"
-                android:text="当前设备:"/>
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:background="@color/app_white"/>
 
             <LinearLayout
-                android:id="@+id/id_find_vip"
+                android:id="@+id/id_set_time"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:gravity="center"
@@ -95,7 +86,7 @@
                     android:layout_marginRight="15dp"
                     android:background="@drawable/btn_bg"
                     android:gravity="center"
-                    android:text="恢复高级版证书"
+                    android:text="设置上课时间"
                     android:textColor="@color/app_white"
                     android:textSize="16sp" />
             </LinearLayout>

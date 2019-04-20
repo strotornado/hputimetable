@@ -29,6 +29,7 @@
             android:textStyle="bold" />
 
         <TextView
+            android:visibility="gone"
             android:id="@+id/id_zanzhu"
             android:layout_width="100dp"
             android:layout_height="match_parent"

@@ -22,9 +22,15 @@ public class MessageAlert extends BaseAdapter<MessageAlert> implements BaseAlert
 	private TextView titleTextView=null;
 	private TextView contentTextView=null;
 	private LinearLayout cancelTextView=null;
+	boolean hideButton=false;
 	
 	public MessageAlert(Context context) {
 		super(context);
+	}
+
+	public MessageAlert(Context context,boolean hideButton) {
+		super(context);
+		this.hideButton=hideButton;
 	}
 
 	public MessageAlert setContent(String content) {
@@ -62,11 +68,15 @@ public class MessageAlert extends BaseAdapter<MessageAlert> implements BaseAlert
 		//获取控件
 		LinearLayout confirm=(LinearLayout) view.findViewById(R.id.id_simplealert_confirm);
 		LinearLayout cancel=(LinearLayout) view.findViewById(R.id.id_simplealert_cancel);
+		LinearLayout buttonLayout=(LinearLayout) view.findViewById(R.id.id_simplealert_buttoncontainer);
 		TextView titleTextView=(TextView) view.findViewById(R.id.id_simplealert_title);
 		final TextView contentTextView=(TextView) view.findViewById(R.id.id_simplealert_content);
 		titleTextView.setText(title);
 		contentTextView.setText(content);
-		
+
+		if(hideButton){
+			buttonLayout.setVisibility(View.GONE);
+		}
 		
 		builder.setView(view);
 		

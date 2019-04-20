@@ -9,13 +9,14 @@ import android.graphics.drawable.GradientDrawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 import android.widget.TextView;
 
 import com.zhuangfei.hputimetable.R;
+import com.zhuangfei.hputimetable.api.model.ScheduleName;
 import com.zhuangfei.hputimetable.api.model.TimetableModel;
+import com.zhuangfei.hputimetable.constants.ShareConstants;
 import com.zhuangfei.hputimetable.model.ScheduleDao;
 import com.zhuangfei.hputimetable.tools.TimetableTools;
 import com.zhuangfei.hputimetable.tools.WidgetConfig;
@@ -27,6 +28,8 @@ import com.zhuangfei.timetable.model.ScheduleSupport;
 import com.zhuangfei.timetable.utils.ScreenUtils;
 import com.zhuangfei.toolkit.tools.ShareTools;
 
+import org.litepal.crud.DataSupport;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -35,14 +38,14 @@ import java.util.List;
  * Created by Liu ZhuangFei on 2018/8/14.
  */
 
-public class ScheduleService2 extends RemoteViewsService {
+public class ScheduleService3 extends RemoteViewsService {
     private static final String TAG = "ScheduleService";
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
         return new ScheduleRemoteViewsFactory(this.getApplicationContext(), intent);
     }
 
-    private class ScheduleRemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
+    private class ScheduleRemoteViewsFactory implements RemoteViewsFactory {
 
         Intent intent;
         Context context;
@@ -134,6 +137,7 @@ public class ScheduleService2 extends RemoteViewsService {
             if(textColorWhite){
                 textColor=Color.WHITE;
             }
+
             dateAdapter.setColor(textColor);
 
             timetableView.data(data)
@@ -149,7 +153,6 @@ public class ScheduleService2 extends RemoteViewsService {
                     .showView();
             slideAdapter.setTextColor(textColor);
             timetableView.updateSlideView();
-
             layoutView(timetableView, ScreenUtils.dip2px(context, 375f),
                     ScreenUtils.dip2px(context, 50) +
                             timetableView.itemHeight() * timetableView.maxSlideItem()+
@@ -215,8 +218,10 @@ public class ScheduleService2 extends RemoteViewsService {
      */
     public List<Schedule> findData(Context context) {
         if (context == null) return null;
-        int id = ScheduleDao.getApplyScheduleId(this);
-        List<TimetableModel> dataModels = ScheduleDao.getAllWithScheduleId(id);
+        int id2 = ShareTools.getInt(context, ShareConstants.INT_SCHEDULE_NAME_ID2, 0);
+        ScheduleName newName = DataSupport.find(ScheduleName.class, id2);
+        if(newName==null) return null;
+        List<TimetableModel> dataModels = newName.getModels();
         if (dataModels == null) return null;
         return ScheduleSupport.transform(dataModels);
     }
