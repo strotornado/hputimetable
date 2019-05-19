@@ -1,5 +1,6 @@
 package com.zhuangfei.hputimetable.fragment;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -107,6 +108,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import es.dmoral.toasty.Toasty;
+import kr.co.namee.permissiongen.PermissionFail;
+import kr.co.namee.permissiongen.PermissionGen;
+import kr.co.namee.permissiongen.PermissionSuccess;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -181,6 +185,8 @@ public class FuncFragment extends LazyLoadFragment {
 
     Typeface normalTypeFace=null;
 
+    final int SUCCESSCODE = 1;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         mView = inflater.inflate(R.layout.fragment_func, container, false);
@@ -199,6 +205,34 @@ public class FuncFragment extends LazyLoadFragment {
             BuglyLog.e("FuncFragment", "onViewCreated", e);
         }
         super.onViewCreated(view, savedInstanceState);
+    }
+
+
+    private void shouldcheckPermission() {
+        PermissionGen.with(getActivity())
+                .addRequestCode(SUCCESSCODE)
+                .permissions(
+                        Manifest.permission.CAMERA,
+                        Manifest.permission.VIBRATE
+                )
+                .request();
+    }
+
+    //申请权限结果的返回
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        PermissionGen.onRequestPermissionsResult(this, requestCode, permissions, grantResults);
+    }
+
+    //权限申请成功
+    @PermissionSuccess(requestCode = SUCCESSCODE)
+    public void doSomething() {
+    }
+
+    //申请失败
+    @PermissionFail(requestCode = SUCCESSCODE)
+    public void doFailSomething() {
+         ToastTools.show(getContext(), "权限不足，运行中可能会出现故障");
     }
 
     @Override
@@ -732,25 +766,8 @@ public class FuncFragment extends LazyLoadFragment {
      */
     @OnClick(R.id.id_func_scan)
     public void toScanActivity() {
+        shouldcheckPermission();
         ActivityTools.toActivityWithout(getActivity(), ScanActivity.class);
-//        String[] items={"从课程码导入","从超表账户导入"};
-//        android.support.v7.app.AlertDialog.Builder builder=new android.support.v7.app.AlertDialog.Builder(getContext())
-//                .setTitle("从超级课程表导入")
-//                .setItems(items, new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialogInterface, int i) {
-//                        switch (i){
-//                            case 0:
-//                                ActivityTools.toActivityWithout(getActivity(), ScanActivity.class);
-//                                break;
-//                            case 1:
-//                                toSimportActivity();
-//                                break;
-//                        }
-//                    }
-//                })
-//                .setNegativeButton("取消",null);
-//        builder.create().show();;
     }
 
     @OnClick(R.id.id_func_theme)

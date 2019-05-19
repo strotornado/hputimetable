@@ -53,7 +53,7 @@ public class UrlContacts {
 
     public final static String URL_BIND_SCHOOL="index.php?c=Adapter&a=bindSchool";
 
-    public final static String URL_GET_SCHOOL_PERSON_COUNT="index.php?c=Adapter&a=getSchoolPersonCount";
+    public final static String URL_GET_SCHOOL_PERSON_COUNT="index.php?c=Adapter&a=getSchoolPersonCountV2";
 
     public final static String URL_CHECK_IS_BIND_SCHOOL="index.php?c=Adapter&a=checkIsBindSchool";
 

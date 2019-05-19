@@ -398,13 +398,9 @@ public class MainActivity extends AppCompatActivity {
         PermissionGen.with(MainActivity.this)
                 .addRequestCode(SUCCESSCODE)
                 .permissions(
-                        Manifest.permission.CAMERA,
-                        Manifest.permission.VIBRATE,
                         Manifest.permission.READ_PHONE_STATE,
                         Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_CALENDAR,
-                        Manifest.permission.READ_CALENDAR
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
                 )
                 .request();
     }

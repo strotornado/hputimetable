@@ -403,7 +403,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:lineSpacingExtra="2dp"
-                        android:text="1.左右滑动可切换到周视图\n2.点击卡片的右上角箭头可以关闭卡片\n3.现在已经支持导出到日历了，不建议使用小部件，如果使用小部件，请将本app加入自启动管理中\n4.由于高级版验证策略升级，前段时间开通高级版的用户将全部降级为普通用户，可以进入工具箱中恢复证书"
+                        android:text="1.左右滑动可切换到周视图\n2.点击卡片的右上角箭头可以关闭卡片\n3.现在已经支持导出到日历了，不建议使用小部件，如果使用小部件，请将本app加入自启动管理中\n4.目前高级版的订单号支持多设备，但是需要向开发者申请，如果更换设备请提供订单号和新设备的设备号发送至1193600556@qq.com"
                         android:textSize="16sp" />
                 </LinearLayout>
 

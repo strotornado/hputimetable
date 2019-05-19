@@ -88,7 +88,9 @@ public interface SchoolService {
 
     @POST(UrlContacts.URL_GET_SCHOOL_PERSON_COUNT)
     @FormUrlEncoded
-    Call<ObjResult<SchoolPersonModel>> getSchoolPersonCount(@Field("school") String school);
+    Call<ObjResult<SchoolPersonModel>> getSchoolPersonCountV2(@Field("school") String school,
+                                                              @Field("time") String time,
+                                                              @Field("sign") String sign);
 
     @POST(UrlContacts.URL_CHECK_IS_BIND_SCHOOL)
     @FormUrlEncoded

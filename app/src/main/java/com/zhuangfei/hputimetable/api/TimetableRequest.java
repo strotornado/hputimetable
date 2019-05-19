@@ -138,9 +138,9 @@ public class TimetableRequest {
         call.enqueue(callback);
     }
 
-    public static void getSchoolPersonCount(Context context,String school,Callback<ObjResult<SchoolPersonModel>> callback) {
+    public static void getSchoolPersonCountV2(Context context,String school,String time,String sign,Callback<ObjResult<SchoolPersonModel>> callback) {
         SchoolService schoolService=ApiUtils.getRetrofitForSchool(context).create(SchoolService.class);
-        Call<ObjResult<SchoolPersonModel>> call=schoolService.getSchoolPersonCount(school);
+        Call<ObjResult<SchoolPersonModel>> call=schoolService.getSchoolPersonCountV2(school,time,sign);
         call.enqueue(callback);
     }
 

@@ -1,5 +1,6 @@
 package com.zhuangfei.hputimetable.activity;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -68,6 +69,7 @@ import com.zhuangfei.smartalert.core.MessageAlert;
 import com.zhuangfei.timetable.model.Schedule;
 import com.zhuangfei.timetable.model.ScheduleConfig;
 import com.zhuangfei.timetable.model.ScheduleSupport;
+import com.zhuangfei.toolkit.model.BundleModel;
 import com.zhuangfei.toolkit.tools.ActivityTools;
 import com.zhuangfei.toolkit.tools.ShareTools;
 import com.zhuangfei.toolkit.tools.ToastTools;
@@ -95,6 +97,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnCheckedChanged;
 import butterknife.OnClick;
+import kr.co.namee.permissiongen.PermissionFail;
+import kr.co.namee.permissiongen.PermissionGen;
+import kr.co.namee.permissiongen.PermissionSuccess;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -184,6 +189,10 @@ public class MenuActivity extends AppCompatActivity {
     @BindView(R.id.id_back_img)
     ImageView backImage;
 
+    final int SUCCESSCODE = 1;
+
+    boolean verifyFail=false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         ThemeManager.apply(this);
@@ -214,6 +223,13 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     public void checkVip(){
+        String schoolName=ShareTools.getString(MenuActivity.this,ShareConstants.STRING_SCHOOL_NAME,null);
+        if(schoolName==null){
+            getSchoolPersonCount("默认学校");
+        }else {
+            getSchoolPersonCount(schoolName);
+        }
+
         final VipVerifyResult result=VipTools.isVip(this);
         if(result!=null&&result.isSuccess()){
             updateTopText();
@@ -380,6 +396,7 @@ public class MenuActivity extends AppCompatActivity {
         String schoolName=ShareTools.getString(MenuActivity.this,ShareConstants.STRING_SCHOOL_NAME,null);
         if(schoolName==null){
             schoolText.setText("未关联学校");
+            getSchoolPersonCount("默认学校");
         }else {
             schoolText.setText(schoolName);
             getSchoolPersonCount(schoolName);
@@ -424,7 +441,7 @@ public class MenuActivity extends AppCompatActivity {
                 public void run() {
                     handler.sendEmptyMessage(0x123);
                 }
-            },500);
+            },300);
         }
     }
 
@@ -551,18 +568,34 @@ public class MenuActivity extends AppCompatActivity {
     }
 
     public void getSchoolPersonCount(final String school){
-        TimetableRequest.getSchoolPersonCount(this, school, new Callback<ObjResult<SchoolPersonModel>>() {
+        String timestamp=""+System.currentTimeMillis();
+        String sign=Md5Tools.encrypBy("time="+timestamp+"zfman$##*=12.");
+        TimetableRequest.getSchoolPersonCountV2(this, school,timestamp,sign, new Callback<ObjResult<SchoolPersonModel>>() {
             @Override
             public void onResponse(Call<ObjResult<SchoolPersonModel>> call, Response<ObjResult<SchoolPersonModel>> response) {
                 if(response==null) return;
                 ObjResult<SchoolPersonModel> result=response.body();
-                if(result.getCode()==200){
-                    SchoolPersonModel schoolPersonModel=result.getData();
-                    if(schoolPersonModel!=null){
-                        personCountText.setText(schoolPersonModel.getCount()+"校友");
+                if(result!=null){
+                    if(result.getCode()==200){
+                        verifyFail=false;
+                        SchoolPersonModel schoolPersonModel=result.getData();
+                        if(schoolPersonModel!=null){
+                            personCountText.setText(schoolPersonModel.getCount()+"校友");
+                        }
+                    }else if(result.getCode()==331||result.getCode()==330){
+                        if(!verifyFail){
+                            showDialog("验证失败","你的本地时间与服务器时间相差大于3分钟，修改时间并不能延长有效期，相反，作为惩罚，你的本地证书被撤销，请重新使用订单号生成新证书");
+                        }
+                        ShareTools.putString(context,"lastModify","");
+                        VipTools.unregisterVip();
+                        cancelVip();
+                        verifyFail=true;
                     }
-                }else {
-                    Toast.makeText(MenuActivity.this,result.getMsg(),Toast.LENGTH_SHORT).show();
+                    else {
+                        Toast.makeText(MenuActivity.this,result.getMsg(),Toast.LENGTH_SHORT).show();
+                    }
+                }else{
+                    Toast.makeText(MenuActivity.this,"result is null",Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -826,7 +859,7 @@ public class MenuActivity extends AppCompatActivity {
                 "灰色主题"
         };
         android.support.v7.app.AlertDialog.Builder builder=new android.support.v7.app.AlertDialog.Builder(this)
-                .setTitle("修改学校")
+                .setTitle("修改主题")
                 .setItems(items, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -849,7 +882,7 @@ public class MenuActivity extends AppCompatActivity {
                 "黑色主题"
         };
         android.support.v7.app.AlertDialog.Builder builder=new android.support.v7.app.AlertDialog.Builder(this)
-                .setTitle("修改学校")
+                .setTitle("修改主题")
                 .setItems(items, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -905,11 +938,39 @@ public class MenuActivity extends AppCompatActivity {
         }
     }
 
+    private void shouldcheckPermission() {
+        PermissionGen.with(MenuActivity.this)
+                .addRequestCode(SUCCESSCODE)
+                .permissions(
+                        Manifest.permission.WRITE_CALENDAR,
+                        Manifest.permission.READ_CALENDAR
+                )
+                .request();
+    }
+
+    //申请权限结果的返回
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        PermissionGen.onRequestPermissionsResult(this, requestCode, permissions, grantResults);
+    }
+
+    //权限申请成功
+    @PermissionSuccess(requestCode = SUCCESSCODE)
+    public void doSomething() {
+    }
+
+    //申请失败
+    @PermissionFail(requestCode = SUCCESSCODE)
+    public void doFailSomething() {
+         ToastTools.show(this, "日历权限不足");
+    }
+
     @OnClick(R.id.id_export_calender)
     public void exportToSystemCalender() {
         if(!checkVipStatus()){
             return;
         }
+        shouldcheckPermission();
         String startTimeString="";
         String startTime=ShareTools.getString(this,ShareConstants.STRING_START_TIME,null);
         if (TextUtils.isEmpty(startTime)) {
@@ -944,6 +1005,7 @@ public class MenuActivity extends AppCompatActivity {
         if(!checkVipStatus()){
             return;
         }
+        shouldcheckPermission();
         String startTimeString="";
         String startTime=ShareTools.getString(this,ShareConstants.STRING_START_TIME,null);
         if (TextUtils.isEmpty(startTime)) {
@@ -980,7 +1042,9 @@ public class MenuActivity extends AppCompatActivity {
         final List<String> endTimeList=new ArrayList<>();
         boolean getTime=TimetableTools.getTimeList(getContext(),startTimeList,endTimeList);
         if(!getTime||startTimeList.size()==0||endTimeList.size()==0){
-            showDialog("请先设置时间","导出到日历需要依赖课程时间，请先去设置课程时间");
+//            showDialog("请先设置时间","导出到日历需要依赖课程时间，请先去设置课程时间");
+            ToastTools.show(getContext(),"导出到日历需要依赖课程时间，请先去设置课程时间");
+            ActivityTools.toActivityWithout(getContext(),SetTimeActivity.class);
             if(loadAlert!=null) loadAlert.hide();
             return;
         }
@@ -1165,6 +1229,7 @@ public class MenuActivity extends AppCompatActivity {
         if(!checkVipStatus()){
             return;
         }
+        shouldcheckPermission();
         AlertDialog.Builder builder=new AlertDialog.Builder(this)
                 .setTitle("清除日历课程内容")
                 .setMessage("该操作仅仅会清除日历中由怪兽课表添加的内容!")
