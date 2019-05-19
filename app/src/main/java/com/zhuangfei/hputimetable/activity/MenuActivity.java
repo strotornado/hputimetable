@@ -220,6 +220,11 @@ public class MenuActivity extends AppCompatActivity {
             vipButton.setVisibility(View.GONE);
             expireText.setVisibility(View.VISIBLE);
             final PayLicense license=result.getLicense();
+            if(license==null){
+                showDialog("验证失败","你可能未授予存储权限，故导致证书文件未生成，请授予权限，然后重新生成证书");
+                cancelVip();
+                return;
+            }
             expireText.setText("有效期至: "+sdf.format(new Date(Long.parseLong(license.getExpire()))));
         }else{
             cancelVip();

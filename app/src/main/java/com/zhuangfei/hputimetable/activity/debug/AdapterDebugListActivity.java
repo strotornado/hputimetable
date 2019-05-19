@@ -82,6 +82,7 @@ public class AdapterDebugListActivity extends AppCompatActivity {
     }
 
     private void showList(List<AdapterDebugModel> data) {
+        if(data==null) return;
        list.clear();
        int index=1;
        for(AdapterDebugModel model:data){
