@@ -76,6 +76,17 @@ bugly {
 
 <img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.1/img1.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.1/img2.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.1/img3.jpg" width="30%"/>
 
+### v1.1.9 `2019/05/19`
+
+- 优化 工具箱分类整理，设置更加便于寻找
+- 优化 导出到日历时可以选择日历账户
+- 优化 导出到日历时[第1周 1-2节上]类似信息不显示
+- 优化 证书找回功能支持设备更换（需向开发者申请激活码）
+- 优化 日历权限申请移至工具箱
+- 修复 5.0下崩溃问题
+- 修复 无课程时小部件崩溃问题
+- 新增 Todo功能
+
 ### v1.1.8 `2019/04/14`
 
 - 主题颜色开放给普通用户

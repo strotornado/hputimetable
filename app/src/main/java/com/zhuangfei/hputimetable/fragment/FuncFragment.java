@@ -207,34 +207,6 @@ public class FuncFragment extends LazyLoadFragment {
         super.onViewCreated(view, savedInstanceState);
     }
 
-
-    private void shouldcheckPermission() {
-        PermissionGen.with(getActivity())
-                .addRequestCode(SUCCESSCODE)
-                .permissions(
-                        Manifest.permission.CAMERA,
-                        Manifest.permission.VIBRATE
-                )
-                .request();
-    }
-
-    //申请权限结果的返回
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        PermissionGen.onRequestPermissionsResult(this, requestCode, permissions, grantResults);
-    }
-
-    //权限申请成功
-    @PermissionSuccess(requestCode = SUCCESSCODE)
-    public void doSomething() {
-    }
-
-    //申请失败
-    @PermissionFail(requestCode = SUCCESSCODE)
-    public void doFailSomething() {
-         ToastTools.show(getContext(), "权限不足，运行中可能会出现故障");
-    }
-
     @Override
     protected void lazyLoad() {
         isInit = true;
@@ -766,7 +738,6 @@ public class FuncFragment extends LazyLoadFragment {
      */
     @OnClick(R.id.id_func_scan)
     public void toScanActivity() {
-        shouldcheckPermission();
         ActivityTools.toActivityWithout(getActivity(), ScanActivity.class);
     }
 

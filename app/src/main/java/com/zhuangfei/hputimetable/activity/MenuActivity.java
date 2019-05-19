@@ -191,7 +191,7 @@ public class MenuActivity extends AppCompatActivity {
 
     final int SUCCESSCODE = 1;
 
-    boolean verifyFail=false;
+    boolean dialogShow=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -202,6 +202,7 @@ public class MenuActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         inits();
         checkVip();
+        shouldcheckPermission();
 //        showOldVersionHelp();
 //        showOldVersionHelp2();
     }
@@ -577,19 +578,17 @@ public class MenuActivity extends AppCompatActivity {
                 ObjResult<SchoolPersonModel> result=response.body();
                 if(result!=null){
                     if(result.getCode()==200){
-                        verifyFail=false;
                         SchoolPersonModel schoolPersonModel=result.getData();
                         if(schoolPersonModel!=null){
                             personCountText.setText(schoolPersonModel.getCount()+"校友");
                         }
                     }else if(result.getCode()==331||result.getCode()==330){
-                        if(!verifyFail){
+                        if(!dialogShow){
                             showDialog("验证失败","你的本地时间与服务器时间相差大于3分钟，修改时间并不能延长有效期，相反，作为惩罚，你的本地证书被撤销，请重新使用订单号生成新证书");
                         }
                         ShareTools.putString(context,"lastModify","");
                         VipTools.unregisterVip();
                         cancelVip();
-                        verifyFail=true;
                     }
                     else {
                         Toast.makeText(MenuActivity.this,result.getMsg(),Toast.LENGTH_SHORT).show();
@@ -791,13 +790,23 @@ public class MenuActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void showDialog(String title,String message){
+    public void showDialog(String title, final String message){
         AlertDialog alertDialog=new AlertDialog.Builder(this)
                 .setTitle(title)
                 .setMessage(message)
                 .setCancelable(false)
-                .setPositiveButton("我知道了",null)
+                .setPositiveButton("我知道了", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if(!TextUtils.isEmpty(message)){
+                            if(message.indexOf("服务器时间")!=-1){
+                                dialogShow=false;
+                            }
+                        }
+                    }
+                })
                 .create();
+        dialogShow=true;
         alertDialog.show();
     }
 
@@ -970,7 +979,6 @@ public class MenuActivity extends AppCompatActivity {
         if(!checkVipStatus()){
             return;
         }
-        shouldcheckPermission();
         String startTimeString="";
         String startTime=ShareTools.getString(this,ShareConstants.STRING_START_TIME,null);
         if (TextUtils.isEmpty(startTime)) {
@@ -1005,7 +1013,6 @@ public class MenuActivity extends AppCompatActivity {
         if(!checkVipStatus()){
             return;
         }
-        shouldcheckPermission();
         String startTimeString="";
         String startTime=ShareTools.getString(this,ShareConstants.STRING_START_TIME,null);
         if (TextUtils.isEmpty(startTime)) {
@@ -1229,7 +1236,6 @@ public class MenuActivity extends AppCompatActivity {
         if(!checkVipStatus()){
             return;
         }
-        shouldcheckPermission();
         AlertDialog.Builder builder=new AlertDialog.Builder(this)
                 .setTitle("清除日历课程内容")
                 .setMessage("该操作仅仅会清除日历中由怪兽课表添加的内容!")
