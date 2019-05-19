@@ -26,11 +26,21 @@ public class PayLicense {
      */
     private int version=1;//证书版本，升级认证机制时升级该版本
     private long orderId;
-    private String userId;
+    private String userId;//设备1 当前设备
+    private String userId2;//设备2 支付时的设备
     private String signature;// app signature
     private String expire;
     private String create;//time
     private String signature2;//all signature
+
+    public void setUserId2(String userId2) {
+        this.userId2 = userId2;
+    }
+
+    public String getUserId2() {
+        if(userId2==null) userId2="hello_youcan";
+        return userId2;
+    }
 
     public void setVersion(int version) {
         this.version = version;

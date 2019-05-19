@@ -63,6 +63,7 @@ public class ScheduleService2 extends RemoteViewsService {
         @Override
         public void onDataSetChanged() {
             data.clear();
+
             data.addAll(findTodayData(context));
         }
 

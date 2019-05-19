@@ -5,4 +5,5 @@ package com.zhuangfei.hputimetable.listener;
  */
 public interface OnExportProgressListener {
     void onProgress(int total,int now);
+    void onError(String msg);
 }

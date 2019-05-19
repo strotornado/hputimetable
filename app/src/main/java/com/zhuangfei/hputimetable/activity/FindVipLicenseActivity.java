@@ -1,5 +1,6 @@
 package com.zhuangfei.hputimetable.activity;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -17,7 +18,9 @@ import com.payelves.sdk.bean.QueryOrderModel;
 import com.payelves.sdk.listener.QueryOrderListener;
 import com.zhuangfei.hputimetable.R;
 import com.zhuangfei.hputimetable.listener.VipVerifyResult;
+import com.zhuangfei.hputimetable.model.ActiveCode;
 import com.zhuangfei.hputimetable.model.PayLicense;
+import com.zhuangfei.hputimetable.tools.AesSecurity;
 import com.zhuangfei.hputimetable.tools.DeviceTools;
 import com.zhuangfei.hputimetable.tools.PayTools;
 import com.zhuangfei.hputimetable.tools.VersionTools;
@@ -44,6 +47,9 @@ public class FindVipLicenseActivity extends AppCompatActivity {
     TextView deviceInfoText;
 
     Context context;
+
+    @BindView(R.id.id_vip_activecode)
+    EditText activeCodeText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +102,10 @@ public class FindVipLicenseActivity extends AppCompatActivity {
             ToastTools.show(this,"订单解析为Long类型时出错");
             return;
         }
+
+        final String activeCode=activeCodeText.getText().toString();
+        final String encryptKey=getResources().getString(R.string.aes_key);
+
         PayTools.checkPaySdkInit(this);
         final long finalOrderLong = orderLong;
         EPay.getInstance(this).queryOrder(orderLong, new QueryOrderListener() {
@@ -114,6 +124,19 @@ public class FindVipLicenseActivity extends AppCompatActivity {
                         Date create=sdf.parse(payTime);
                         Integer amount=PayTools.getMoneyByOrderId(model.getOrderId());
                         PayLicense license=VipTools.getLicense(getContext(), finalOrderLong,create,amount);
+                        ActiveCode activeCodeModel=new ActiveCode();
+                        if(!TextUtils.isEmpty(activeCode)){
+                            activeCodeModel.load(encryptKey,activeCode);
+
+                            if(license.getUserId()!=null&&activeCodeModel.getNewDeviceId()!=null&&
+                                    license.getUserId().equals(activeCodeModel.getNewDeviceId())){
+                                license.setUserId2(activeCodeModel.getOldDeviceId());
+                            }else{
+                                showDialog("找回失败","激活码无效,请联系1193600556@qq.com申请激活码");
+                                return;
+                            }
+                        }
+
                         VipVerifyResult verifyResult=VipTools.isVip(getContext(),license);
                         if(verifyResult.isSuccess()||verifyResult.isNeedVerify()){
                             VipTools.registerVip(license);
@@ -131,6 +154,16 @@ public class FindVipLicenseActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    public void showDialog(String title,String message){
+        AlertDialog alertDialog=new AlertDialog.Builder(this)
+                .setTitle(title)
+                .setMessage(message)
+                .setCancelable(false)
+                .setPositiveButton("我知道了",null)
+                .create();
+        alertDialog.show();
     }
 
     @OnClick(R.id.id_howtofind)

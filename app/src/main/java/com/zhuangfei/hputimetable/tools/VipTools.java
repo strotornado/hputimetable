@@ -180,7 +180,7 @@ public class VipTools {
      * @param model
      * @return
      */
-    public static boolean checkOrderResult(Context context,boolean isSuccess, String msg, QueryOrderModel model){
+    public static boolean checkOrderResult(Context context,boolean isSuccess, String msg, QueryOrderModel model,PayLicense license){
         if(context==null) return false;
         String deviceId=DeviceTools.getDeviceId(context);
         if(TextUtils.isEmpty(deviceId)) return false;
@@ -192,7 +192,11 @@ public class VipTools {
         if(model!=null&&model.getPayStatus()!=null&&!model.getPayStatus().equals("SUCCESS")){
             return false;
         }
-        if(model!=null&&model.getOrderId()!=null&&model.getOrderId().indexOf(deviceId)==-1){
+        if(model==null||model.getOrderId()==null){
+            return false;
+        }
+        if(model.getOrderId().indexOf(deviceId)==-1&&
+                model.getOrderId().indexOf(license.getUserId2())==-1){
             return false;
         }
         return true;
@@ -203,7 +207,7 @@ public class VipTools {
         android.support.v7.app.AlertDialog.Builder builder=new android.support.v7.app.AlertDialog.Builder(context)
                 .setTitle("高级版被撤销")
                 .setCancelable(false)
-                .setMessage("经过系统检测，您的高级版凭证非正版，证书已被删除！请支持正版，感谢您的支持，如果本检测有误，请联系客服进行申诉:1193600556@qq.com")
+                .setMessage("经过系统检测，您的高级版凭证未通过验证，可能原因如下:\n1.高级版到期，请及时续费\n2.证书未通过校验，订单可能未支付成功\n3.证书未通过校验，证书可能遭到恶意篡改或者使用的软件非正版\n4.如果支付时的设备号与找回时的设备号不同时，恢复证书会失败，需要联系开发者申请激活码\n如果仍有疑问，请联系客服进行申诉:1193600556@qq.com")
                 .setPositiveButton("我知道了", null);
         builder.create().show();
     }
@@ -222,9 +226,10 @@ public class VipTools {
             cal.add(Calendar.YEAR, 1);
         }
         if(amount==330){
-            cal.add(Calendar.DATE, 30);
+            cal.add(Calendar.DATE, 30*3);
         }
         Date date = cal.getTime();
         return date;
     }
+
 }

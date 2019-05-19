@@ -244,19 +244,19 @@
                         </LinearLayout>
                     </LinearLayout>
 
+                    <com.zhuangfei.hputimetable.CustomGridView
+                        android:id="@+id/id_func_gridview"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginRight="15dp"
+                        android:gravity="center"
+                        android:numColumns="5"
+                        android:visibility="gone" />
+
                 </LinearLayout>
 
-                <com.zhuangfei.hputimetable.CustomGridView
-                    android:id="@+id/id_func_gridview"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginRight="15dp"
-                    android:layout_marginTop="10dp"
-                    android:background="@drawable/border_dayview"
-                    android:gravity="center"
-                    android:numColumns="5"
-                    android:visibility="gone" />
+
 
                 <View
                     android:id="@+id/id_line"
@@ -341,8 +341,6 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:paddingLeft="5dp"
-                            android:paddingRight="5dp"
                             android:text="Ta的课表"
                             android:textSize="18sp" />
 
@@ -463,6 +461,88 @@
                         android:textColor="@color/app_white"
                         android:textSize="16sp" />
                 </LinearLayout>
+
+                <!--Todo卡片-->
+                <LinearLayout
+                    android:id="@+id/id_todo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginTop="10dp"
+                    android:background="@drawable/border_dayview"
+                    android:gravity="center_vertical"
+                    android:orientation="vertical"
+                    android:paddingBottom="10dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Todo"
+                            android:textSize="18sp" />
+
+                        <ImageView
+                            android:id="@+id/id_todo_add_img"
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:layout_marginRight="6dp"
+                            android:src="@drawable/ic_add"/>
+
+                        <ImageView
+                            android:id="@+id/id_todo_setting_img"
+                            android:layout_width="25dp"
+                            android:layout_height="25dp"
+                            android:src="@drawable/ic_point_down" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/id_cardview_todolayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"></LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:id="@+id/id_addtodo"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:gravity="left|center_vertical"
+                            android:layout_marginRight="15dp"
+                            android:paddingLeft="5dp"
+                            android:layout_height="40dp"
+                            android:background="@drawable/layout_ripple"
+                            android:clickable="true"
+                            android:textSize="17sp"
+                            android:text="添加Todo"/>
+
+                        <TextView
+                            android:id="@+id/id_edittodo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="40dp"
+                            android:layout_marginLeft="15dp"
+                            android:textSize="17sp"
+                            android:paddingLeft="20dp"
+                            android:paddingRight="2dp"
+                            android:gravity="center_vertical|right"
+                            android:background="@drawable/layout_ripple"
+                            android:clickable="true"
+                            android:text="编辑"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+
 
                 <LinearLayout
                     android:id="@+id/id_vip_layout"

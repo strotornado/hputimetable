@@ -6,6 +6,7 @@ import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.icu.util.TimeZone;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,7 +16,9 @@ import android.support.v7.widget.SwitchCompat;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.DatePicker;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -39,9 +42,11 @@ import com.zhuangfei.hputimetable.api.model.ScheduleName;
 import com.zhuangfei.hputimetable.api.model.SchoolPersonModel;
 import com.zhuangfei.hputimetable.api.model.TimetableModel;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
+import com.zhuangfei.hputimetable.event.CheckVipOrderEvent;
 import com.zhuangfei.hputimetable.event.ConfigChangeEvent;
 import com.zhuangfei.hputimetable.event.UpdateBindDataEvent;
 import com.zhuangfei.hputimetable.event.UpdateScheduleEvent;
+import com.zhuangfei.hputimetable.event.UpdateTodoEvent;
 import com.zhuangfei.hputimetable.listener.OnExportProgressListener;
 import com.zhuangfei.hputimetable.listener.VipVerifyResult;
 import com.zhuangfei.hputimetable.model.PayLicense;
@@ -52,8 +57,10 @@ import com.zhuangfei.hputimetable.tools.DeviceTools;
 import com.zhuangfei.hputimetable.tools.FileTools;
 import com.zhuangfei.hputimetable.tools.Md5Tools;
 import com.zhuangfei.hputimetable.tools.PayTools;
+import com.zhuangfei.hputimetable.tools.ThemeManager;
 import com.zhuangfei.hputimetable.tools.TimetableTools;
 import com.zhuangfei.hputimetable.tools.UpdateTools;
+import com.zhuangfei.hputimetable.tools.ViewTools;
 import com.zhuangfei.hputimetable.tools.VipTools;
 import com.zhuangfei.hputimetable.tools.WidgetConfig;
 import com.zhuangfei.smartalert.core.LoadAlert;
@@ -66,6 +73,8 @@ import com.zhuangfei.toolkit.tools.ShareTools;
 import com.zhuangfei.toolkit.tools.ToastTools;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 import org.litepal.crud.DataSupport;
 import org.litepal.crud.async.FindMultiExecutor;
 import org.litepal.crud.callback.FindMultiCallback;
@@ -77,6 +86,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -131,6 +141,9 @@ public class MenuActivity extends AppCompatActivity {
     @BindView(R.id.id_widget_textcolor)
     SwitchCompat whiteTextColorSwitch;
 
+    @BindView(R.id.id_show_todo)
+    SwitchCompat showTodoSwitch;
+
     boolean changeStatus=false;
     boolean changeStatus2=false;
 
@@ -159,14 +172,29 @@ public class MenuActivity extends AppCompatActivity {
 
     MessageAlert loadAlert;
 
+    @BindView(R.id.id_time_set_tip)
+    TextView timeSetTipText;
+
+    @BindView(R.id.id_maxcount)
+    TextView maxCountText;
+
+    @BindView(R.id.statuslayout)
+    View statusView;
+
+    @BindView(R.id.id_back_img)
+    ImageView backImage;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        ThemeManager.apply(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
+        ViewTools.setTransparent(this);
         ButterKnife.bind(this);
         inits();
         checkVip();
-        showOldVersionHelp();
+//        showOldVersionHelp();
+//        showOldVersionHelp2();
     }
 
     public void showOldVersionHelp(){
@@ -174,6 +202,14 @@ public class MenuActivity extends AppCompatActivity {
         if(old==1){
             showDialog("高级版证书升级","由于安全策略升级，在旧版上开通的高级版凭证将全部被弃用，所有用户都会被降级到普通用户，之前开通过高级版的用户可在工具箱-高级版证书恢复中找回");
             ShareTools.putInt(this,"oldVip",0);
+        }
+    }
+
+    public void showOldVersionHelp2(){
+        int old=ShareTools.getInt(this,"oldVip2",1);
+        if(old==1){
+            showDialog("高级版证书升级","v1.1.8版本3.3元高级版的证书过期时间我错误的设置成了一个月，应该是三个月，请在工具箱-高级版证书恢复中生成新证书，感谢您的支持和理解");
+            ShareTools.putInt(this,"oldVip2",0);
         }
     }
 
@@ -193,19 +229,23 @@ public class MenuActivity extends AppCompatActivity {
             showDialog("权限不足","无法获取设备ID，证书验证失败，请先开启读取设备IMEI权限");
             return;
         }
+        if(result==null||result.getLicense()==null){
+            return;
+        }
         if(result!=null&&result.isNeedVerify()){
             final String finalLastModifyMd = VipTools.getLastModifyMd5(context);
             final String finalDeviceId = deviceId;
             PayTools.checkPay(this, result.getLicense(),new QueryOrderListener() {
                 @Override
                 public void onFinish(boolean isSuccess, String msg, QueryOrderModel model) {
-                    boolean ok=VipTools.checkOrderResult(MenuActivity.this,isSuccess,msg,model);
+                    boolean ok=VipTools.checkOrderResult(MenuActivity.this,isSuccess,msg,model,result.getLicense());
                     if(!ok){
                         VipTools.showDeleteLicenseDialog(MenuActivity.this);
                         cancelVip();
                     }else if(isSuccess){
                         if(model!=null&&model.getPayStatus()!=null&&model.getPayStatus().equals("SUCCESS")){
-                            if(model!=null&&model.getOrderId()!=null&&model.getOrderId().indexOf(finalDeviceId)!=-1){
+                            if(model!=null&&model.getOrderId()!=null&&(model.getOrderId().indexOf(finalDeviceId)!=-1||
+                                    model.getOrderId().indexOf(result.getLicense().getUserId2())!=-1)){
                                 ShareTools.putString(MenuActivity.this,"lastModify",""+ finalLastModifyMd);
                                 updateTopText();
                                 vipButton.setVisibility(View.GONE);
@@ -242,7 +282,7 @@ public class MenuActivity extends AppCompatActivity {
 //        }
 
         if(VipTools.isVip(this).isSuccess()){
-            deviceText.setText("高级版");
+            deviceText.setText("已开通高级版");
         }else{
             deviceText.setText("普通版");
         }
@@ -250,7 +290,16 @@ public class MenuActivity extends AppCompatActivity {
 
     private void inits() {
         context = this;
+        backImage.setColorFilter(Color.WHITE);
         updateTopText();
+        try {
+            int statusHeight = ViewTools.getStatusHeight(this);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, statusHeight);
+            statusView.setLayoutParams(lp);
+        } catch (Exception e) {
+            BuglyLog.e("FuncFragment", "onViewCreated", e);
+        }
+
         backLayout = findViewById(R.id.id_back);
         backLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -301,6 +350,13 @@ public class MenuActivity extends AppCompatActivity {
             weekdayFirstSwitch.setChecked(true);
         }
 
+        int isShowTodo = ShareTools.getInt(this, ShareConstants.INT_TODO_LAYOUT, 1);
+        if (isShowTodo == 0) {
+            showTodoSwitch.setChecked(false);
+        } else {
+            showTodoSwitch.setChecked(true);
+        }
+
         boolean maxItem= WidgetConfig.get(this,WidgetConfig.CONFIG_MAX_ITEM);
         max15Switch.setChecked(maxItem);
 
@@ -338,6 +394,16 @@ public class MenuActivity extends AppCompatActivity {
             }
         }
         effect=true;
+        //todo
+        int maxCount=ShareTools.getInt(MenuActivity.this,"maxCount",10);
+        maxCountText.setText(""+maxCount);
+
+        String time= ShareTools.getString(this,"schedule_time",null);
+        if(TextUtils.isEmpty(time)){
+            timeSetTipText.setText("未设置");
+        }else{
+            timeSetTipText.setText("已设置");
+        }
     }
 
     //除了第一次之外都需要执行检查
@@ -399,6 +465,7 @@ public class MenuActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         ShareTools.putInt(MenuActivity.this,"maxCount",(i+8));
+                        maxCountText.setText(""+(i+8));
                         ToastTools.show(MenuActivity.this,"设置成功!");
                         changeStatus=true;
                     }
@@ -412,6 +479,25 @@ public class MenuActivity extends AppCompatActivity {
     public void onSetStartTimeLayoutClicked(){
         final SimpleDateFormat sdf=new SimpleDateFormat("yyyy-M-d 00:00:00");
         final SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String localStartTime=ShareTools.getString(MenuActivity.this,ShareConstants.STRING_START_TIME,null);
+        int year=2019,month=5,day=18;
+        if(localStartTime==null){
+            Calendar calendar=Calendar.getInstance();
+            year=calendar.get(Calendar.YEAR);
+            month=calendar.get(Calendar.MONTH);
+            day=calendar.get(Calendar.DATE);
+        }else{
+            try {
+                Date date=sdf.parse(localStartTime);
+                Calendar calendar=Calendar.getInstance();
+                calendar.setTime(date);
+                year=calendar.get(Calendar.YEAR);
+                month=calendar.get(Calendar.MONTH);
+                day=calendar.get(Calendar.DATE);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
         DatePickerDialog mDatePickerDialog = new DatePickerDialog(context,  new DatePickerDialog.OnDateSetListener() {
             @Override
             public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
@@ -419,8 +505,8 @@ public class MenuActivity extends AppCompatActivity {
                 try {
                     Date date=sdf.parse(year+"-"+month+"-"+dayOfMonth+" 00:00:00");
                     String time=sdf2.format(date);
-                    int curweek= TimetableTools.getCurWeek(MenuActivity.this);
                     ShareTools.putString(MenuActivity.this,ShareConstants.STRING_START_TIME,time);
+                    int curweek= TimetableTools.getCurWeek(MenuActivity.this);
                     ToastTools.show(MenuActivity.this,"设置成功，当前周:"+curweek);
                     EventBus.getDefault().post(new UpdateScheduleEvent());
                 } catch (ParseException e) {
@@ -429,7 +515,7 @@ public class MenuActivity extends AppCompatActivity {
                 startTimeText.setText(year+"/"+month+"/"+dayOfMonth);
             }
 
-        }, 2019, 4, 14);
+        }, year, month, day);
         mDatePickerDialog.setOnCancelListener(null);
         mDatePickerDialog.show();
     }
@@ -468,7 +554,7 @@ public class MenuActivity extends AppCompatActivity {
                 if(result.getCode()==200){
                     SchoolPersonModel schoolPersonModel=result.getData();
                     if(schoolPersonModel!=null){
-                        personCountText.setText(schoolPersonModel.getCount()+"名校友");
+                        personCountText.setText(schoolPersonModel.getCount()+"校友");
                     }
                 }else {
                     Toast.makeText(MenuActivity.this,result.getMsg(),Toast.LENGTH_SHORT).show();
@@ -593,6 +679,19 @@ public class MenuActivity extends AppCompatActivity {
             ToastTools.show(MenuActivity.this,"设置成功，重启App生效");
         }
         setChangeStatus(true);
+    }
+
+    @OnCheckedChanged(R.id.id_show_todo)
+    public void onShowTodoSwitchClicked(boolean b) {
+        if(effect&&!checkVipStatus()){
+            return;
+        }
+        if (b) {
+            ShareTools.putInt(this, ShareConstants.INT_TODO_LAYOUT, 1);
+        } else {
+            ShareTools.putInt(this, ShareConstants.INT_TODO_LAYOUT, 0);
+        }
+        EventBus.getDefault().post(new UpdateTodoEvent());
     }
 
     @OnCheckedChanged(R.id.id_widget_hideweeks)
@@ -823,9 +922,10 @@ public class MenuActivity extends AppCompatActivity {
         }
 
         AlertDialog.Builder builder=new AlertDialog.Builder(this)
-                .setTitle("导出到系统日历")
+                .setTitle("导出到日历账户")
+                .setCancelable(false)
                 .setMessage("开学时间:"+startTimeString+"(第"+TimetableTools.getCurWeek(getContext())+"周)\n将当前课表写入系统日历事件中，写入日历后对当前课表进行的编辑操作将不会自动同步到日历中\n2.请务必授予日历权限\n3.请保证本地日期准确\n4.请保证开学时间或当前周设置准确")
-                .setPositiveButton("开始导出", new DialogInterface.OnClickListener() {
+                .setPositiveButton("选择日历账户", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         doExport();
@@ -856,9 +956,10 @@ public class MenuActivity extends AppCompatActivity {
         }
 
         AlertDialog.Builder builder=new AlertDialog.Builder(this)
-                .setTitle("导出到系统日历")
+                .setTitle("导出到日历账户")
+                .setCancelable(false)
                 .setMessage("开学时间:"+startTimeString+"(第"+TimetableTools.getCurWeek(getContext())+"周)\n1.将情侣课表写入系统日历事件中\n2.请务必授予日历权限\n3.请保证本地日期准确\n4.请保证开学时间或当前周设置准确\n5.导出的数据在事件名会标记[情侣]")
-                .setPositiveButton("开始导出", new DialogInterface.OnClickListener() {
+                .setPositiveButton("选择日历账户", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         doExport2();
@@ -870,103 +971,157 @@ public class MenuActivity extends AppCompatActivity {
         final ScheduleName newName = DataSupport.find(ScheduleName.class, id);
         if (newName == null) return;
 
+        final List<String> startTimeList=new ArrayList<>();
+        final List<String> endTimeList=new ArrayList<>();
+        boolean getTime=TimetableTools.getTimeList(getContext(),startTimeList,endTimeList);
+        if(!getTime||startTimeList.size()==0||endTimeList.size()==0){
+            showDialog("请先设置时间","导出到日历需要依赖课程时间，请先去设置课程时间");
+            if(loadAlert!=null) loadAlert.hide();
+            return;
+        }
+
+        final List<Map<String,String>> calenderIdList=CalendarReminderUtils.listCalendarAccount(getContext());
+        final String[] items=new String[calenderIdList.size()];
+        int i=0;
+        if(calenderIdList==null||calenderIdList.size()==0){
+            showDialog("日历账户不存在","系统不存在日历账户，且自动添加日历账户失败");
+            if(loadAlert!=null) loadAlert.hide();
+            return;
+        }
+
+        for(Map<String,String> map:calenderIdList){
+            items[i]=map.get("name")+"\n("+map.get("account")+")";
+            i++;
+        }
         FindMultiExecutor executor = newName.getModelsAsync();
         executor.listen(new FindMultiCallback() {
             @Override
             public <T> void onFinish(List<T> t) {
                 final List<TimetableModel> models = (List<TimetableModel>) t;
-                final List<String> startTimeList=new ArrayList<>();
-                final List<String> endTimeList=new ArrayList<>();
-                boolean getTime=TimetableTools.getTimeList(getContext(),startTimeList,endTimeList);
-                if(!getTime||startTimeList.size()==0||endTimeList.size()==0){
-                    showDialog("请先设置时间","导出到日历需要依赖课程时间，请先去设置课程时间");
-                    if(loadAlert!=null) loadAlert.hide();
-                    return;
-                }
-                final int curWeek=TimetableTools.getCurWeek(getContext());
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        if (models != null) {
-                            if (models != null && models.size() != 0) {
-
-                                final String origin="计算量有点大，可能需要耗费15s左右，请耐心等待..\n"
-                                        +"等待写入"+models.size()+"个课程\n";
-
-
-                                handler.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        loadAlert.setContent(origin);
-                                    }
-                                });
-
-                                int max=1;
-                                for(TimetableModel model:models){
-                                    int modelMax=model.getStart()+model.getStep()-1;
-                                    if(modelMax>max){
-                                        max=modelMax;
-                                    }
-                                }
-                                if(max>startTimeList.size()){
-                                    final int finalMax = max;
-                                    handler.post(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            loadAlert.hide();
-                                            showDialog("请先设置时间","当前课程最大节次为:"+ finalMax+"\n课程时间节次:"+startTimeList.size()+
-                                                    "\n请务必保证课程时间可以覆盖到所有课程，所有导出会有遗漏");
-                                        }
-                                    });
-                                    return;
-                                }
-
-                                int index=0;
-                                for(TimetableModel model:models){
-                                    index++;
-                                    final int finalIndex = index;
-                                    CalendarReminderUtils.addScheduleToCalender(getContext(), model,qinglv,
-                                            startTimeList, endTimeList,
-                                            curWeek, new OnExportProgressListener() {
-                                                @Override
-                                                public void onProgress(final int total, final int now) {
-                                                    handler.post(new Runnable() {
-                                                        @Override
-                                                        public void run() {
-                                                            loadAlert.setContent(origin+"写入第"+ finalIndex +"个数据("+now+"/"+total+")");
-                                                        }
-                                                    });
-                                                }
-                                            });
-                                }
-                                handler.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        loadAlert.hide();
-                                        showDialog("导出到日历","导出成功，以后可以用日历看课表啦~");
-                                    }
-                                });
-                            } else{
-                                handler.post(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        loadAlert.hide();
-                                        ToastTools.show(getContext(),"导出失败：当前课表为空");
-                                    }
-                                });
+                final List<Schedule> scheduleList=ScheduleSupport.transform(models);
+                AlertDialog.Builder builder=new AlertDialog.Builder(getContext())
+                        .setTitle("选择日历账户")
+                        .setCancelable(false)
+                        .setItems(items, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                Integer calId=Integer.parseInt(calenderIdList.get(i).get("calId"));
+                                loadAlert.setContent("正在获取课表信息..");
+                                loadAlert.show();
+                                addCalenderById(models,scheduleList,startTimeList,endTimeList,qinglv,calId,
+                                        calenderIdList.get(i).get("name"));
                             }
-                        }else{
+                        });
+                builder.create().show();
+            }
+        });
+    }
+
+    private void addCalenderById(final List<TimetableModel> models, final List<Schedule> scheduleList,
+                                 final List<String> startTimeList, final List<String> endTimeList,
+                                 final boolean qinglv,
+                                 final Integer calId, final String account) {
+        final int curWeek=TimetableTools.getCurWeek(getContext());
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (models != null) {
+                    if (models != null && models.size() != 0) {
+
+                        final String originText="准备写入到"+account+"账户中\n";
+
+                        final String origin="计算量较大，课程较多时需要耗费15s左右，请耐心等待..\n"
+                                +"等待写入"+models.size()+"个课程\n";
+
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                loadAlert.setContent(originText+origin);
+                            }
+                        });
+
+                        int max=1;
+                        for(Schedule model:scheduleList){
+                            int modelMax=model.getStart()+model.getStep()-1;
+                            if(modelMax>max){
+                                max=modelMax;
+                            }
+                        }
+
+                        if(max>startTimeList.size()){
+                            final int finalMax = max;
                             handler.post(new Runnable() {
                                 @Override
                                 public void run() {
                                     loadAlert.hide();
+                                    showDialog("请先设置时间","当前课程最大节次为:"+ finalMax+"\n课程时间节次:"+startTimeList.size()+
+                                            "\n请务必保证课程时间可以覆盖到所有课程，所有导出会有遗漏");
                                 }
                             });
+                            return;
                         }
+
+                        int index=0;
+                        for(Schedule model:scheduleList){
+                            index++;
+                            final int finalIndex = index;
+                            final int finalIndex1 = index;
+                            final boolean[] showError = {false};
+                            CalendarReminderUtils.addScheduleToCalender(getContext(), calId,model,qinglv,
+                                    startTimeList, endTimeList,
+                                    curWeek, new OnExportProgressListener() {
+                                        @Override
+                                        public void onProgress(final int total, final int now) {
+                                            handler.post(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    loadAlert.setContent(originText+origin+"写入第"+ finalIndex +"个数据("+now+"/"+total+")");
+                                                }
+                                            });
+                                        }
+
+                                        @Override
+                                        public void onError(final String msg) {
+                                            handler.post(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    if(!showError[0]){
+                                                        loadAlert.hide();
+                                                        showDialog("导出失败","导出遇到了问题:"+msg);
+                                                        showError[0] =true;
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    });
+                        }
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                loadAlert.hide();
+                                showDialog("导出到日历","导出成功，以后可以用日历看课表啦~");
+                            }
+                        });
+                    } else{
+                        handler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                loadAlert.hide();
+                                ToastTools.show(getContext(),"导出失败：当前课表为空");
+                            }
+                        });
                     }
-                }).start();
+                }else{
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            loadAlert.hide();
+                            ToastTools.show(getContext(),"导出失败：本地课程读取失败");
+                        }
+                    });
+                }
             }
-        });
+        }).start();
     }
 
     public void doExport(){
@@ -981,9 +1136,6 @@ public class MenuActivity extends AppCompatActivity {
         }
 
         loadAlert=new MessageAlert(getContext(),true).create();
-        loadAlert.setContent("正在获取课表信息..\n");
-        loadAlert.show();
-
         int id = ScheduleDao.getApplyScheduleId(this);
         doExportOperator(id,false);
     }
@@ -1000,8 +1152,6 @@ public class MenuActivity extends AppCompatActivity {
             return;
         }
         loadAlert=new MessageAlert(getContext(),true).create();
-        loadAlert.setContent("正在获取课表信息..\n");
-        loadAlert.show();
         doExportOperator(id2,true);
     }
 
@@ -1042,6 +1192,7 @@ public class MenuActivity extends AppCompatActivity {
                         loadAlert.show();
                     }
                 });
+
                 CalendarReminderUtils.deleteCalendarSchedule(getContext(), handler, new OnExportProgressListener() {
                     @Override
                     public void onProgress(final int total, final int now) {
@@ -1049,9 +1200,14 @@ public class MenuActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 loadAlert.setContent("正在清除\n这可能需要一些时间，请耐心等待..\n"+
-                                "正在删除("+now+"/"+total+")");
+                                "正在过滤..("+now+"/"+total+")");
                             }
                         });
+                    }
+
+                    @Override
+                    public void onError(String msg) {
+
                     }
                 });
                 handler.post(new Runnable() {

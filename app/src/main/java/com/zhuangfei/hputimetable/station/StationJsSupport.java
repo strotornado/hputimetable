@@ -52,4 +52,9 @@ public class StationJsSupport {
         // 调用html页面中的js函数
         webView.evaluateJavascript(method, null);
     }
+
+    public void callJsHandler(String action,String result){
+        String method="onJsHandler('$0?$1')";
+        callJs(method,new String[]{action,result});
+    }
 }

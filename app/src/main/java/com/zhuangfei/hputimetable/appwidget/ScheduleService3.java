@@ -93,7 +93,9 @@ public class ScheduleService3 extends RemoteViewsService {
             int curWeek = TimetableTools.getCurWeek(context);
             if (data == null) data = new ArrayList<>();
             data.clear();
-            data.addAll(findData(context));
+            List<Schedule> list=findData(context);
+            if(list==null) list=new ArrayList<>();
+            data.addAll(list);
 
             int maxCount = ShareTools.getInt(context, "maxCount", 10);
 

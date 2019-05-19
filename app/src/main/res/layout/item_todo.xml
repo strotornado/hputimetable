@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/id_widget_item_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center_vertical"
+        android:background="@drawable/layout_ripple"
+        android:orientation="horizontal">
+        <CheckBox
+            android:id="@+id/item_to_checkbox"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/item_todo_title"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="40dp"
+            android:gravity="center_vertical"
+            android:clickable="true"
+            android:layout_marginLeft="10dp"
+            android:ellipsize="end"
+            android:singleLine="true"
+            android:textSize="17sp" />
+
+        <TextView
+            android:visibility="gone"
+            android:id="@+id/item_todo_delete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/app_white"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:layout_marginRight="2dp"
+            android:text="删除"
+            android:background="@drawable/border_5_red"
+            android:textSize="15sp" />
+
+        <TextView
+            android:id="@+id/item_todo_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/app_gray"
+            android:textSize="15sp" />
+    </LinearLayout>
+
+
+</LinearLayout>

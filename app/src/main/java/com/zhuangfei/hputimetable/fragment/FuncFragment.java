@@ -7,10 +7,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.annotation.MainThread;
 import android.support.v7.widget.CardView;
 import android.text.TextUtils;
 import android.view.ContextMenu;
@@ -19,6 +22,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -32,6 +37,7 @@ import com.zhuangfei.classbox.model.SuperResult;
 import com.zhuangfei.classbox.utils.SuperUtils;
 import com.zhuangfei.hputimetable.CustomGridView;
 import com.zhuangfei.hputimetable.MainActivity;
+import com.zhuangfei.hputimetable.activity.AddTodoActivity;
 import com.zhuangfei.hputimetable.activity.MenuActivity;
 import com.zhuangfei.hputimetable.activity.MessageActivity;
 import com.zhuangfei.hputimetable.activity.VipActivity;
@@ -47,12 +53,14 @@ import com.zhuangfei.hputimetable.api.model.MessageModel;
 import com.zhuangfei.hputimetable.api.model.ScheduleName;
 import com.zhuangfei.hputimetable.api.model.StationModel;
 import com.zhuangfei.hputimetable.api.model.TimetableModel;
+import com.zhuangfei.hputimetable.api.model.TodoModel;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
 import com.zhuangfei.hputimetable.event.ReloadStationEvent;
 import com.zhuangfei.hputimetable.event.SwitchPagerEvent;
 import com.zhuangfei.hputimetable.event.UpdateBindDataEvent;
 import com.zhuangfei.hputimetable.event.UpdateScheduleEvent;
 import com.zhuangfei.hputimetable.event.UpdateStationHomeEvent;
+import com.zhuangfei.hputimetable.event.UpdateTodoEvent;
 import com.zhuangfei.hputimetable.listener.OnNoticeUpdateListener;
 import com.zhuangfei.hputimetable.listener.OnSwitchPagerListener;
 import com.zhuangfei.hputimetable.listener.OnUpdateCourseListener;
@@ -123,9 +131,6 @@ public class FuncFragment extends LazyLoadFragment {
     @BindView(R.id.id_cardview_layout2)
     LinearLayout cardLayout2;
 
-    @BindView(R.id.id_top_nav)
-    LinearLayout topNavLayout;
-
     @BindView(R.id.id_func_message_count)
     TextView messageCountView;
 
@@ -155,10 +160,26 @@ public class FuncFragment extends LazyLoadFragment {
     @BindView(R.id.statuslayout)
     View statusView;
 
+    @BindView(R.id.id_cardview_todolayout)
+    LinearLayout todoCardLayout;
+
+    @BindView(R.id.id_todo)
+    LinearLayout todoContainerLayout;
+
     int curWeek = 1;
     int dayOfWeek = -1;
 
     boolean isInit = false;
+
+    boolean isEdit=false;
+
+    List<TextView> deleteTextList=null;
+    List<TextView> timeTextList=null;
+
+    @BindView(R.id.id_edittodo)
+    TextView editTodoText;
+
+    Typeface normalTypeFace=null;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -240,8 +261,16 @@ public class FuncFragment extends LazyLoadFragment {
         if(showHelp==1){
             helpLayout.setVisibility(View.VISIBLE);
         }
+        int isShowTodo = ShareTools.getInt(getContext(), ShareConstants.INT_TODO_LAYOUT, 1);
+        if(isShowTodo==1){
+            todoContainerLayout.setVisibility(View.VISIBLE);
+        }else{
+            todoContainerLayout.setVisibility(View.GONE);
+        }
+        normalTypeFace=editTodoText.getTypeface();
         registerForContextMenu(stationGridView);
         findData();
+        findTodoData();
         findStationLocal();
         getUnreadMessageCount();
     }
@@ -326,6 +355,7 @@ public class FuncFragment extends LazyLoadFragment {
                 TextView nameText = view.findViewById(R.id.id_item_name);
                 TextView roomText = view.findViewById(R.id.id_item_room);
                 View colorView = view.findViewById(R.id.id_item_color);
+                colorView.setVisibility(View.GONE);
                 colorView.setBackgroundColor(colorPool.getColorAuto(schedule.getColorRandom()));
 
                 GradientDrawable gd = new GradientDrawable();
@@ -397,6 +427,7 @@ public class FuncFragment extends LazyLoadFragment {
                 TextView nameText = view.findViewById(R.id.id_item_name);
                 TextView roomText = view.findViewById(R.id.id_item_room);
                 View colorView = view.findViewById(R.id.id_item_color);
+                colorView.setVisibility(View.GONE);
                 colorView.setBackgroundColor(colorPool.getColorAuto(schedule.getColorRandom()));
 
                 GradientDrawable gd = new GradientDrawable();
@@ -478,6 +509,164 @@ public class FuncFragment extends LazyLoadFragment {
             }
         });
         findData2();
+    }
+
+    /**
+     * 获取数据
+     *
+     * @return
+     */
+    public void findTodoData() {
+        FindMultiExecutor executor = DataSupport.findAllAsync(TodoModel.class);
+        executor.listen(new FindMultiCallback() {
+            @Override
+            public <T> void onFinish(List<T> t) {
+                List<TodoModel> models = (List<TodoModel>) t;
+                if (models != null) {
+                    createTodoCardView(models);
+                }
+            }
+        });
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void findTodoDataEvent(UpdateTodoEvent event) {
+        int isShowTodo = ShareTools.getInt(getContext(), ShareConstants.INT_TODO_LAYOUT, 1);
+        if(isShowTodo==1){
+            todoContainerLayout.setVisibility(View.VISIBLE);
+        }else{
+            todoContainerLayout.setVisibility(View.GONE);
+        }
+        findTodoData();
+    }
+
+    public void createTodoCardView(List<TodoModel> models) {
+        if(getContext()==null) return;
+        todoCardLayout.removeAllViews();
+        LayoutInflater inflater = LayoutInflater.from(getActivity());
+
+        deleteTextList=new ArrayList<>();
+        timeTextList=new ArrayList<>();
+
+        if(models==null||models.size()==0){
+            editTodoText.setText("编辑");
+            editTodoText.setTextColor(Color.BLACK);
+            isEdit=false;
+            for(TextView delete:deleteTextList){
+                if(delete!=null){
+                    delete.setVisibility(View.GONE);
+                }
+            }
+            for(TextView time:timeTextList){
+                if(time!=null){
+                    time.setVisibility(View.VISIBLE);
+                }
+            }
+        }
+
+        if (models == null) {
+//            View view = inflater.inflate(R.layout.item_empty, null, false);
+//            TextView infoText = view.findViewById(R.id.item_empty);
+//            TextView infoButtonText = view.findViewById(R.id.item_to_station);
+//            view.findViewById(R.id.item_empty).setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    EventBus.getDefault().post(new SwitchPagerEvent());
+//                }
+//            });
+//            infoButtonText.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    showImportDialog();
+//                }
+//            });
+//            infoButtonText.setText("导入课程");
+//            infoText.setText("本地没有数据,去添加!");
+//            cardLayout.addView(view);
+        } else if (models.size() == 0) {
+//            View view = inflater.inflate(R.layout.item_empty, null, false);
+//            TextView infoButtonText = view.findViewById(R.id.item_to_station);
+//            TextView infoText = view.findViewById(R.id.item_empty);
+//            view.findViewById(R.id.item_empty).setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    EventBus.getDefault().post(new SwitchPagerEvent());
+//                }
+//            });
+//            infoButtonText.setVisibility(View.GONE);
+//            cardLayout.addView(view);
+
+        } else {
+            SimpleDateFormat sdf=new SimpleDateFormat("MM-dd");
+            for (int i = 0; i < models.size(); i++) {
+                final TodoModel todoModel = models.get(i);
+                if (todoModel == null) continue;
+                final View view = inflater.inflate(R.layout.item_todo, null, false);
+                final TextView titleText = view.findViewById(R.id.item_todo_title);
+                TextView timeText = view.findViewById(R.id.item_todo_time);
+                TextView deleteText = view.findViewById(R.id.item_todo_delete);
+                final CheckBox checkBox = view.findViewById(R.id.item_to_checkbox);
+                titleText.setText(todoModel.getTitle());
+                deleteTextList.add(deleteText);
+                timeTextList.add(timeText);
+                timeText.setText(sdf.format(todoModel.getTimestamp()));
+
+                if(todoModel.isFinish()){
+                    checkBox.setChecked(true);
+                    titleText.getPaint().setFlags(Paint. STRIKE_THRU_TEXT_FLAG);
+                    titleText.setTypeface(titleText.getTypeface(), Typeface.ITALIC);
+                    titleText.setText(todoModel.getTitle());
+                }
+                titleText.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if(!checkBox.isChecked()){
+                            todoModel.setFinish(true);
+                            todoModel.save();
+                            checkBox.setChecked(true);
+                            titleText.getPaint().setFlags(Paint. STRIKE_THRU_TEXT_FLAG);
+                            titleText.setTypeface(titleText.getTypeface(), Typeface.ITALIC);
+                            titleText.setText(todoModel.getTitle());
+                        }else{
+                            checkBox.setChecked(false);
+                            todoModel.setFinish(false);
+                            todoModel.save();
+                            titleText.setPaintFlags(titleText.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+                            titleText.setTypeface(normalTypeFace, Typeface.NORMAL);
+                            titleText.setText(todoModel.getTitle());
+                        }
+                    }
+                });
+                deleteText.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        todoModel.delete();
+                        view.setVisibility(View.GONE);
+                        findTodoData();
+                        ToastTools.show(getContext(),"删除成功");
+                    }
+                });
+                checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                    @Override
+                    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                        if(b){
+                            todoModel.setFinish(true);
+                            todoModel.save();
+                            titleText.getPaint().setFlags(Paint. STRIKE_THRU_TEXT_FLAG);
+                            titleText.setTypeface(titleText.getTypeface(), Typeface.ITALIC);
+                            titleText.setText(todoModel.getTitle());
+                        }else{
+                            todoModel.setFinish(false);
+                            todoModel.save();
+                            titleText.setPaintFlags(titleText.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+                            titleText.setTypeface(normalTypeFace, Typeface.NORMAL);
+                            titleText.setText(todoModel.getTitle());
+                        }
+                    }
+                });
+                todoCardLayout.addView(view);
+            }
+        }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -890,7 +1079,7 @@ public class FuncFragment extends LazyLoadFragment {
                             case 0:
                                 vipLayout.setVisibility(View.GONE);
                                 ShareTools.putInt(getActivity(),  ShareConstants.INT_VIP_LAYOUT, 0);
-                                ToastTools.show(getActivity(),"已隐藏关联课表卡片，可在工具箱中打开");
+                                ToastTools.show(getActivity(),"已隐藏卡片");
                                 break;
                             default:
                                 break;
@@ -900,5 +1089,70 @@ public class FuncFragment extends LazyLoadFragment {
                 .setCancelable(false)
                 .setNegativeButton("取消",null);
         builder.create().show();
+    }
+
+    @OnClick(R.id.id_todo_setting_img)
+    public void onTodoSettingImgClicked(){
+        String[] items = {
+                "隐藏本卡片"
+        };
+        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getActivity())
+                .setTitle("卡片设置")
+                .setItems(items, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        switch (i) {
+                            case 0:
+                                todoContainerLayout.setVisibility(View.GONE);
+                                ShareTools.putInt(getActivity(),  ShareConstants.INT_TODO_LAYOUT, 0);
+                                ToastTools.show(getActivity(),"已隐藏Todo卡片，可在工具箱中打开");
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                })
+                .setCancelable(false)
+                .setNegativeButton("取消",null);
+        builder.create().show();
+    }
+
+    @OnClick(R.id.id_addtodo)
+    public void addTodo(){
+        ActivityTools.toActivityWithout(getActivity(), AddTodoActivity.class);
+    }
+
+    @OnClick(R.id.id_edittodo)
+    public void addEditTodo(){
+        if(timeTextList==null||deleteTextList==null) return;
+        if(isEdit){
+            editTodoText.setText("编辑");
+            editTodoText.setTextColor(Color.BLACK);
+            isEdit=false;
+            for(TextView delete:deleteTextList){
+                if(delete!=null){
+                    delete.setVisibility(View.GONE);
+                }
+            }
+            for(TextView time:timeTextList){
+                if(time!=null){
+                    time.setVisibility(View.VISIBLE);
+                }
+            }
+        }else{
+            isEdit=true;
+            editTodoText.setText("点击这里恢复");
+            editTodoText.setTextColor(Color.RED);
+            for(TextView delete:deleteTextList){
+                if(delete!=null){
+                    delete.setVisibility(View.VISIBLE);
+                }
+            }
+            for(TextView time:timeTextList){
+                if(time!=null){
+                    time.setVisibility(View.GONE);
+                }
+            }
+        }
     }
 }

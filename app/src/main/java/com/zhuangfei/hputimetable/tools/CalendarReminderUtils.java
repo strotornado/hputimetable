@@ -12,13 +12,16 @@ import android.text.TextUtils;
 
 import com.zhuangfei.hputimetable.api.model.TimetableModel;
 import com.zhuangfei.hputimetable.listener.OnExportProgressListener;
+import com.zhuangfei.timetable.model.Schedule;
 import com.zhuangfei.toolkit.tools.ToastTools;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -41,17 +44,22 @@ public class CalendarReminderUtils {
      * 获取账户成功返回账户id，否则返回-1
      */
     private static int checkAndAddCalendarAccount(Context context) {
-        int oldId = checkCalendarAccount(context);
-        if( oldId >= 0 ){
-            return oldId;
-        }else{
-            long addId = addCalendarAccount(context);
-            if (addId >= 0) {
-                return checkCalendarAccount(context);
-            } else {
-                return -1;
+        try{
+            int oldId = checkCalendarAccount(context);
+            if( oldId >= 0 ){
+                return oldId;
+            }else{
+                long addId = addCalendarAccount(context);
+                if (addId >= 0) {
+                    return checkCalendarAccount(context);
+                } else {
+                    return -1;
+                }
             }
+        }catch (Exception e){
+            ToastTools.show(context,"请务必授予日历权限，错误信息:"+e.getMessage());
         }
+        return -1;
     }
 
     /**
@@ -75,6 +83,43 @@ public class CalendarReminderUtils {
                 userCursor.close();
             }
         }
+    }
+
+    /**
+     * 返回所有的日历账户
+     */
+    public static List<Map<String,String>> listCalendarAccount(Context context) {
+        List<Map<String,String>> result=new ArrayList<>();
+        Cursor userCursor = context.getContentResolver().query(Uri.parse(CALENDER_URL), null, null, null, null);
+        try {
+            if (userCursor!=null&&userCursor.getCount() > 0) {
+                for (userCursor.moveToFirst(); !userCursor.isAfterLast(); userCursor.moveToNext()){
+                    String account=userCursor.getString(userCursor.getColumnIndex(CalendarContract.Calendars.ACCOUNT_NAME));
+                    String name=userCursor.getString(userCursor.getColumnIndex(CalendarContract.Calendars.DEFAULT_SORT_ORDER));
+                    int calId=userCursor.getInt(userCursor.getColumnIndex(CalendarContract.Calendars._ID));
+                    Map<String,String> map=new HashMap<>();
+                    map.put("name",name);
+                    map.put("account",account);
+                    map.put("calId",String.valueOf(calId));
+                    result.add(map);
+                }
+            }
+        } finally {
+            if (userCursor != null) {
+                userCursor.close();
+            }
+        }
+        if(result.isEmpty()){
+            long addId = addCalendarAccount(context);
+            if (addId >= 0) {
+                Map<String,String> map=new HashMap<>();
+                map.put("name","新增账户");
+                map.put("account","新增账户");
+                map.put("calId",String.valueOf(addId));
+                result.add(map);
+            }
+        }
+        return result;
     }
 
     /**
@@ -107,22 +152,20 @@ public class CalendarReminderUtils {
         return id;
     }
 
-    public static void addScheduleToCalender(Context context, TimetableModel model,
-                                             boolean qinglv,
-                                             List<String> startTimeList,
-                                             List<String> endTimeList, int curWeek){
-        addScheduleToCalender(context,model,qinglv,startTimeList,endTimeList,curWeek,null);
-    }
-
-    public static void addScheduleToCalender(Context context, TimetableModel model,
+    public static void addScheduleToCalender(Context context,int calId, Schedule model,
                                              boolean qinglv,
                                              List<String> startTimeList,
                                              List<String> endTimeList, int curWeek, OnExportProgressListener listener){
         if(model==null||model.getWeekList()==null||startTimeList==null
-                ||endTimeList==null
+                ||endTimeList==null||model.getWeekList().size()==0
                 ||model.getStep()==0||model.getStart()==0
                 ||(model.getStart()-1)>=startTimeList.size()
-                ||(model.getStart()+model.getStep()-2)>=endTimeList.size()) return;
+                ||(model.getStart()+model.getStep()-2)>=endTimeList.size()) {
+            if(listener!=null){
+                listener.onError("数据为空|时间没有覆盖全部课程");
+            }
+            return;
+        }
         Set<Integer> weekSet= new HashSet<>();
         weekSet.addAll(model.getWeekList());
         String startTime=startTimeList.get(model.getStart()-1);
@@ -133,6 +176,10 @@ public class CalendarReminderUtils {
         int nowIndex=0;
         String prefix="";
         if(qinglv) prefix="[情侣]";
+//        if(listener!=null&&weekSet.size()==0){
+//            listener.onError(model.getName()+" weekList size is 0");
+//        }
+
         for(Integer i:weekSet){
             nowIndex++;
             Date date=TimetableTools.getTargetDate(curWeek,i,thisDay,model.getDay());
@@ -140,18 +187,21 @@ public class CalendarReminderUtils {
             try {
                 Date realStartDate=sdf2.parse(dateString+" "+startTime);
                 Date realEndDate=sdf2.parse(dateString+" "+endTime);
-                addCalendarEvent(context,
-                        prefix+" "+model.getName()+"[第"+i+"周 "+(model.getStart()+"-"+(model.getStart()+model.getStep()-1))+"节]",
-                        model.getStart()+"-"+(model.getStart()+model.getStep()-1)+"节上 | "
+                addCalendarEvent(context,calId,
+                        prefix+" "+model.getName(),
+                        "第"+i+"周 | "+model.getStart()+"-"+(model.getStart()+model.getStep()-1)+"节上 | "
                                 +model.getTeacher()+" | "
                                 +model.getWeekList().toString()+" | "
                                 +"add by 怪兽课表",
                         model.getRoom(),
-                        realStartDate,realEndDate);
+                        realStartDate,realEndDate,listener);
                 if(listener!=null){
                     listener.onProgress(weekSet.size(),nowIndex);
                 }
             } catch (ParseException e) {
+                if(listener!=null){
+                    listener.onError(e.getMessage());
+                }
                 e.printStackTrace();
             }
         }
@@ -160,13 +210,19 @@ public class CalendarReminderUtils {
     /**
      * 添加日历事件
      */
-    public static void addCalendarEvent(Context context, String title, String description, String location, Date startDate, Date endDate) {
+    public static void addCalendarEvent(Context context,int calId, String title, String description, String location, Date startDate, Date endDate,OnExportProgressListener listener) {
         if (context == null) {
+            if(listener!=null){
+                listener.onError("context is null");
+            }
             return;
         }
-        int calId = checkAndAddCalendarAccount(context); //获取日历账户的id
+//        int calId = checkAndAddCalendarAccount(context); //获取日历账户的id
         if (calId < 0) { //获取账户id失败直接返回，添加日历事件失败
-            ToastTools.show(context,"添加日历账户失败，可能没有授予日历权限");
+            ToastTools.show(context,"添加日历账户失败，可能没有授予日历权限或者没有日历账户");
+            if(listener!=null){
+                listener.onError("添加日历账户失败，可能没有授予日历权限或者没有日历账户");
+            }
             return;
         }
 
@@ -187,6 +243,9 @@ public class CalendarReminderUtils {
         event.put(CalendarContract.Events.EVENT_TIMEZONE, "Asia/Shanghai");//这个是时区，必须有
         Uri newEvent = context.getContentResolver().insert(Uri.parse(CALENDER_EVENT_URL), event); //添加事件
         if (newEvent == null) { //添加日历事件失败直接返回
+            if(listener!=null){
+                listener.onError("添加日历日程失败");
+            }
             return;
         }
 

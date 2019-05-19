@@ -54,28 +54,30 @@ public class UpdateTools {
                                     int isIgnoreUpdate = ShareTools.getInt(context, "isIgnoreUpdate", 0);
                                     if (isIgnoreUpdate == 0 && v > VersionTools.getVersionNumber()) {
                                         if(context==null) return;
-                                        AlertDialog.Builder builder = new AlertDialog.Builder(context)
-                                                .setTitle("发现新版本-v" + vals[1])
-                                                .setMessage("你可以在 工具箱->自动检查更新 中关闭提醒!\n\n更新日志:\n" + vals[2])
-                                                .setPositiveButton("去看看", new DialogInterface.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                                        Intent intent = new Intent();
-                                                        intent.setAction("android.intent.action.VIEW");
-                                                        intent.setData(Uri.parse("https://www.coolapk.com/apk/com.zhuangfei.hputimetable"));
-                                                        context.startActivity(intent);
-                                                        if (dialogInterface != null) {
-                                                            dialogInterface.dismiss();
+                                        try{
+                                            AlertDialog.Builder builder = new AlertDialog.Builder(context)
+                                                    .setTitle("发现新版本-v" + vals[1])
+                                                    .setMessage("你可以在 工具箱->自动检查更新 中关闭提醒!\n\n更新日志:\n" + vals[2])
+                                                    .setPositiveButton("去看看", new DialogInterface.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                                            Intent intent = new Intent();
+                                                            intent.setAction("android.intent.action.VIEW");
+                                                            intent.setData(Uri.parse("https://www.coolapk.com/apk/com.zhuangfei.hputimetable"));
+                                                            context.startActivity(intent);
+                                                            if (dialogInterface != null) {
+                                                                dialogInterface.dismiss();
+                                                            }
                                                         }
-                                                    }
-                                                })
-                                                .setNegativeButton("明天提醒", new DialogInterface.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                                        ShareTools.putString(context, "app_update_info", s);
-                                                    }
-                                                });
-                                        builder.create().show();
+                                                    })
+                                                    .setNegativeButton("明天提醒", new DialogInterface.OnClickListener() {
+                                                        @Override
+                                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                                            ShareTools.putString(context, "app_update_info", s);
+                                                        }
+                                                    });
+                                            builder.create().show();
+                                        }catch (Exception e){}
                                     }
                                 }
                             }

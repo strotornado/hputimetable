@@ -165,8 +165,13 @@ public class StationSdk {
 
     @JavascriptInterface
     @SuppressLint("SetJavaScriptEnabled")
-    public void toast(String msg){
-        stationView.showMessage(msg);
+    public void toast(final String msg){
+        stationView.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                stationView.showMessage(msg);
+            }
+        });
     }
 
     @JavascriptInterface
@@ -218,14 +223,7 @@ public class StationSdk {
     @JavascriptInterface
     @SuppressLint("SetJavaScriptEnabled")
     public String getString(final String key, final String defVal){
-        final String[] result = {null};
-        stationView.runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                result[0] =preferences.getString(key,defVal);
-            }
-        });
-        return result[0];
+        return preferences.getString(key,defVal);
     }
 
     @JavascriptInterface

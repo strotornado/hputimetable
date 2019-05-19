@@ -6,6 +6,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <View
+        android:id="@+id/statuslayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/mainColor" />
+
     <include layout="@layout/header_timetable_menu" />
 
     <ScrollView
@@ -22,7 +28,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="80dp"
-                android:background="@color/app_white"
+                android:background="?attr/mainColor"
                 android:paddingLeft="15dp"
                 android:paddingRight="15dp">
 
@@ -30,20 +36,24 @@
                     android:id="@+id/id_device_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:textSize="17sp"
+                    android:layout_marginTop="12dp"
+                    android:textSize="18sp"
+                    android:textColor="@color/app_white"
                     android:textStyle="bold" />
 
                 <TextView
+                    android:visibility="gone"
                     android:id="@+id/id_school_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/id_device_text"
-                    android:layout_marginTop="5dp"
-                    android:background="@drawable/border_start_end2"
-                    android:includeFontPadding="false"
-                    android:paddingLeft="5dp"
-                    android:paddingRight="5dp"
+                    android:layout_toRightOf="@id/id_device_text"
+                    android:layout_alignBaseline="@id/id_device_text"
+                    android:background="@drawable/border_start_end3"
+                    android:paddingLeft="7dp"
+                    android:paddingRight="7dp"
+                    android:paddingTop="3dp"
+                    android:paddingBottom="3dp"
+                    android:layout_marginLeft="10dp"
                     android:textColor="@color/app_white"
                     android:textSize="14sp" />
 
@@ -51,145 +61,366 @@
                     android:id="@+id/id_school_count_text"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_alignTop="@id/id_school_text"
+                    android:layout_alignBaseline="@id/id_school_text"
                     android:layout_marginLeft="10dp"
                     android:layout_toRightOf="@id/id_school_text"
-                    android:background="@drawable/border_start_end2"
-                    android:includeFontPadding="false"
-                    android:paddingLeft="5dp"
-                    android:paddingRight="5dp"
-                    android:text="0名校友"
+                    android:background="@drawable/border_start_end3"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:paddingTop="2dp"
+                    android:paddingBottom="2dp"
+                    android:text="0校友"
                     android:textColor="@color/app_white"
                     android:textSize="14sp" />
 
                 <TextView
-                    android:id="@+id/id_menu_modify_school"
-                    android:layout_width="80dp"
-                    android:layout_height="match_parent"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:gravity="center"
-                    android:text="修改学校"
-                    android:textColor="@color/theme_red" />
+                    android:id="@+id/id_vip_expire"
+                    android:gravity="center_vertical"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:layout_marginTop="5dp"
+                    android:singleLine="true"
+                    android:ellipsize="end"
+                    android:layout_below="@id/id_device_text"
+                    android:textColor="@color/white_alpha20"
+                    android:textSize="14sp"/>
 
             </RelativeLayout>
-            <include layout="@layout/view_line" />
-            <TextView
-                android:id="@+id/id_vip_expire"
-                android:gravity="center_vertical"
-                android:layout_width="match_parent"
-                android:layout_height="30dp"
-                android:paddingLeft="15dp"
-                android:paddingRight="15dp"
-                android:textColor="@color/app_gray"
-                android:background="@color/app_white"
-                android:text=""/>
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_marginTop="15dp"
-                android:background="@color/app_white"
                 android:gravity="center_vertical"
-                android:paddingLeft="15dp"
-                android:text="产品相关"
-                android:textColor="@color/app_gray" />
-
-            <include layout="@layout/view_line" />
-
-            <TableLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:background="@color/app_white"
-                android:stretchColumns="0,1,2,3">
+                android:orientation="horizontal">
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:paddingLeft="15dp"
+                    android:src="@drawable/icon_calender"/>
 
-                <TableRow>
-
-                    <TextView
-                        android:id="@+id/id_menu_about"
-                        android:layout_width="wrap_content"
-                        android:layout_height="50dp"
-                        android:background="@drawable/layout_ripple"
-                        android:gravity="center"
-                        android:text="关于软件"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:id="@+id/id_menu_share"
-                        android:layout_width="wrap_content"
-                        android:layout_height="50dp"
-                        android:background="@drawable/layout_ripple"
-                        android:gravity="center"
-                        android:text="分享软件"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:id="@+id/id_menu_update2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="50dp"
-                        android:background="@drawable/layout_ripple"
-                        android:gravity="center"
-                        android:text="去酷安更新"
-                        android:textSize="14sp" />
-
-                    <TextView
-                        android:id="@+id/id_menu_update"
-                        android:layout_width="wrap_content"
-                        android:layout_height="50dp"
-                        android:background="@drawable/layout_ripple"
-                        android:gravity="center"
-                        android:text="在线更新"
-                        android:textSize="14sp" />
-
-                </TableRow>
-            </TableLayout>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="5dp"
+                    android:text="日历管理"
+                    android:textSize="17sp"/>
+            </LinearLayout>
 
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_marginTop="15dp"
-                android:background="@color/app_white"
-                android:gravity="center_vertical"
-                android:paddingLeft="15dp"
-                android:text="高级版功能"
-                android:textColor="@color/app_gray" />
+                android:layout_height="1px"
+                android:layout_marginLeft="20dp"
+                android:background="@color/app_line"/>
 
-            <include layout="@layout/view_line" />
+            <LinearLayout
+                android:id="@+id/id_export_calender"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/layout_ripple"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:textSize="17sp"
+                    android:gravity="center_vertical"
+                    android:text="导出当前课表到日历" />
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="20dp"
+                android:background="@color/app_panel_bg"/>
+
+            <LinearLayout
+                android:id="@+id/id_export_calender_qinglv"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/layout_ripple"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:textSize="17sp"
+                    android:gravity="center_vertical"
+                    android:text="导出情侣课表到日历" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="20dp"
+                android:background="@color/app_panel_bg"/>
+
+            <LinearLayout
+                android:id="@+id/id_clear_calender"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/layout_ripple"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:textSize="17sp"
+                    android:gravity="center_vertical"
+                    android:text="清除日历中的课程" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:layout_marginTop="15dp"
+                android:paddingTop="5dp"
+                android:gravity="center_vertical"
+                android:background="@color/app_white"
+                android:orientation="horizontal">
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:paddingLeft="15dp"
+                    android:src="@drawable/icon_vip"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="5dp"
+                    android:text="主题设置"
+                    android:textSize="16sp"/>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="20dp"
+                android:background="@color/app_line"/>
 
             <LinearLayout
                 android:id="@+id/id_set_theme_layout"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:background="@color/app_white"
+                android:background="@drawable/layout_ripple"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="20dp"
+                    android:textSize="17sp"
+                    android:gravity="center_vertical"
+                    android:text="设置首页主颜色（高级版）" />
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginRight="20dp"
+                    android:src="@drawable/ic_point_right"/>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="20dp"
+                android:background="@color/app_panel_bg"/>
+
+            <LinearLayout
+                android:id="@+id/id_set_theme_layout_normal"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/layout_ripple"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="15dp"
+                    android:layout_marginLeft="20dp"
                     android:layout_weight="1"
-                    android:textSize="16sp"
+                    android:textSize="17sp"
                     android:gravity="center_vertical"
-                    android:text="设置首页主颜色（多种）" />
+                    android:text="设置首页主颜色（普通版）" />
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginRight="20dp"
+                    android:src="@drawable/ic_point_right"/>
 
             </LinearLayout>
 
-            <include layout="@layout/view_line" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="15dp"
+                android:gravity="center_vertical"
+                android:background="@color/app_white"
+                android:orientation="horizontal">
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:paddingLeft="15dp"
+                    android:src="@drawable/icon_settings"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="5dp"
+                    android:text="视图设置"
+                    android:textSize="16sp"/>
+            </LinearLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="20dp"
+                android:background="@color/app_line"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:background="@color/app_white"
+                android:background="@drawable/layout_ripple"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="15dp"
+                    android:layout_marginLeft="20dp"
                     android:layout_weight="1"
-                    android:textSize="16sp"
+                    android:textSize="17sp"
+                    android:gravity="center_vertical"
+                    android:text="隐藏非本周" />
+
+                <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/id_switch_hidenotcur"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="15dp" />
+            </LinearLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="20dp"
+                android:background="@color/app_panel_bg"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/layout_ripple"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="20dp"
+                    android:layout_weight="1"
+                    android:textSize="17sp"
+                    android:gravity="center_vertical"
+                    android:text="隐藏周末" />
+
+                <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/id_switch_hideweekends"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="15dp"
+                    android:gravity="center_vertical" />
+            </LinearLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="20dp"
+                android:background="@color/app_panel_bg"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/layout_ripple"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="20dp"
+                    android:textSize="17sp"
+                    android:gravity="center_vertical"
+                    android:text="显示关联课表" />
+
+                <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/id_show_qinglv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="15dp"
+                    android:checked="true"
+                    android:gravity="center_vertical" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="20dp"
+                android:background="@color/app_panel_bg"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/layout_ripple"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="20dp"
+                    android:textSize="17sp"
+                    android:gravity="center_vertical"
+                    android:text="显示Todo列表" />
+
+                <android.support.v7.widget.SwitchCompat
+                    android:id="@+id/id_show_todo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="15dp"
+                    android:checked="true"
+                    android:gravity="center_vertical" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="20dp"
+                android:background="@color/app_panel_bg"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/layout_ripple"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="20dp"
+                    android:layout_weight="1"
+                    android:textSize="17sp"
                     android:gravity="center_vertical"
                     android:text="设置周日为起始日" />
 
@@ -199,20 +430,25 @@
                     android:layout_height="wrap_content"
                     android:layout_marginRight="15dp" />
             </LinearLayout>
-            <include layout="@layout/view_line" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="20dp"
+                android:background="@color/app_panel_bg"/>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:background="@color/app_white"
+                android:background="@drawable/layout_ripple"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="15dp"
+                    android:layout_marginLeft="20dp"
                     android:layout_weight="1"
-                    android:textSize="16sp"
+                    android:textSize="17sp"
                     android:gravity="center_vertical"
                     android:text="设置周视图为首页" />
 
@@ -222,207 +458,170 @@
                     android:layout_height="wrap_content"
                     android:layout_marginRight="15dp" />
             </LinearLayout>
-            <include layout="@layout/view_line" />
+
+            <LinearLayout
+                android:id="@+id/id_set_starttime_layout"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/layout_ripple"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="20dp"
+                    android:layout_weight="1"
+                    android:textSize="17sp"
+                    android:gravity="center_vertical"
+                    android:text="设置开学时间" />
+
+                <TextView
+                    android:id="@+id/tv_startTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="20dp"
+                    android:gravity="center_vertical"
+                    android:textSize="17sp"
+                    android:text="未设置" />
+
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/id_set_maxcount"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:background="@color/app_white"
+                android:background="@drawable/layout_ripple"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="15dp"
+                    android:layout_marginLeft="20dp"
                     android:layout_weight="1"
-                    android:textSize="16sp"
+                    android:textSize="17sp"
                     android:gravity="center_vertical"
                     android:text="最大节次设置" />
 
+                <TextView
+                    android:id="@+id/id_maxcount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="20dp"
+                    android:textSize="17sp"
+                    android:gravity="center_vertical"/>
+
             </LinearLayout>
 
-            <include layout="@layout/view_line" />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="20dp"
+                android:background="@color/app_panel_bg"/>
+
             <LinearLayout
                 android:id="@+id/id_set_time"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:background="@color/app_white"
+                android:background="@drawable/layout_ripple"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="15dp"
+                    android:layout_marginLeft="20dp"
                     android:layout_weight="1"
-                    android:textSize="16sp"
+                    android:textSize="17sp"
                     android:gravity="center_vertical"
                     android:text="节次时间设置" />
 
+                <TextView
+                    android:id="@+id/id_time_set_tip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginRight="20dp"
+                    android:textSize="17sp"
+                    android:gravity="center_vertical"/>
+
             </LinearLayout>
 
-            <include layout="@layout/view_line" />
+
             <LinearLayout
-                android:id="@+id/id_export_calender"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:background="@color/app_white"
+                android:layout_height="40dp"
+                android:layout_marginTop="15dp"
                 android:gravity="center_vertical"
-                android:orientation="vertical">
+                android:background="@color/app_white"
+                android:orientation="horizontal">
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:paddingLeft="15dp"
+                    android:src="@drawable/icon_found"/>
 
                 <TextView
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="15dp"
-                    android:textSize="17sp"
+                    android:layout_height="40dp"
                     android:gravity="center_vertical"
-                    android:text="导出到日历" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginRight="15dp"
-                    android:gravity="center_vertical"
-                    android:textSize="14sp"
-                    android:textColor="@color/app_gray"
-                    android:text="将当前课表写入系统日历中" />
+                    android:paddingLeft="5dp"
+                    android:text="证书管理"
+                    android:textSize="16sp"/>
             </LinearLayout>
-            <include layout="@layout/view_line" />
-            <LinearLayout
-                android:id="@+id/id_export_calender_qinglv"
+
+            <TextView
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:background="@color/app_white"
-                android:gravity="center_vertical"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="15dp"
-                    android:textSize="17sp"
-                    android:gravity="center_vertical"
-                    android:text="导出情侣课表到日历" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginRight="15dp"
-                    android:gravity="center_vertical"
-                    android:textSize="14sp"
-                    android:textColor="@color/app_gray"
-                    android:text="将情侣课表写入系统日历中" />
-            </LinearLayout>
-
-            <include layout="@layout/view_line" />
-            <LinearLayout
-                android:id="@+id/id_clear_calender"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:background="@color/app_white"
-                android:gravity="center_vertical"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="15dp"
-                    android:textSize="17sp"
-                    android:gravity="center_vertical"
-                    android:text="清除日历中的课程" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginRight="15dp"
-                    android:gravity="center_vertical"
-                    android:textSize="14sp"
-                    android:textColor="@color/app_gray"
-                    android:text="仅仅移除日历中的课程" />
-            </LinearLayout>
-            <include layout="@layout/view_line" />
+                android:layout_height="1px"
+                android:layout_marginLeft="20dp"
+                android:background="@color/app_line"/>
 
             <LinearLayout
                 android:id="@+id/id_check_license"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:background="@color/app_white"
+                android:layout_height="50dp"
+                android:background="@drawable/layout_ripple"
                 android:gravity="center_vertical"
                 android:orientation="vertical">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="15dp"
+                    android:layout_marginLeft="20dp"
                     android:textSize="17sp"
                     android:gravity="center_vertical"
                     android:text="证书安全性检查" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginRight="15dp"
-                    android:gravity="center_vertical"
-                    android:textSize="14sp"
-                    android:textColor="@color/app_gray"
-                    android:text="检查目前证书存在的问题" />
             </LinearLayout>
-            <include layout="@layout/view_line" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="20dp"
+                android:background="@color/app_panel_bg"/>
+
             <LinearLayout
                 android:id="@+id/id_find_license"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:background="@color/app_white"
+                android:layout_height="50dp"
+                android:background="@drawable/layout_ripple"
                 android:gravity="center_vertical"
                 android:orientation="vertical">
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="15dp"
+                    android:layout_marginLeft="20dp"
                     android:textSize="17sp"
                     android:gravity="center_vertical"
-                    android:text="高级版证书恢复" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginRight="15dp"
-                    android:gravity="center_vertical"
-                    android:textSize="14sp"
-                    android:textColor="@color/app_gray"
-                    android:text="解决由于刷机等造成的高级版丢失问题" />
+                    android:text="高级版证书找回" />
             </LinearLayout>
-            <include layout="@layout/view_line" />
-
-            <LinearLayout
+            <TextView
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:background="@color/app_white"
-                android:gravity="center_vertical"
-                android:orientation="vertical">
+                android:layout_height="1px"
+                android:layout_marginLeft="20dp"
+                android:background="@color/app_panel_bg"/>
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="15dp"
-                    android:textSize="17sp"
-                    android:gravity="center_vertical"
-                    android:text="专属客服答疑" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginRight="15dp"
-                    android:gravity="center_vertical"
-                    android:textSize="14sp"
-                    android:textColor="@color/app_gray"
-                    android:text="有问题请联系邮箱:1193600556@qq.com" />
-            </LinearLayout>
-
-            <include layout="@layout/view_line" />
             <LinearLayout
                 android:id="@+id/id_vip_btn"
                 android:layout_width="match_parent"
@@ -433,25 +632,41 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
-                    android:layout_marginLeft="15dp"
-                    android:layout_marginRight="15dp"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginRight="20dp"
                     android:background="@drawable/btn_bg"
                     android:gravity="center"
                     android:text="开通高级版（低至¥3.3）"
                     android:textColor="@color/app_white"
-                    android:textSize="16sp" />
+                    android:textSize="17sp" />
             </LinearLayout>
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_marginTop="15dp"
-                android:background="@color/app_white"
                 android:gravity="center_vertical"
-                android:paddingLeft="15dp"
-                android:text="桌面部件设置"
-                android:textSize="16sp"
-                android:textColor="@color/app_gray"/>
+                android:background="@color/app_white"
+                android:orientation="horizontal">
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:paddingLeft="15dp"
+                    android:src="@drawable/icon_found"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="5dp"
+                    android:text="小部件设置"
+                    android:textSize="16sp"/>
+            </LinearLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="20dp"
+                android:background="@color/app_line"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -464,9 +679,9 @@
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="15dp"
+                    android:layout_marginLeft="20dp"
                     android:layout_weight="1"
-                    android:textSize="16sp"
+                    android:textSize="17sp"
                     android:gravity="center_vertical"
                     android:text="开启15节次" />
 
@@ -482,16 +697,16 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:background="@color/app_white"
+                android:background="@drawable/layout_ripple"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="15dp"
+                    android:layout_marginLeft="20dp"
                     android:layout_weight="1"
-                    android:textSize="16sp"
+                    android:textSize="17sp"
                     android:gravity="center_vertical"
                     android:text="隐藏周末" />
 
@@ -504,19 +719,25 @@
                     android:gravity="center_vertical" />
             </LinearLayout>
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="20dp"
+                android:background="@color/app_panel_bg"/>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:background="@color/app_white"
+                android:background="@drawable/layout_ripple"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="15dp"
+                    android:layout_marginLeft="20dp"
                     android:layout_weight="1"
-                    android:textSize="16sp"
+                    android:textSize="17sp"
                     android:gravity="center_vertical"
                     android:text="隐藏日期栏" />
 
@@ -528,19 +749,26 @@
                     android:checked="false"
                     android:gravity="center_vertical" />
             </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="20dp"
+                android:background="@color/app_panel_bg"/>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:background="@color/app_white"
+                android:background="@drawable/layout_ripple"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <TextView
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="15dp"
+                    android:layout_marginLeft="20dp"
                     android:layout_weight="1"
-                    android:textSize="16sp"
+                    android:textSize="17sp"
                     android:gravity="center_vertical"
                     android:text="小部件周视图透明版" />
 
@@ -552,6 +780,7 @@
                     android:checked="false"
                     android:gravity="center_vertical" />
             </LinearLayout>
+
             <LinearLayout
                 android:visibility="gone"
                 android:layout_width="match_parent"
@@ -578,78 +807,47 @@
                     android:gravity="center_vertical" />
             </LinearLayout>
 
-            <TextView
+
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:layout_marginTop="15dp"
-                android:background="@color/app_white"
                 android:gravity="center_vertical"
-                android:paddingLeft="15dp"
-                android:text="基础设置"
-                android:textColor="@color/app_gray" />
-
-            <include layout="@layout/view_line" />
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
                 android:background="@color/app_white"
-                android:gravity="center_vertical"
                 android:orientation="horizontal">
+                <ImageView
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:paddingLeft="15dp"
+                    android:src="@drawable/icon_settings"/>
 
                 <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="15dp"
-                    android:layout_weight="1"
-                    android:textSize="16sp"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
                     android:gravity="center_vertical"
-                    android:text="隐藏非本周" />
-
-                <android.support.v7.widget.SwitchCompat
-                    android:id="@+id/id_switch_hidenotcur"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="15dp" />
+                    android:paddingLeft="5dp"
+                    android:text="杂项功能"
+                    android:textSize="16sp"/>
             </LinearLayout>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="20dp"
+                android:background="@color/app_line"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
-                android:background="@color/app_white"
+                android:background="@drawable/layout_ripple"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="15dp"
-                    android:layout_weight="1"
-                    android:textSize="16sp"
-                    android:gravity="center_vertical"
-                    android:text="隐藏周末" />
-
-                <android.support.v7.widget.SwitchCompat
-                    android:id="@+id/id_switch_hideweekends"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="15dp"
-                    android:gravity="center_vertical" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="@color/app_white"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_marginLeft="15dp"
+                    android:layout_marginLeft="20dp"
                     android:layout_weight="1"
-                    android:textSize="16sp"
+                    android:textSize="17sp"
                     android:gravity="center_vertical"
                     android:text="自动检查更新" />
 
@@ -661,100 +859,40 @@
                     android:checked="true"
                     android:gravity="center_vertical" />
             </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="@color/app_white"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="15dp"
-                    android:layout_weight="1"
-                    android:textSize="16sp"
-                    android:gravity="center_vertical"
-                    android:text="显示关联课表" />
-
-                <android.support.v7.widget.SwitchCompat
-                    android:id="@+id/id_show_qinglv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="15dp"
-                    android:checked="true"
-                    android:gravity="center_vertical" />
-            </LinearLayout>
-            <include layout="@layout/view_line" />
-            <LinearLayout
-                android:id="@+id/id_set_theme_layout_normal"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="@color/app_white"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="15dp"
-                    android:layout_weight="1"
-                    android:textSize="16sp"
-                    android:gravity="center_vertical"
-                    android:text="设置首页主颜色（仅三种）" />
-
-            </LinearLayout>
-            <include layout="@layout/view_line" />
-            <LinearLayout
-                android:id="@+id/id_set_starttime_layout"
-                android:layout_width="match_parent"
-                android:layout_height="50dp"
-                android:background="@color/app_white"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_marginLeft="15dp"
-                    android:layout_weight="1"
-                    android:textSize="16sp"
-                    android:gravity="center_vertical"
-                    android:text="设置开学时间" />
-
-                <TextView
-                    android:id="@+id/tv_startTime"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_marginRight="15dp"
-                    android:gravity="center_vertical"
-                    android:textSize="16sp"
-                    android:text="未设置" />
-
-            </LinearLayout>
-
             <TextView
                 android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:layout_marginTop="15dp"
-                android:background="@color/app_white"
-                android:gravity="center_vertical"
-                android:paddingLeft="15dp"
-                android:text="开发者选项"
-                android:textColor="@color/app_gray" />
+                android:layout_height="1px"
+                android:layout_marginLeft="20dp"
+                android:background="@color/app_panel_bg"/>
 
-            <include layout="@layout/view_line" />
-
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:background="@drawable/layout_ripple"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
             <TextView
                 android:id="@+id/id_debug"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
+                android:layout_weight="1"
                 android:layout_height="50dp"
-                android:background="@color/app_white"
                 android:gravity="center_vertical"
-                android:paddingLeft="15dp"
-                android:textSize="16sp"
+                android:paddingLeft="20dp"
+                android:textSize="17sp"
                 android:text="适配调试器" />
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginRight="20dp"
+                android:src="@drawable/ic_point_right"/>
+        </LinearLayout>
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="20dp"
+                android:background="@color/app_panel_bg"/>
 
             <TextView
                 android:id="@+id/id_other"
@@ -765,6 +903,137 @@
                 android:paddingLeft="15dp"
                 android:text="测试跳转"
                 android:visibility="gone" />
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/layout_ripple"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/id_menu_update2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="20dp"
+                    android:layout_weight="1"
+                    android:textSize="17sp"
+                    android:gravity="center_vertical"
+                    android:text="去酷安更新" />
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginRight="20dp"
+                    android:src="@drawable/ic_point_right"/>
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="20dp"
+                android:background="@color/app_panel_bg"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/layout_ripple"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/id_menu_modify_school"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="20dp"
+                    android:layout_weight="1"
+                    android:textSize="17sp"
+                    android:gravity="center_vertical"
+                    android:text="修改关联学校" />
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginRight="20dp"
+                    android:src="@drawable/ic_point_right"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/layout_ripple"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/id_menu_about"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="20dp"
+                    android:layout_weight="1"
+                    android:textSize="17sp"
+                    android:gravity="center_vertical"
+                    android:text="关于软件" />
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginRight="20dp"
+                    android:src="@drawable/ic_point_right"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:layout_marginLeft="20dp"
+                android:background="@color/app_panel_bg"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@drawable/layout_ripple"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/id_menu_share"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="20dp"
+                    android:layout_weight="1"
+                    android:textSize="17sp"
+                    android:gravity="center_vertical"
+                    android:text="分享软件" />
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginRight="20dp"
+                    android:src="@drawable/ic_point_right"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@color/app_white"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/id_menu_update"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="20dp"
+                    android:layout_weight="1"
+                    android:textSize="17sp"
+                    android:gravity="center_vertical"
+                    android:text="在线更新" />
+            </LinearLayout>
+
         </LinearLayout>
 
     </ScrollView>

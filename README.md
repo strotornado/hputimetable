@@ -76,11 +76,7 @@ bugly {
 
 <img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.1/img1.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.1/img2.jpg" width="30%"/><img src="https://raw.githubusercontent.com/zfman/hputimetable/master/resource/images/v1.1.1/img3.jpg" width="30%"/>
 
-### v1.1.8 `2019/04/21`
-
--
-
-### v1.1.7 `2019/04/14`
+### v1.1.8 `2019/04/14`
 
 - 主题颜色开放给普通用户
 - 增加两个周课表部件，属性可设置
@@ -89,6 +85,7 @@ bugly {
 - 导出情侣课表到系统日历
 - 设置最大节次
 - 可通过订单号找回高级版证书
+- 工具箱不再显示用户ID
 
 ### v1.1.6 `2019/03/7`
 

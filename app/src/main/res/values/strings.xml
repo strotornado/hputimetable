@@ -12,6 +12,7 @@
     <string name="vip_success">支付成功，高级版已开启</string>
     <string name="vip_error">支付失败</string>
     <string name="signature">73c419013830a771157e2f188fcafaf8</string>
+    <string name="aes_key">zfmaNnn1234567@</string>
 
 
     <!-- TODO: Remove or change this placeholder text -->

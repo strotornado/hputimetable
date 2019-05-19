@@ -141,19 +141,6 @@
                     android:paddingBottom="16dp"
                     android:paddingLeft="48dp"
                     android:paddingRight="48dp"
-                    android:text="超表授权库\nhttps://github.com/zfman/SuperBox"
-                    android:textSize="12sp" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:autoLink="web"
-                    android:gravity="center_horizontal"
-                    android:lineSpacingExtra="8dp"
-                    android:paddingBottom="16dp"
-                    android:paddingLeft="48dp"
-                    android:paddingRight="48dp"
                     android:text="全国大学生课程适配平台-已授权\nhttps://github.com/zfman/CourseAdapter\n如需使用该功能请务必先向开发者申请授权\n违者必究!"
                     android:textSize="12sp" />
 

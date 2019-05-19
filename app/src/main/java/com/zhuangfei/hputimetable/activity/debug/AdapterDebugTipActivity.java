@@ -12,6 +12,7 @@ import com.zhuangfei.hputimetable.api.TimetableRequest;
 import com.zhuangfei.hputimetable.api.model.ObjResult;
 import com.zhuangfei.hputimetable.api.model.UserDebugModel;
 import com.zhuangfei.hputimetable.model.PayLicense;
+import com.zhuangfei.hputimetable.tools.AesSecurity;
 import com.zhuangfei.hputimetable.tools.FileTools;
 import com.zhuangfei.hputimetable.tools.VipTools;
 import com.zhuangfei.toolkit.tools.ActivityTools;
@@ -85,6 +86,15 @@ public class AdapterDebugTipActivity extends AppCompatActivity {
                 ToastTools.show(this,"Success:别人的订单");
                 return;
             }
+
+            if(name.equals("ZFMAN_encrypt")){
+                final String encryptKey=getResources().getString(R.string.aes_key);
+                String encrypt= AesSecurity.getInstance().encrypt(encryptKey,userkey);
+                nameEdit.setText(userkey);
+                userkeydit.setText(encrypt==null?"null":encrypt);
+                return;
+            }
+
             TimetableRequest.getUserInfo(this, name, userkey,
                     new Callback<ObjResult<UserDebugModel>>() {
                         @Override

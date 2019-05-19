@@ -24,7 +24,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:gravity="center_vertical"
-            android:text="找回VIP"
+            android:text="添加Todo"
             android:textSize="16sp"
             android:textStyle="bold" />
     </LinearLayout>
@@ -47,12 +47,12 @@
             android:orientation="vertical">
 
             <EditText
-                android:id="@+id/id_vip_order"
+                android:id="@+id/id_todo_title"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:paddingLeft="15dp"
                 android:paddingRight="15dp"
-                android:hint="输入商家订单号"
+                android:hint="输入标题"
                 android:singleLine="true"
                 android:textSize="16sp"
                 android:background="@color/app_white"/>
@@ -60,48 +60,34 @@
                 android:layout_width="match_parent"
                 android:layout_height="1px"
                 android:background="@color/app_line"/>
-
-            <EditText
-                android:id="@+id/id_vip_activecode"
+            <LinearLayout
+                android:id="@+id/id_set_time_layout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingLeft="15dp"
-                android:paddingRight="15dp"
-                android:paddingTop="10dp"
-                android:paddingBottom="10dp"
-                android:hint="激活码选填,如需更换设备，请将商家订单号以及新设备的设备号发送至1193600556@qq.com以申请激活码，然后填入此处"
-                android:minLines="5"
-                android:textSize="16sp"
-                android:gravity="top|left"
-                android:background="@color/app_white"/>
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="10dp"
-                android:background="@color/app_panel_bg"/>
-
-            <TextView
-                android:id="@+id/id_howtofind"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
+                android:layout_height="50dp"
+                android:background="@drawable/layout_ripple"
                 android:gravity="center_vertical"
-                android:background="@color/app_white"
-                android:paddingLeft="15dp"
-                android:textSize="16sp"
-                android:textColor="@color/theme_red"
-                android:text="如何查看商家订单号?"/>
-            <TextView
-                android:id="@+id/id_device_info"
-                android:layout_width="match_parent"
-                android:layout_height="40dp"
-                android:gravity="center_vertical"
-                android:background="@color/app_white"
-                android:paddingLeft="15dp"
-                android:textSize="16sp"
-                android:textColor="@color/theme_red"
-                android:text="当前设备:"/>
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/id_set_time_display"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="15dp"
+                    android:textSize="17sp"
+                    android:gravity="center_vertical"
+                    android:text="设置任务到期时间" />
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginRight="20dp"
+                    android:src="@drawable/ic_point_right"/>
+
+            </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/id_find_vip"
+                android:id="@+id/id_todo_add"
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:gravity="center"
@@ -114,7 +100,7 @@
                     android:layout_marginRight="15dp"
                     android:background="@drawable/btn_bg"
                     android:gravity="center"
-                    android:text="恢复高级版证书"
+                    android:text="添加Todo"
                     android:textColor="@color/app_white"
                     android:textSize="16sp" />
             </LinearLayout>
