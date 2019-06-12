@@ -31,6 +31,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.tencent.bugly.crashreport.BuglyLog;
 import com.zhuangfei.classbox.activity.AuthActivity;
 import com.zhuangfei.classbox.model.SuperLesson;
@@ -39,6 +40,7 @@ import com.zhuangfei.classbox.utils.SuperUtils;
 import com.zhuangfei.hputimetable.CustomGridView;
 import com.zhuangfei.hputimetable.MainActivity;
 import com.zhuangfei.hputimetable.activity.AddTodoActivity;
+import com.zhuangfei.hputimetable.activity.LoginActivity;
 import com.zhuangfei.hputimetable.activity.MenuActivity;
 import com.zhuangfei.hputimetable.activity.MessageActivity;
 import com.zhuangfei.hputimetable.activity.VipActivity;
@@ -48,7 +50,9 @@ import com.zhuangfei.hputimetable.R;
 import com.zhuangfei.hputimetable.activity.ScanActivity;
 import com.zhuangfei.hputimetable.activity.schedule.TimetableDetailActivity;
 import com.zhuangfei.hputimetable.adapter.StationAdapter;
+import com.zhuangfei.hputimetable.adapter_apis.AssetTools;
 import com.zhuangfei.hputimetable.api.TimetableRequest;
+import com.zhuangfei.hputimetable.api.model.GreenFruitProfile;
 import com.zhuangfei.hputimetable.api.model.ListResult;
 import com.zhuangfei.hputimetable.api.model.MessageModel;
 import com.zhuangfei.hputimetable.api.model.ScheduleName;
@@ -69,6 +73,7 @@ import com.zhuangfei.hputimetable.model.ScheduleDao;
 import com.zhuangfei.hputimetable.tools.BroadcastUtils;
 import com.zhuangfei.hputimetable.tools.DeviceTools;
 import com.zhuangfei.hputimetable.tools.ImportTools;
+import com.zhuangfei.hputimetable.tools.PermissionTools;
 import com.zhuangfei.hputimetable.tools.StationManager;
 import com.zhuangfei.hputimetable.tools.TimetableTools;
 import com.zhuangfei.hputimetable.tools.ViewTools;
@@ -92,6 +97,7 @@ import org.litepal.crud.DataSupport;
 import org.litepal.crud.async.FindMultiExecutor;
 import org.litepal.crud.callback.FindMultiCallback;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -111,6 +117,7 @@ import es.dmoral.toasty.Toasty;
 import kr.co.namee.permissiongen.PermissionFail;
 import kr.co.namee.permissiongen.PermissionGen;
 import kr.co.namee.permissiongen.PermissionSuccess;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -175,15 +182,15 @@ public class FuncFragment extends LazyLoadFragment {
 
     boolean isInit = false;
 
-    boolean isEdit=false;
+    boolean isEdit = false;
 
-    List<TextView> deleteTextList=null;
-    List<TextView> timeTextList=null;
+    List<TextView> deleteTextList = null;
+    List<TextView> timeTextList = null;
 
     @BindView(R.id.id_edittodo)
     TextView editTodoText;
 
-    Typeface normalTypeFace=null;
+    Typeface normalTypeFace = null;
 
     final int SUCCESSCODE = 1;
 
@@ -258,22 +265,22 @@ public class FuncFragment extends LazyLoadFragment {
             }
         });
         //todo
-        int showVip=ShareTools.getInt(getActivity(),ShareConstants.INT_VIP_LAYOUT,1);
-        if(showVip==1&&!VipTools.isVip(getActivity()).isSuccess()){
+        int showVip = ShareTools.getInt(getActivity(), ShareConstants.INT_VIP_LAYOUT, 1);
+        if (showVip == 1 && !VipTools.isVip(getActivity()).isSuccess()) {
             vipLayout.setVisibility(View.VISIBLE);
         }
 
-        int showHelp=ShareTools.getInt(getContext(),"showHelpLayout",1);
-        if(showHelp==1){
+        int showHelp = ShareTools.getInt(getContext(), "showHelpLayout", 1);
+        if (showHelp == 1) {
             helpLayout.setVisibility(View.VISIBLE);
         }
         int isShowTodo = ShareTools.getInt(getContext(), ShareConstants.INT_TODO_LAYOUT, 1);
-        if(isShowTodo==1){
+        if (isShowTodo == 1) {
             todoContainerLayout.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             todoContainerLayout.setVisibility(View.GONE);
         }
-        normalTypeFace=editTodoText.getTypeface();
+        normalTypeFace = editTodoText.getTypeface();
         registerForContextMenu(stationGridView);
         findData();
         findTodoData();
@@ -348,10 +355,10 @@ public class FuncFragment extends LazyLoadFragment {
             cardLayout.addView(view);
 
         } else {
-            final List<String> startTimeList=new ArrayList<>();
-            final List<String> endTimeList=new ArrayList<>();
-            boolean isGetTime=TimetableTools.getTimeList(getContext(),startTimeList,endTimeList);
-            String time= ShareTools.getString(getContext(),"schedule_time",null);
+            final List<String> startTimeList = new ArrayList<>();
+            final List<String> endTimeList = new ArrayList<>();
+            boolean isGetTime = TimetableTools.getTimeList(getContext(), startTimeList, endTimeList);
+            String time = ShareTools.getString(getContext(), "schedule_time", null);
 
             for (int i = 0; i < models.size(); i++) {
                 final Schedule schedule = models.get(i);
@@ -373,11 +380,11 @@ public class FuncFragment extends LazyLoadFragment {
                 String room = schedule.getRoom();
                 if (TextUtils.isEmpty(name)) name = "课程名未知";
                 if (TextUtils.isEmpty(room)) room = "上课地点未知";
-                if(!TextUtils.isEmpty(time)){
-                    int startTimeIndex=schedule.getStart()-1;
-                    int endTimeIndex=schedule.getStart()+schedule.getStep()-2;
-                    if(startTimeIndex<startTimeList.size()&&endTimeIndex<endTimeList.size()){
-                        room=startTimeList.get(startTimeIndex)+"-"+endTimeList.get(endTimeIndex)+" | "+room;
+                if (!TextUtils.isEmpty(time)) {
+                    int startTimeIndex = schedule.getStart() - 1;
+                    int endTimeIndex = schedule.getStart() + schedule.getStep() - 2;
+                    if (startTimeIndex < startTimeList.size() && endTimeIndex < endTimeList.size()) {
+                        room = startTimeList.get(startTimeIndex) + "-" + endTimeList.get(endTimeIndex) + " | " + room;
                     }
                 }
                 nameText.setText(name);
@@ -420,10 +427,10 @@ public class FuncFragment extends LazyLoadFragment {
             infoButtonText.setVisibility(View.GONE);
             cardLayout2.addView(view);
         } else {
-            final List<String> startTimeList=new ArrayList<>();
-            final List<String> endTimeList=new ArrayList<>();
-            TimetableTools.getTimeList(getContext(),startTimeList,endTimeList);
-            String time= ShareTools.getString(getContext(),"schedule_time",null);
+            final List<String> startTimeList = new ArrayList<>();
+            final List<String> endTimeList = new ArrayList<>();
+            TimetableTools.getTimeList(getContext(), startTimeList, endTimeList);
+            String time = ShareTools.getString(getContext(), "schedule_time", null);
 
             for (int i = 0; i < models.size(); i++) {
                 final Schedule schedule = models.get(i);
@@ -445,11 +452,11 @@ public class FuncFragment extends LazyLoadFragment {
                 String room = schedule.getRoom();
                 if (TextUtils.isEmpty(name)) name = "课程名未知";
                 if (TextUtils.isEmpty(room)) room = "上课地点未知";
-                if(!TextUtils.isEmpty(time)){
-                    int startTimeIndex=schedule.getStart()-1;
-                    int endTimeIndex=schedule.getStart()+schedule.getStep()-2;
-                    if(startTimeIndex<startTimeList.size()&&endTimeIndex<endTimeList.size()){
-                        room=startTimeList.get(startTimeIndex)+"-"+endTimeList.get(endTimeIndex)+" | "+room;
+                if (!TextUtils.isEmpty(time)) {
+                    int startTimeIndex = schedule.getStart() - 1;
+                    int endTimeIndex = schedule.getStart() + schedule.getStep() - 2;
+                    if (startTimeIndex < startTimeList.size() && endTimeIndex < endTimeList.size()) {
+                        room = startTimeList.get(startTimeIndex) + "-" + endTimeList.get(endTimeIndex) + " | " + room;
                     }
                 }
                 nameText.setText(name);
@@ -538,33 +545,33 @@ public class FuncFragment extends LazyLoadFragment {
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void findTodoDataEvent(UpdateTodoEvent event) {
         int isShowTodo = ShareTools.getInt(getContext(), ShareConstants.INT_TODO_LAYOUT, 1);
-        if(isShowTodo==1){
+        if (isShowTodo == 1) {
             todoContainerLayout.setVisibility(View.VISIBLE);
-        }else{
+        } else {
             todoContainerLayout.setVisibility(View.GONE);
         }
         findTodoData();
     }
 
     public void createTodoCardView(List<TodoModel> models) {
-        if(getContext()==null) return;
+        if (getContext() == null) return;
         todoCardLayout.removeAllViews();
         LayoutInflater inflater = LayoutInflater.from(getActivity());
 
-        deleteTextList=new ArrayList<>();
-        timeTextList=new ArrayList<>();
+        deleteTextList = new ArrayList<>();
+        timeTextList = new ArrayList<>();
 
-        if(models==null||models.size()==0){
+        if (models == null || models.size() == 0) {
             editTodoText.setText("编辑");
             editTodoText.setTextColor(Color.BLACK);
-            isEdit=false;
-            for(TextView delete:deleteTextList){
-                if(delete!=null){
+            isEdit = false;
+            for (TextView delete : deleteTextList) {
+                if (delete != null) {
                     delete.setVisibility(View.GONE);
                 }
             }
-            for(TextView time:timeTextList){
-                if(time!=null){
+            for (TextView time : timeTextList) {
+                if (time != null) {
                     time.setVisibility(View.VISIBLE);
                 }
             }
@@ -603,7 +610,7 @@ public class FuncFragment extends LazyLoadFragment {
 //            cardLayout.addView(view);
 
         } else {
-            SimpleDateFormat sdf=new SimpleDateFormat("MM-dd");
+            SimpleDateFormat sdf = new SimpleDateFormat("MM-dd");
             for (int i = 0; i < models.size(); i++) {
                 final TodoModel todoModel = models.get(i);
                 if (todoModel == null) continue;
@@ -617,23 +624,23 @@ public class FuncFragment extends LazyLoadFragment {
                 timeTextList.add(timeText);
                 timeText.setText(sdf.format(todoModel.getTimestamp()));
 
-                if(todoModel.isFinish()){
+                if (todoModel.isFinish()) {
                     checkBox.setChecked(true);
-                    titleText.getPaint().setFlags(Paint. STRIKE_THRU_TEXT_FLAG);
+                    titleText.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);
                     titleText.setTypeface(titleText.getTypeface(), Typeface.ITALIC);
                     titleText.setText(todoModel.getTitle());
                 }
                 titleText.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if(!checkBox.isChecked()){
+                        if (!checkBox.isChecked()) {
                             todoModel.setFinish(true);
                             todoModel.save();
                             checkBox.setChecked(true);
-                            titleText.getPaint().setFlags(Paint. STRIKE_THRU_TEXT_FLAG);
+                            titleText.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);
                             titleText.setTypeface(titleText.getTypeface(), Typeface.ITALIC);
                             titleText.setText(todoModel.getTitle());
-                        }else{
+                        } else {
                             checkBox.setChecked(false);
                             todoModel.setFinish(false);
                             todoModel.save();
@@ -649,19 +656,19 @@ public class FuncFragment extends LazyLoadFragment {
                         todoModel.delete();
                         view.setVisibility(View.GONE);
                         findTodoData();
-                        ToastTools.show(getContext(),"删除成功");
+                        ToastTools.show(getContext(), "删除成功");
                     }
                 });
                 checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                     @Override
                     public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                        if(b){
+                        if (b) {
                             todoModel.setFinish(true);
                             todoModel.save();
-                            titleText.getPaint().setFlags(Paint. STRIKE_THRU_TEXT_FLAG);
+                            titleText.getPaint().setFlags(Paint.STRIKE_THRU_TEXT_FLAG);
                             titleText.setTypeface(titleText.getTypeface(), Typeface.ITALIC);
                             titleText.setText(todoModel.getTitle());
-                        }else{
+                        } else {
                             todoModel.setFinish(false);
                             todoModel.save();
                             titleText.setPaintFlags(titleText.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
@@ -738,6 +745,7 @@ public class FuncFragment extends LazyLoadFragment {
      */
     @OnClick(R.id.id_func_scan)
     public void toScanActivity() {
+        shouldcheckPermission();
         ActivityTools.toActivityWithout(getActivity(), ScanActivity.class);
     }
 
@@ -747,7 +755,7 @@ public class FuncFragment extends LazyLoadFragment {
     }
 
     public void showImportDialog() {
-        String[] items = {"从超表课程码导入", "从超表账户导入", "从教务系统导入"};
+        String[] items = {"从超表课程码导入", "从超表账户导入", "从教务系统导入","从喜鹊儿导入(青果教务)"};
         android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(getContext())
                 .setTitle("课程导入")
                 .setItems(items, new DialogInterface.OnClickListener() {
@@ -763,6 +771,9 @@ public class FuncFragment extends LazyLoadFragment {
                             case 2:
                                 toSearchSchool();
                                 break;
+                            case 3:
+                                toQingguoActivity();
+                                break;
                         }
                     }
                 })
@@ -777,7 +788,15 @@ public class FuncFragment extends LazyLoadFragment {
         ActivityTools.toActivityWithout(getActivity(), MultiScheduleActivity.class);
     }
 
+    /**
+     * 青果教务
+     */
     @OnClick(R.id.id_func_message)
+    public void toQingguoActivity() {
+        ActivityTools.toActivityWithout(getActivity(), LoginActivity.class);
+    }
+
+    @OnClick(R.id.id_func_message_count)
     public void toMessageActivity() {
         ActivityTools.toActivityWithout(getActivity(), MessageActivity.class);
     }
@@ -895,7 +914,7 @@ public class FuncFragment extends LazyLoadFragment {
                         }
                         if (size > 0) {
                             messageCountView.setVisibility(View.VISIBLE);
-                            messageCountView.setText(String.valueOf(size));
+                            messageCountView.setText("你有"+String.valueOf(size)+"条消息未读");
                         } else hideMessageCountView();
                     } else hideMessageCountView();
                 } else {
@@ -949,7 +968,7 @@ public class FuncFragment extends LazyLoadFragment {
                                     }
                                 })
                                 .setCancelable(false)
-                                .setNegativeButton("取消",null);
+                                .setNegativeButton("取消", null);
                         builder.create().show();
                     }
                 });
@@ -958,7 +977,7 @@ public class FuncFragment extends LazyLoadFragment {
     }
 
     @OnClick(R.id.id_func_setting_img2)
-    public void onSettingLayout2Clicked(){
+    public void onSettingLayout2Clicked() {
         String[] items = {
                 "隐藏本卡片"
         };
@@ -971,8 +990,8 @@ public class FuncFragment extends LazyLoadFragment {
                             case 0:
                                 isBindLayout.setVisibility(View.GONE);
                                 bindContainer.setVisibility(View.GONE);
-                                ShareTools.putInt(getActivity(),  ShareConstants.INT_GUANLIAN, 0);
-                                ToastTools.show(getActivity(),"已隐藏关联课表卡片，可在工具箱中打开");
+                                ShareTools.putInt(getActivity(), ShareConstants.INT_GUANLIAN, 0);
+                                ToastTools.show(getActivity(), "已隐藏关联课表卡片，可在工具箱中打开");
                                 break;
                             default:
                                 break;
@@ -980,7 +999,7 @@ public class FuncFragment extends LazyLoadFragment {
                     }
                 })
                 .setCancelable(false)
-                .setNegativeButton("取消",null);
+                .setNegativeButton("取消", null);
         builder.create().show();
     }
 
@@ -1001,7 +1020,7 @@ public class FuncFragment extends LazyLoadFragment {
                                 int id2 = ShareTools.getInt(getActivity(), ShareConstants.INT_SCHEDULE_NAME_ID2, 0);
                                 final ScheduleName newName = DataSupport.find(ScheduleName.class, id2);
                                 if (newName != null) {
-                                    ToastTools.show(getActivity(),"课表名称:"+newName.getName());
+                                    ToastTools.show(getActivity(), "课表名称:" + newName.getName());
                                 }
                                 break;
                             case 1:
@@ -1010,8 +1029,8 @@ public class FuncFragment extends LazyLoadFragment {
                             case 2:
                                 isBindLayout.setVisibility(View.GONE);
                                 bindContainer.setVisibility(View.GONE);
-                                ShareTools.putInt(getActivity(),  ShareConstants.INT_GUANLIAN, 0);
-                                ToastTools.show(getActivity(),"已隐藏关联课表卡片，可在工具箱中打开");
+                                ShareTools.putInt(getActivity(), ShareConstants.INT_GUANLIAN, 0);
+                                ToastTools.show(getActivity(), "已隐藏关联课表卡片，可在工具箱中打开");
                                 break;
                             default:
                                 break;
@@ -1019,7 +1038,7 @@ public class FuncFragment extends LazyLoadFragment {
                     }
                 })
                 .setCancelable(false)
-                .setNegativeButton("取消",null);
+                .setNegativeButton("取消", null);
         builder.create().show();
     }
 
@@ -1036,7 +1055,7 @@ public class FuncFragment extends LazyLoadFragment {
                         switch (i) {
                             case 0:
                                 helpLayout.setVisibility(View.GONE);
-                                ShareTools.putInt(getContext(),"showHelpLayout",0);
+                                ShareTools.putInt(getContext(), "showHelpLayout", 0);
                                 break;
                             default:
                                 break;
@@ -1044,17 +1063,17 @@ public class FuncFragment extends LazyLoadFragment {
                     }
                 })
                 .setCancelable(false)
-                .setNegativeButton("取消",null);
+                .setNegativeButton("取消", null);
         builder.create().show();
     }
 
     @OnClick(R.id.id_vip_btn)
-    public void onVipBtnClicked(){
+    public void onVipBtnClicked() {
         ActivityTools.toActivityWithout(getActivity(), VipActivity.class);
     }
 
     @OnClick(R.id.id_func_setting_img3)
-    public void onHideVipBtnClicked(){
+    public void onHideVipBtnClicked() {
         String[] items = {
                 "隐藏本卡片"
         };
@@ -1066,8 +1085,8 @@ public class FuncFragment extends LazyLoadFragment {
                         switch (i) {
                             case 0:
                                 vipLayout.setVisibility(View.GONE);
-                                ShareTools.putInt(getActivity(),  ShareConstants.INT_VIP_LAYOUT, 0);
-                                ToastTools.show(getActivity(),"已隐藏卡片");
+                                ShareTools.putInt(getActivity(), ShareConstants.INT_VIP_LAYOUT, 0);
+                                ToastTools.show(getActivity(), "已隐藏卡片");
                                 break;
                             default:
                                 break;
@@ -1075,12 +1094,12 @@ public class FuncFragment extends LazyLoadFragment {
                     }
                 })
                 .setCancelable(false)
-                .setNegativeButton("取消",null);
+                .setNegativeButton("取消", null);
         builder.create().show();
     }
 
     @OnClick(R.id.id_todo_setting_img)
-    public void onTodoSettingImgClicked(){
+    public void onTodoSettingImgClicked() {
         String[] items = {
                 "隐藏本卡片"
         };
@@ -1092,8 +1111,8 @@ public class FuncFragment extends LazyLoadFragment {
                         switch (i) {
                             case 0:
                                 todoContainerLayout.setVisibility(View.GONE);
-                                ShareTools.putInt(getActivity(),  ShareConstants.INT_TODO_LAYOUT, 0);
-                                ToastTools.show(getActivity(),"已隐藏Todo卡片，可在工具箱中打开");
+                                ShareTools.putInt(getActivity(), ShareConstants.INT_TODO_LAYOUT, 0);
+                                ToastTools.show(getActivity(), "已隐藏Todo卡片，可在工具箱中打开");
                                 break;
                             default:
                                 break;
@@ -1101,46 +1120,74 @@ public class FuncFragment extends LazyLoadFragment {
                     }
                 })
                 .setCancelable(false)
-                .setNegativeButton("取消",null);
+                .setNegativeButton("取消", null);
         builder.create().show();
     }
 
     @OnClick(R.id.id_addtodo)
-    public void addTodo(){
+    public void addTodo() {
         ActivityTools.toActivityWithout(getActivity(), AddTodoActivity.class);
     }
 
     @OnClick(R.id.id_edittodo)
-    public void addEditTodo(){
-        if(timeTextList==null||deleteTextList==null) return;
-        if(isEdit){
+    public void addEditTodo() {
+        if (timeTextList == null || deleteTextList == null) return;
+        if (isEdit) {
             editTodoText.setText("编辑");
             editTodoText.setTextColor(Color.BLACK);
-            isEdit=false;
-            for(TextView delete:deleteTextList){
-                if(delete!=null){
+            isEdit = false;
+            for (TextView delete : deleteTextList) {
+                if (delete != null) {
                     delete.setVisibility(View.GONE);
                 }
             }
-            for(TextView time:timeTextList){
-                if(time!=null){
+            for (TextView time : timeTextList) {
+                if (time != null) {
                     time.setVisibility(View.VISIBLE);
                 }
             }
-        }else{
-            isEdit=true;
+        } else {
+            isEdit = true;
             editTodoText.setText("点击这里恢复");
             editTodoText.setTextColor(Color.RED);
-            for(TextView delete:deleteTextList){
-                if(delete!=null){
+            for (TextView delete : deleteTextList) {
+                if (delete != null) {
                     delete.setVisibility(View.VISIBLE);
                 }
             }
-            for(TextView time:timeTextList){
-                if(time!=null){
+            for (TextView time : timeTextList) {
+                if (time != null) {
                     time.setVisibility(View.GONE);
                 }
             }
         }
+    }
+
+    private void shouldcheckPermission() {
+        PermissionGen.with(getActivity())
+                .addRequestCode(SUCCESSCODE)
+                .permissions(
+                        Manifest.permission.CAMERA,
+                        Manifest.permission.VIBRATE
+                )
+                .request();
+    }
+
+    //申请权限结果的返回
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        PermissionGen.onRequestPermissionsResult(this, requestCode, permissions, grantResults);
+    }
+
+    //权限申请成功
+    @PermissionSuccess(requestCode = SUCCESSCODE)
+    public void doSomething() {
+        ActivityTools.toActivityWithout(getActivity(), ScanActivity.class);
+    }
+
+    //申请失败
+    @PermissionFail(requestCode = SUCCESSCODE)
+    public void doFailSomething() {
+        ToastTools.show(getContext(), "权限不足");
     }
 }

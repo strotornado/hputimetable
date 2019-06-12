@@ -5,10 +5,10 @@ package com.zhuangfei.hputimetable.tools;
  */
 public class VersionTools {
     public static int getVersionNumber(){
-        return 20;
+        return 21;
     }
 
     public static String getVersionName(){
-        return "1.1.9";
+        return "1.2.0";
     }
 }

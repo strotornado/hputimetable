@@ -22,6 +22,7 @@ import com.zhuangfei.hputimetable.api.model.MessageModel;
 import com.zhuangfei.hputimetable.api.model.School;
 import com.zhuangfei.hputimetable.api.model.StationModel;
 import com.zhuangfei.hputimetable.api.model.TemplateModel;
+import com.zhuangfei.hputimetable.model.GreenFruitSchool;
 import com.zhuangfei.hputimetable.model.SearchResultModel;
 import com.zhuangfei.hputimetable.tools.DeviceTools;
 import com.zhuangfei.hputimetable.tools.StationManager;
@@ -51,9 +52,10 @@ import retrofit2.Response;
 public class SearchSchoolAdapter extends BaseAdapter {
 
     private static final int TYPE_STATION = 0;
-    private static final int TYPE_SCHOOL = 2;
+    private static final int TYPE_SCHOOL = 3;
+    private static final int TYPE_XIQUER = 2;
     private static final int TYPE_COMMON = 1;
-    private static final int TYPE_ITEM_COUNT = 3;
+    private static final int TYPE_ITEM_COUNT = 4;
     public static final int TYPE_STATION_MAX_SIZE= 3;
 
     private LayoutInflater mInflater = null;
@@ -225,6 +227,42 @@ public class SearchSchoolAdapter extends BaseAdapter {
                     }
                 }
                 break;
+            case TYPE_XIQUER:
+                if (convertView == null) {
+                    schoolViewHolder = new SchoolViewHolder();
+                    convertView = mInflater.inflate(R.layout.item_search_school, null);
+                    schoolViewHolder.searchTitleView=convertView.findViewById(R.id.id_search_title);
+                    schoolViewHolder.lineTextView2=convertView.findViewById(R.id.item_search_line2);
+                    schoolViewHolder.schoolLayout=convertView.findViewById(R.id.id_search_school_layout);
+                    schoolViewHolder.schoolTextView=convertView.findViewById(R.id.item_school_val);
+                    schoolViewHolder.schoolTypeTextView=convertView.findViewById(R.id.id_search_school_type);
+                    convertView.setTag(schoolViewHolder);
+                } else {
+                    schoolViewHolder = (SchoolViewHolder) convertView.getTag();
+                }
+                if (model != null) {
+                    schoolViewHolder.searchTitleView.setText("喜鹊儿");
+                    schoolViewHolder.schoolLayout.setVisibility(View.VISIBLE);
+                    GreenFruitSchool school= (GreenFruitSchool) model.getObject();
+                    if(school!=null){
+                        schoolViewHolder.schoolTextView.setText(school.getXxmc());
+                        String type="青果";
+                        schoolViewHolder.schoolTypeTextView.setText(type);
+                    }
+
+                    if(position==0||model.getType()!=list.get(position-1).getType()){
+                        schoolViewHolder.searchTitleView.setVisibility(View.VISIBLE);
+                        schoolViewHolder.lineTextView2.setVisibility(View.VISIBLE);
+                    }else {
+                        schoolViewHolder.searchTitleView.setVisibility(View.GONE);
+                        schoolViewHolder.lineTextView2.setVisibility(View.GONE);
+                    }
+
+                    if(position==0){
+                        schoolViewHolder.lineTextView2.setVisibility(View.GONE);
+                    }
+                }
+                break;
             case TYPE_SCHOOL:
                 if (convertView == null) {
                     schoolViewHolder = new SchoolViewHolder();
@@ -282,6 +320,8 @@ public class SearchSchoolAdapter extends BaseAdapter {
             return TYPE_STATION;
         }else if(list.get(position).getType()==SearchResultModel.TYPE_SCHOOL){
             return TYPE_SCHOOL;
+        }else if(list.get(position).getType()==SearchResultModel.TYPE_XIQUER){
+            return TYPE_XIQUER;
         }else {
             return TYPE_COMMON;
         }

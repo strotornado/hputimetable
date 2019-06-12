@@ -4,6 +4,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -15,14 +17,18 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.zhuangfei.hputimetable.MainActivity;
 import com.zhuangfei.hputimetable.R;
+import com.zhuangfei.hputimetable.activity.LoginActivity;
 import com.zhuangfei.hputimetable.activity.MessageActivity;
 import com.zhuangfei.hputimetable.activity.StationWebViewActivity;
 import com.zhuangfei.hputimetable.activity.WebViewActivity;
 import com.zhuangfei.hputimetable.activity.hpu.HpuRepertoryActivity;
 import com.zhuangfei.hputimetable.activity.hpu.ImportMajorActivity;
 import com.zhuangfei.hputimetable.adapter.SearchSchoolAdapter;
+import com.zhuangfei.hputimetable.adapter_apis.AssetTools;
 import com.zhuangfei.hputimetable.api.TimetableRequest;
 import com.zhuangfei.hputimetable.api.model.AdapterResultV2;
 import com.zhuangfei.hputimetable.api.model.ListResult;
@@ -31,8 +37,10 @@ import com.zhuangfei.hputimetable.api.model.School;
 import com.zhuangfei.hputimetable.api.model.StationModel;
 import com.zhuangfei.hputimetable.api.model.TemplateModel;
 import com.zhuangfei.hputimetable.constants.ShareConstants;
+import com.zhuangfei.hputimetable.model.GreenFruitSchool;
 import com.zhuangfei.hputimetable.model.SearchResultModel;
 import com.zhuangfei.hputimetable.tools.StationManager;
+import com.zhuangfei.hputimetable.tools.ThemeManager;
 import com.zhuangfei.hputimetable.tools.ViewTools;
 import com.zhuangfei.toolkit.model.BundleModel;
 import com.zhuangfei.toolkit.tools.ActivityTools;
@@ -74,6 +82,11 @@ public class SearchSchoolActivity extends AppCompatActivity {
 
     boolean firstStatus=true;
 
+    List<GreenFruitSchool> allSchool;
+
+    @BindView(R.id.id_layout_hpusa)
+    LinearLayout hpuLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,16 +114,42 @@ public class SearchSchoolActivity extends AppCompatActivity {
 //            }
 //        });
 
+        allSchool=new ArrayList<>();
         models = new ArrayList<>();
         allDatas=new ArrayList<>();
         searchAdapter = new SearchSchoolAdapter(this, allDatas,models);
         searchListView.setAdapter(searchAdapter);
         searchEditText.addTextChangedListener(textWatcher);
 
-
+        loadSchools();
         String school= ShareTools.getString(SearchSchoolActivity.this, ShareConstants.STRING_SCHOOL_NAME,"unknow");
         search(school);
     }
+
+    private void loadSchools() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                String schoolStr= AssetTools.readAssetFile(getContext(),"schools.txt");
+                TypeToken<List<GreenFruitSchool>> typeToken=new TypeToken<List<GreenFruitSchool>>(){};
+                List<GreenFruitSchool> school=new Gson().fromJson(schoolStr,typeToken.getType());
+                Message message=new Message();
+                message.obj=school;
+                message.what=0x123;
+                handler.sendMessage(message);
+            }
+        }).start();
+    }
+
+    Handler handler=new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if(msg.obj!=null){
+                allSchool= (List<GreenFruitSchool>) msg.obj;
+            }
+        }
+    };
 
     @OnItemClick(R.id.id_search_listview)
     public void onItemClick(int i) {
@@ -164,6 +203,12 @@ public class SearchSchoolActivity extends AppCompatActivity {
 
             }
         }
+        else if(model.getType()==SearchResultModel.TYPE_XIQUER){
+            GreenFruitSchool school = (GreenFruitSchool) model.getObject();
+            ActivityTools.toActivityWithout(this, LoginActivity.class,
+                    new BundleModel()
+            .put("selectSchool",school));
+        }
         //服务站
         else{
             StationModel stationModel= (StationModel) model.getObject();
@@ -198,6 +243,7 @@ public class SearchSchoolActivity extends AppCompatActivity {
             String key = charSequence.toString();
             firstStatus=false;
             if (TextUtils.isEmpty(key)) {
+                hpuLayout.setVisibility(View.GONE);
                 models.clear();
                 allDatas.clear();
                 searchAdapter.notifyDataSetChanged();
@@ -220,7 +266,13 @@ public class SearchSchoolActivity extends AppCompatActivity {
 
     public void search(final String key) {
         if(TextUtils.isEmpty(key)) {
+            hpuLayout.setVisibility(View.GONE);
             return;
+        }
+        if(key.indexOf("河南理工")!=-1){
+            hpuLayout.setVisibility(View.VISIBLE);
+        }else{
+            hpuLayout.setVisibility(View.GONE);
         }
 
         models.clear();
@@ -334,6 +386,17 @@ public class SearchSchoolActivity extends AppCompatActivity {
                     SearchResultModel searchResultModel = new SearchResultModel();
                     searchResultModel.setType(SearchResultModel.TYPE_COMMON);
                     searchResultModel.setObject(model);
+                    addModelToList(searchResultModel);
+                }
+            }
+        }
+
+        if(allSchool!=null){
+            for (GreenFruitSchool schoolBean : allSchool) {
+                if (schoolBean.getXxmc() != null && schoolBean.getXxmc().indexOf(key) != -1) {
+                    SearchResultModel searchResultModel = new SearchResultModel();
+                    searchResultModel.setType(SearchResultModel.TYPE_XIQUER);
+                    searchResultModel.setObject(schoolBean);
                     addModelToList(searchResultModel);
                 }
             }

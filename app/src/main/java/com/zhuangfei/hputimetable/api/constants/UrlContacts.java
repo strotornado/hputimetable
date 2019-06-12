@@ -59,4 +59,8 @@ public class UrlContacts {
 
     public final static String URL_GET_STATION_BY_ID="index.php?c=Adapter&a=getStationById";
 
+    //青果URL
+    public final static String URL_QINGGUO="wap/wapController.jsp";
+    public final static String URL_BASE_QINGGUO="http://www.xiqueer.com:8080/manager/";
+
 }

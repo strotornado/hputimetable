@@ -46,4 +46,16 @@ public class ApiUtils {
                 .build();
         return retrofit;
     }
+
+    public static Retrofit getRetrofitForGreenFruit(Context context) {
+        OkHttpClient builder = new OkHttpClient.Builder()
+                .build();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .client(builder)
+                .baseUrl(UrlContacts.URL_BASE_QINGGUO)
+                .addConverterFactory(GsonConverterFactory.create(getGson()))
+                .build();
+        return retrofit;
+    }
 }

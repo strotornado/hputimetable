@@ -9,6 +9,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/qingguo" />
             <option value="$PROJECT_DIR$/smartalert" />
             <option value="$PROJECT_DIR$/toolkit" />
           </set>

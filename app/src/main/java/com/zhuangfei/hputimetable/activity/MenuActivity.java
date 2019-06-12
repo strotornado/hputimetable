@@ -865,7 +865,8 @@ public class MenuActivity extends AppCompatActivity {
                 "青色主题",
                 "蓝色主题2",
                 "橙色主题",
-                "灰色主题"
+                "灰色主题",
+                "酷安绿"
         };
         android.support.v7.app.AlertDialog.Builder builder=new android.support.v7.app.AlertDialog.Builder(this)
                 .setTitle("修改主题")

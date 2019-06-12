@@ -18,8 +18,8 @@ android {
         // 开启multidex
         multiDexEnabled true
 
-        versionCode 20
-        versionName "1.1.9"
+        versionCode 21
+        versionName "1.2.0"
     }
 
     // 签名配置
@@ -77,6 +77,7 @@ dependencies {
     compile 'com.zhuangfei:SuperBox:1.0.5'
     implementation 'org.greenrobot:eventbus:3.1.1'
     compile 'com.payelves:sdk-release:3.3.9'
+    api project(':qingguo')
 }
 
 apply plugin: 'bugly'

@@ -22,6 +22,7 @@ public class ImportTools {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setMessage("你导入的数据已存储在多课表[" + name.getName() + "]下!\n是否直接设置为当前课表?")
                 .setTitle("课表导入成功")
+                .setCancelable(false)
                 .setPositiveButton("设为当前课表", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
@@ -51,6 +52,7 @@ public class ImportTools {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setMessage("你导入的数据已存储在多课表[" + name.getName() + "]下!\n是否直接设置为当前课表?")
                 .setTitle("课表导入成功")
+                .setCancelable(false)
                 .setPositiveButton("设为当前课表", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {

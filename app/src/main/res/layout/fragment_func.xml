@@ -163,7 +163,7 @@
                                     android:id="@+id/id_img3"
                                     android:layout_width="30dp"
                                     android:layout_height="30dp"
-                                    android:src="@drawable/ic_superimport" />
+                                    android:src="@drawable/ic_super" />
                             </LinearLayout>
 
                             <TextView
@@ -182,36 +182,24 @@
                             android:orientation="vertical">
 
 
-                            <RelativeLayout
+                            <LinearLayout
                                 android:layout_width="50dp"
                                 android:layout_height="50dp"
                                 android:background="@drawable/border_25dp"
+                                android:gravity="center"
                                 android:orientation="vertical">
 
                                 <ImageView
                                     android:layout_width="30dp"
                                     android:layout_height="30dp"
-                                    android:layout_centerHorizontal="true"
-                                    android:layout_centerVertical="true"
-                                    android:src="@drawable/ic_message" />
-
-                                <TextView
-                                    android:id="@+id/id_func_message_count"
-                                    android:layout_width="20dp"
-                                    android:layout_height="20dp"
-                                    android:layout_alignParentRight="true"
-                                    android:background="@drawable/border_10_red"
-                                    android:gravity="center"
-                                    android:text="1"
-                                    android:textColor="@color/app_white"
-                                    android:visibility="gone" />
-                            </RelativeLayout>
+                                    android:src="@drawable/ic_bird" />
+                            </LinearLayout>
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="5dp"
-                                android:text="消息" />
+                                android:text="青果教务" />
                         </LinearLayout>
 
                         <LinearLayout
@@ -253,6 +241,19 @@
                         android:gravity="center"
                         android:numColumns="5"
                         android:visibility="gone" />
+
+                    <TextView
+                        android:visibility="gone"
+                        android:id="@+id/id_func_message_count"
+                        android:layout_width="match_parent"
+                        android:layout_height="40dp"
+                        android:background="@color/color_5"
+                        android:ellipsize="end"
+                        android:paddingLeft="15dp"
+                        android:gravity="center_vertical"
+                        android:singleLine="true"
+                        android:textColor="@color/theme_red"
+                        android:textSize="16sp" />
 
                 </LinearLayout>
 

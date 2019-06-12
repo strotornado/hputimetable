@@ -75,4 +75,8 @@
         <item name="mainColor">#607D8B</item>
     </style>
 
+    <style name="coolapkTheme" parent="AppTheme">
+        <item name="mainColor">#109D58</item>
+    </style>
+
 </resources>

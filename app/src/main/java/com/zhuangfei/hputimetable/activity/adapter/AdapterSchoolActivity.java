@@ -104,8 +104,26 @@ public class AdapterSchoolActivity extends AppCompatActivity {
 
     @OnClick(R.id.id_close)
     public void goBack() {
-        ActivityTools.toBackActivityAnim(AdapterSchoolActivity.this,
-                returnClass);
+        android.app.AlertDialog.Builder builder=new android.app.AlertDialog.Builder(this)
+                .setTitle("需要帮忙吗?")
+                .setMessage("是否是在解析中出现了问题，为你提供如下解决方法:\n1.如果浏览教务处时出现布局混乱导致的无法点击问题，请设置为电脑UA\n2.如果是URP教务登录后无法点击，请在登录后选择兼容模式")
+                .setCancelable(false)
+                .setPositiveButton("去设置", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        showPopMenu();
+                        if(dialogInterface!=null){
+                            dialogInterface.dismiss();
+                        }
+                    }
+                }).setNegativeButton("退出", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        ActivityTools.toBackActivityAnim(AdapterSchoolActivity.this,
+                                returnClass);
+                    }
+                });
+        builder.create().show();
     }
 
     /**
@@ -285,6 +303,14 @@ public class AdapterSchoolActivity extends AppCompatActivity {
                             webView.loadUrl(now+"/xkAction.do?actionType=6");
                         }
 
+                        break;
+                    case R.id.id_menu3:
+                        webView.getSettings().setUserAgentString("Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.80 Safari/537.36");
+                        webView.reload();
+                        break;
+                    case R.id.id_menu4:
+                        webView.getSettings().setUserAgentString("Mozilla/5.0 (Linux; Android 7.1.1; Mi Note 3 Build/NMF26X; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/61.0.3163.98 Mobile Safari/537.36");
+                        webView.reload();
                         break;
                 }
                 return false;

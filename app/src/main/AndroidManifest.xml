@@ -159,6 +159,10 @@
         <activity android:name=".activity.FindVipLicenseActivity" android:windowSoftInputMode="stateHidden"></activity>
         <activity android:name=".activity.SetTimeActivity" android:windowSoftInputMode="stateHidden"></activity>
         <activity android:name=".activity.AddTodoActivity" android:windowSoftInputMode="stateHidden"></activity>
+
+        <activity android:name=".activity.LoginActivity" android:windowSoftInputMode="stateHidden"></activity>
+
+        <activity android:name=".activity.ChooseSchoolActivity" android:windowSoftInputMode="stateHidden"></activity>
     </application>
 
 </manifest>

@@ -40,6 +40,9 @@ public class ThemeManager {
             case 8:
                 context.setTheme(R.style.grayTheme);
                 break;
+            case 9:
+                context.setTheme(R.style.coolapkTheme);
+                break;
             default:
                 context.setTheme(R.style.blackTheme);
                 break;
